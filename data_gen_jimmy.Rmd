@@ -1,0 +1,109 @@
+---
+title: "Bootstrapping Simulation Study"
+author: "Jimmy Kelliher"
+date: "2/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# load necessary packages
+library(tidyverse)
+
+# set knitr defaults
+knitr::opts_chunk$set(
+    echo      = TRUE
+  , fig.align = "center"
+  , fig.width = 6
+  , fig.asp   = .6
+  , out.width = "90%"
+)
+
+# set theme defaults
+theme_set(
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+    , plot.title    = element_text(hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5)
+    , plot.caption  = element_text(hjust = 0.0)
+  )
+)
+
+# set color scale defaults
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill   = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete   = scale_fill_viridis_d
+```
+
+Let the logit function $h : (0, 1) \to \mathbb{R}$ be given by
+
+  \[ h(x) = \log \left( \frac{x}{1 - x} \right). \]
+
+Fix $n \in \mathbb{N}$, and consider a population of individuals $i \in \{ 1, \ldots, n \}$. Let $X_{1i}, X_{2i}, X_{3i} \sim N(0, 1)$ be covariates associated with individual $i$. Let $T_i$ be a binary variable indicating some treatment, and let the data-generating process for $T_i$ satisfy
+
+  \[
+    h \Big( P \big(T_i = 1 \; | \; \mathbf{X}_i, \boldsymbol{\alpha} \big) \Big)
+    = \alpha_0 + \alpha_1 X_{1i} + \alpha_2 X_{2i} + \varepsilon_i
+  \]
+
+for $\varepsilon_i \sim N(0, \sigma_\varepsilon^2)$. That is, the probability of receiving treatment $T_i$ for individual $i$ is determined by $X_{1i}, X_{2i},$ and random noise. Let $Y_i$ be some outcome variable with data-generating process
+
+  \[
+    Y_i
+    = \beta_0 + \beta_{1i} T_i + \beta_2 X_{2i} + \beta_3 X_{3i} + \eta_i
+  \]
+
+for $\eta_i \sim N(0, \sigma_\eta^2)$. That is, the outcome for individual $i$ is determined by $T_i, X_{2i}, X_{3i},$ and random noise, as well as individual treatment effect $\beta_{1i} \sim N(\beta_1, \sigma^2)$.
+
+
+```{r}
+set.seed(8160)
+
+# set parameters
+n <- 10^3
+
+alpha_0 <- -1.00
+alpha_1 <-  0.25
+alpha_2 <-  4.00
+
+beta_0  <- 0
+beta_1  <- 4
+beta_2  <- 2
+beta_3  <- 3
+
+sigma_t <- 1 # standard deviation of noise in treatment DGP
+sigma_y <- 1 # standard deviation of noise in outcome DGP
+sigma_b <- 1 # standard deviation of distribution of individual treatment effects
+
+# define the distribution of individual treatment effects
+beta_1i <- rnorm(n, beta_1, sigma_b^2)
+hist(beta_1i)
+
+# define covariates
+x_1 <- rnorm(n, 0, 1)
+x_2 <- rnorm(n, 0, 1)
+x_3 <- rnorm(n, 0, 1)
+
+# define inverse of logistic function
+invlogit <- function(x) exp(x) / (1 + exp(x))
+
+# obtain probability of treatment and whether treatment was observed
+p_i <- invlogit(alpha_0 + alpha_1 * x_1 + alpha_2 * x_2 + 0 * rnorm(n, 0, sigma_t^2))
+t_i <- p_i > runif(n)
+
+hist(p_i)
+summary(t_i)
+
+y_i <- beta_0 + beta_1i * t_i + beta_2 * x_2 + beta_3 * x_3 + rnorm(n, 0, sigma_y^2)
+
+hist(y_i)
+summary(lm(y_i ~ t_i + x_2 + x_3))
+mean(y_i[t_i == 1]) - mean(y_i[t_i == 0])
+
+summary(x_2[t_i == 1])
+summary(x_2[t_i == 0])
+cov(t_i, x_2)
+```
