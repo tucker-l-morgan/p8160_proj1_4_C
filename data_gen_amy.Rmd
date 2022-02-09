@@ -1,0 +1,369 @@
+---
+title: "Data Generation"
+author: "Amy Pitts"
+date: "2/8/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+# Data Generation 
+
+The method of data generation is inspired by the Austin & Small paper. 
+
+Covariate Generation 
+
+```{r}
+set.seed(8160) # once we do simulations this will need to change with interations 
+
+N <- 1000 # size of simulated dataset
+
+x1 <- rnorm(N, 0, 1)
+x2 <- rnorm(N, 0, 1)
+x3 <- rnorm(N, 0, 1)
+x4 <- rnorm(N, 0, 1)
+x5 <- rnorm(N, 0, 1)
+x6 <- rnorm(N, 0, 1)
+x7 <- rnorm(N, 0, 1)
+x8 <- rnorm(N, 0, 1)
+x9 <- rnorm(N, 0, 1)
+x10 <- rnorm(N, 0, 1)
+
+beta_low <- log(1.25)
+beta_med <- log(1.50)
+beta_high <- log(1.75)
+beta_Vhigh <- log(2)
+
+error <- rnorm(N, 0, 3)
+
+# Value gathered (Need to work on this)
+beta_0_treat <- 1 # the intercept in the treament-selection model. This will detemrine the prevalance of treatment in the simulated dataset. Ths approaite value of the inercept can be found using a grid search or a bisection approach. 
+
+beta_0_outcome <- 0 # the intercept in the binary-outcome generating model 
+# its value will determine the incidence of the outcome 
+# the approaiate value of the intercept can be found using a bisection approach 
+
+beta_effect <- 1 # the log-odds ratio for the effect of treatment on the outcome that will be induce the desired mariginal risk properence. It can be found using a biscetion apprach 
+
+data_gen <- tibble(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10)
+head(data_gen)
+```
+
+# treatment status 
+
+### Determining the beta_0_treat value 
+Want a value that is close to 20% treatment selection 
+```{r message=FALSE, warning=FALSE}
+desired_prop = 0.2
+seq_try = seq(-4,0, 0.01)
+prop_save = rep(0, length(seq_try))
+seq_select = tibble(seq_try, prop_save)
+count = 0
+for(i in seq_try) {
+beta_0_treat = i
+count = count + 1
+treat_logit <- beta_0_treat+ beta_low*x1 + beta_med*x2 + beta_high*x3 + beta_low*x4 + 
+  beta_med*x5 + beta_high*x6 + beta_Vhigh*x7
+
+p_treat <- exp(treat_logit)/(1+ exp(treat_logit))
+
+treat <- rbinom(N, 1, p_treat) 
+
+treat_nontreat = tibble(treat) %>% 
+  group_by(treat) %>%
+  summarize(num = n())
+
+prop = treat_nontreat %>% filter(treat == 1 ) %>% pull(num) / 
+        treat_nontreat %>% filter(treat == 0 ) %>% pull(num)
+
+seq_select$prop_save[count] =  prop
+}
+seq_select %>%
+  ggplot(aes(x=seq_try, y=prop_save))+
+  geom_point()
+
+beta_0_treat = seq_select %>% 
+  filter(prop_save < desired_prop + 0.01) %>%
+  filter(prop_save > desired_prop - 0.01) %>%
+  summarise(
+    avg = mean(seq_try)
+  ) %>% pull(avg)
+beta_0_treat
+```
+
+
+Now creating the treatment status
+```{r}
+treat_logit <- beta_0_treat+ beta_low*x1 + beta_med*x2 + beta_high*x3 + beta_low*x4 + 
+  beta_med*x5 + beta_high*x6 + beta_Vhigh*x7
+
+p_treat <- exp(treat_logit)/(1+ exp(treat_logit))
+
+treat <- rbinom(N, 1, p_treat) 
+
+data_gen <- data_gen %>% mutate ( treat = treat) 
+
+table(treat)
+```
+
+# Continous Y 
+
+### determining beta_0_outcome 
+```{r message=FALSE, warning=FALSE}
+seq_try = seq(0, 100, 1)
+seq_select = tibble(seq_try, diff_save = rep(0, length(seq_try)))
+count = 0
+for(i in seq_try) {
+  beta_0_outcome = i
+  count = count + 1
+  y_continous <- beta_0_outcome + 1*treat + beta_low*x4 + beta_med*x5 + 
+    beta_high*x6 + beta_Vhigh*x7 +  beta_low*x8 + beta_med*x9 + 
+    beta_high*x10 + error
+
+  data_gen$y_continous = y_continous
+  data_gen_save = data_gen  %>%
+    group_by(treat) %>%
+    summarize(
+      mean_effect = mean(y_continous),
+      sd_effect = sd(y_continous)
+    )
+  diff = data_gen_save %>% filter(treat == 0 ) %>% pull(mean_effect) -
+          data_gen_save %>% filter(treat == 1 ) %>% pull(mean_effect)
+  seq_select$diff_save[count] =  diff
+}
+seq_select %>%
+  ggplot(aes(x=seq_try, y=diff_save))+
+  geom_point()
+
+
+```
+doesn't seem to matter what the intercept is. the 1 is what is controlling the difference in group. I am not sure what is beta.0.outcome then... 
+
+
+Determining y using beta_0_outcome 
+
+```{r}
+# continous outcome for each subject 
+beta_0_outcome = 0
+y_continous <- beta_0_outcome+ 1*treat + beta_low*x4 + beta_med*x5 + beta_high*x6 + beta_Vhigh*x7 +
+   beta_low*x8 + beta_med*x9 + beta_high*x10 + error
+
+data_gen$y_continous = y_continous
+
+# 1 is the treatment effect
+data_gen  %>%
+  group_by(treat) %>%
+  summarize(
+    mean_effect = mean(y_continous),
+    sd_effect = sd(y_continous)
+  )
+```
+
+# binary outcome 
+
+Finding the right beta_effect estimate. 
+```{r message=FALSE, warning=FALSE}
+seq_try = seq(0.1,2, 0.01)
+prop_save = rep(0, length(seq_try))
+seq_select = tibble(seq_try, prop_save)
+count = 0
+for(i in seq_try) {
+  beta_effect = i
+  count = count + 1
+  
+  # binary outcome 
+  y_logit <- beta_effect*treat + beta_low*x4 + beta_med*x5 + beta_high*x6 + 
+    beta_Vhigh*x7 +beta_low*x8 + beta_med*x9 + beta_high*x10 
+  # don't need error here. error comes from rbinom
+  
+  p_outcome <- exp(y_logit)/(1+ exp(y_logit))
+  y_binary <- rbinom(N, 1, p_outcome)
+  
+  data_gen$y_binary = y_binary
+  
+  table_prop = data_gen %>%
+    mutate(treat = ifelse(treat == 1, "treated", "nontreated")) %>% 
+    group_by(treat, y_binary) %>% 
+    summarize(n=n()) %>%
+    pivot_wider(
+      names_from = treat,
+      values_from = n
+    )
+  
+  prop = (table_prop %>% filter(y_binary == 1) %>% pull(treated)/
+       table_prop %>% filter(y_binary == 0) %>% pull(treated))-
+    (table_prop %>% filter(y_binary == 1) %>%  pull(nontreated) /  
+       table_prop %>% filter(y_binary == 0) %>% pull(nontreated))
+  
+  seq_select$prop_save[count] = prop
+}
+
+seq_select %>%
+  ggplot(aes(x=seq_try, y=prop_save))+
+  geom_point()
+desired_prop = 1
+beta_effect = seq_select %>% 
+  filter(prop_save < desired_prop + 0.01) %>%
+  filter(prop_save > desired_prop - 0.01) %>%
+  summarise(
+    avg = mean(seq_try)
+  ) %>% pull(avg)
+beta_effect
+```
+
+Using that estimate. 
+```{r}
+
+# binary outcome 
+y_logit <- beta_effect*treat + beta_low*x4 + beta_med*x5 + beta_high*x6 + 
+  beta_Vhigh*x7 +beta_low*x8 + beta_med*x9 + beta_high*x10 # don't need error here. 
+
+p_outcome <- exp(y_logit)/(1+ exp(y_logit))
+y_binary <- rbinom(N, 1, p_outcome)
+
+data_gen$y_binary = y_binary
+
+```
+
+
+# Evaulating our Methods
+```{r message=FALSE, warning=FALSE}
+# treated vs non treated 
+data_gen  %>%
+  ggplot(aes(y=y_continous, x=treat, group=treat)) +
+  geom_boxplot() 
+
+table(data_gen$treat)
+
+# contious 
+data_gen  %>%
+  group_by(treat) %>%
+  summarize(
+    mean_effect = mean(y_continous),
+    sd_effect = sd(y_continous)
+  )
+
+# binary
+table_prop = data_gen %>%
+  mutate(treat = ifelse(treat == 1, "treated", "nontreated")) %>% 
+  group_by(treat, y_binary) %>% 
+  summarize(n=n()) %>%
+  pivot_wider(
+    names_from = treat,
+    values_from = n
+  )
+
+(table_prop %>% filter(y_binary == 1) %>% pull(nontreated) /
+table_prop %>% filter(y_binary == 0) %>% pull(nontreated))-
+(table_prop %>% filter(y_binary == 1) %>% pull(treated)/
+table_prop %>% filter(y_binary == 0) %>% pull(treated))
+```
+
+
+# Matching! 
+I am reading off of [link](https://sejdemyr.github.io/r-tutorials/statistics/tutorial8.html)
+
+## Pre-analysis using non-matched data Continous Y
+
+```{r}
+data_gen %>%
+  group_by(treat) %>%
+  summarise(n = n(),
+            mean_math = mean(y_continous),
+            std_error = sd(y_continous) / sqrt(n))
+
+with(data_gen, t.test(y_continous ~ treat))
+```
+
+## Difference-in-means: pre-treatment covariates
+```{r}
+data_gen_cov <- c('x4', 'x5', 'x6', 'x7')
+data_gen %>%
+  group_by(treat) %>%
+  select(one_of(data_gen_cov)) %>%
+  summarise_all(funs(mean(., na.rm = T)))
+```
+
+## Propensity score estimation
+We estimate the propensity score by running a logit model (probit also works) where the outcome variable is a binary variable indicating treatment status. What covariates should you include? For the matching to give you a causal estimate in the end, you need to include any covariate that is related to both the treatment assignment and potential outcomes. I choose just a few covariates below—they are unlikely to capture all covariates that should be included. You’ll be asked to come up with a potentially better model on your own later.
+
+```{r}
+m_ps <- glm(treat ~ x4 + x5 + x6 + x7 ,
+            family = binomial(), data = data_gen)
+summary(m_ps)
+```
+
+Using this model, we can now calculate the propensity score for each student. It is simply the student’s predicted probability of being Treated, given the estimates from the logit model. Below, I calculate this propensity score using predict() and create a dataframe that has the propensity score as well as the student’s actual treatment status.
+
+```{r}
+prs_df <- data.frame(pr_score = predict(m_ps, type = "response"),
+                     treat = m_ps$model$treat)
+head(prs_df)
+```
+
+## Evaulating 
+```{r}
+labs <- paste("Actual treatment:", c("Treat", "No"))
+prs_df %>%
+  mutate(treat = ifelse(treat == 1, labs[1], labs[2])) %>%
+  ggplot(aes(x = pr_score)) +
+  geom_histogram(color = "white") +
+  facet_wrap(~treat) +
+  xlab("Probability of treat") +
+  theme_bw()
+```
+
+
+## Executing a matching algorithm
+```{r}
+library(MatchIt)
+data_gen_nomiss <- data_gen %>%  # MatchIt does not allow missing values
+  select(y_continous, treat, one_of(data_gen_cov)) %>%
+  na.omit()
+
+mod_match <- MatchIt::matchit(treat ~ x4 + x4 + x6 +  x7,  
+                              method = "nearest", 
+                              data = data_gen_nomiss)
+dta_m <- match.data(mod_match)
+dim(dta_m)
+
+```
+
+## Evaulate 
+
+```{r message=FALSE, warning=FALSE}
+fn_bal <- function(dta, variable) {
+  dta$variable <- dta[, variable]
+  dta$treat <- as.factor(dta$treat)
+  support <- c(min(dta$variable), max(dta$variable))
+  ggplot(dta, aes_string(x = "distance", y = variable, color = "treat")) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+
+library(gridExtra)
+grid.arrange(
+   fn_bal(dta_m, "x4"),
+   fn_bal(dta_m, "x5") + theme(legend.position = "none"),
+   fn_bal(dta_m, "x6"),
+   fn_bal(dta_m, "x7") + theme(legend.position = "none"),
+   nrow = 2, widths = c(1, 0.8)
+)
+
+
+dta_m %>%
+  group_by(treat) %>%
+  select(one_of(data_gen_cov)) %>%
+  summarise_all(funs(mean))
+```
+
+
+
