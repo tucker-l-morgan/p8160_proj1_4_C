@@ -1,0 +1,140 @@
+\documentclass{beamer}
+
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{Madrid}      % or try Darmstadt, Madrid, Warsaw, ... Madrid Frankfurt
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{animate}
+\usepackage{array}
+\usepackage{color, colortbl}
+
+\usepackage{xcolor}
+
+
+%\usepackage{appendixnumberbeamer}
+
+
+\title[P8160]{Simulation study comparing two bootstrapping methods for propensity-score matching.
+ }
+\author[Group 4]{Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu
+}
+
+\date{Monday, February 21, 2022}
+
+\begin{document}
+
+%title page
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Slide Title}
+    Here is our info  
+    \medskip 
+    \begin{block}{Thing we are defining }
+    definition 
+    \end{block}
+    \bigskip
+    Here is a list
+    \begin{itemize}
+        \item one thing
+        \item second thing  
+        \item third thing 
+        \item last thing 
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Data Generation}
+    \textbf{Project Goal}: here is our project goal 
+    \\ \bigskip
+    More things 
+\end{frame}
+
+
+% For the picture playing with the scale can help the picture fit on the slide. 
+\begin{frame}{Picture Example}
+    Here is a picture of my cat as an example 
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{petra.jpg}
+        \caption{This is one of my favorite pictures haha }
+        \label{fig:my_label}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}{Adding Some Color}
+    Here is some color   
+    \begin{itemize}
+        \color{blue}
+        \item blue, 
+        \color{purple}
+        \item purple, 
+        \item second purple, 
+        \color{orange}
+        \item orange
+    \end{itemize}
+    We can also just add  {\color{blue}color}  in a sentence. 
+\end{frame}
+
+
+
+
+\begin{frame}{Model Assessment}
+   Here is a table and some formulas 
+   \bigskip 
+   \begin{columns}
+        \begin{column}{0.45\textwidth}
+        	\begin{tabular}{|c|cc|} \hline
+            	&Outcome:& \\
+          		Treat:  & Yes & No \\ \hline 
+           		0& A & B  \\
+           		1 & C & D \\ \hline 
+        	\end{tabular}
+        \end{column}
+        \begin{column}{0.55\textwidth}
+        	$$Y = \alpha_0 + \alpha_1 X_1 + \alpha_2 X_2 + \alpha_3 X_3 + \epsilon$$
+        	$$\epsilon \sim N(0,1)$$
+        \end{column}
+   \end{columns}
+\end{frame}
+
+
+\begin{frame}{Acknowledgements + Resources}
+\begin{center}
+    Here are old resources I used.  
+\end{center}
+\medskip  
+\scriptsize{ 1. Hodgson, J. T., \& Darnton, A. (2000). The quantitative risks of mesothelioma and lung cancer in relation to asbestos exposure. The Annals of occupational hygiene, 44(8), 565–601. \\
+2. Lemen R. A. (2016). Mesothelioma from asbestos exposures: Epidemiologic patterns and impact in the United States. Journal of toxicology and environmental health. Part B, Critical reviews, 19(5-6), 250–265. \\
+3. American Cancer Society. (2018, November 16). Risk factors for malignant mesothelioma.  \\ https://www.cancer.org/cancer/malignant-mesothelioma/causes-risks-prevention/risk-factors.html \\
+4. Er, O., Tanrikulu, A. C., . Abakay, A., \& Temurtas, F. An approach based on probabilistic neural network for diagnosis of Mesothelioma's disease. Computers \& Electrical Engineering, 38(1), 75-81. \\
+5. Dua, D. \& Graff, C. (2019). UCI Machine Learning Repository. Irvine, CA: University of California, School of Information and Computer Science.  http://archive.ics.uci.edu/ml \\
+6. Hillegass, J. M., Shukla, A., Lathrop, S. A., MacPherson, M. B., Beuschel, S. L., Butnor, K. J., Testa, J. R., Pass, H. I., Carbone, M., Steele, C., \& Mossman, B. T. (2010). Inflammation precedes the development of human malignant mesotheliomas in a SCID mouse xenograft model. Annals of the New York Academy of Sciences, 1203, 7–14. \\
+7. What Mesothelioma Treatment is Right for Me? Mesothelioma Center - Vital Services for Cancer Patients \& Families. (n.d.). https://www.asbestos.com/treatment/ }
+\end{frame}
+
+\begin{frame}{Thank you!}
+    \centering {\Large Thank you!} 
+\end{frame}
+
+\end{document}
