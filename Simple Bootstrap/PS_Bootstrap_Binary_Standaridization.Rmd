@@ -159,6 +159,12 @@ for (i in 1:nboot) {
   
   boots[i, "se_OR"] <- summary(bootmod)$coeff[2,2]
   
+  boots[i, "se_ATE"] <- 
+    sqrt((summary(bootmod)$coeff[2,2]*mean(sampl.treated$pred.y) *
+       (1 - mean(sampl.treated$pred.y)))^2 +
+    (summary(bootmod)$coeff[2,2]*mean(sampl.untreated$pred.y) *
+       (1 - mean(sampl.untreated$pred.y)))^2)
+  
   boots[i, "mean1"] <- mean(sampl.treated$pred.y)
   boots[i, "mean0"] <- mean(sampl.untreated$pred.y)
   boots[i, "difference"] <- boots[i, "mean1"] - boots[i, "mean0"]
@@ -166,6 +172,8 @@ for (i in 1:nboot) {
   mean_log_OR <- mean(boots$log_OR)
   
   Empirical_se_ATE <- sd(boots$difference)
+  
+  mean_se_ATE <- mean(boots$se_ATE)
   
   Empirical_se_log_OR <- sd(boots$log_OR)
   
@@ -181,6 +189,10 @@ for (i in 1:nboot) {
     cat("\n")
     cat("Empirical_se_ATE:")
     cat(Empirical_se_ATE)
+    cat("\n")
+    cat("\n")
+    cat("mean_se_ATE:")
+    cat(mean_se_ATE)
     cat("\n")
     cat("\n")
     cat("95% CI for ATE:")
@@ -216,6 +228,16 @@ hist(boots$log_OR)
 hist(boots$se_OR)
 ```
 
+
+
+
+```{r}
+a <- glm(Y ~ A + ps, data = sampl, 
+                 weights = weights, family = binomial)
+
+
+summary(a)
+```
 
 
 
