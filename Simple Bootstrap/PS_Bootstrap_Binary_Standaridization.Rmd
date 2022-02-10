@@ -1,11 +1,12 @@
 ---
-title: "PS Bootstrap Continuous Outcome"
+title: "PS Bootstrap Binary Standardization"
 author: "Hun"
-date: "2/7/2022"
+date: "2/9/2022"
 output: pdf_document
 ---
 
-```{r, echo = FALSE, message = FALSE}
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(simstudy)
 library(MatchIt)
@@ -23,42 +24,33 @@ pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
 pre_data <- defData(pre_data, varname = "A", 
                     formula = " 0.5*L1 + 0.27*L2 -0.17*L3", 
                 dist = "binary", link = "logit")
-pre_data <- defData(pre_data, varname = "Y0", 
-                    formula = "-1.5 + 0.7*L2 - 0.3*L3", 
-                dist = "nonrandom")
-pre_data <- defData(pre_data, varname = "Y1", 
-                    formula = "1.7 + 1.77*L2 - 0.7*L3", 
-                dist = "nonrandom")
 pre_data <- defData(pre_data, varname = "Y", 
-                    formula = "2 + 1.5*A + 0.8*L2 + -0.1*L3", 
-                dist = "nonrandom")
+                    formula = "0.5*A + 0.8*L2 + -0.1*L3", 
+                dist = "binary", link = "logit")
 
-set.seed(246)
+set.seed(7777)
 df <- genData(1000, pre_data)
 
-mean(df$Y1-df$Y0)
+expit <- function(beta) {
+    return(exp(beta)/(1 + exp(beta)))
+}
 
-sd(df$Y1-df$Y0)
+ATE <- expit(sum(0.5 + 0.8*df$L2 - 0.1*df$L3)) - expit(sum(0.8*df$L2 - 0.1*df$L3)) 
+# this is not true ATE
 
-hist(df$Y1 - df$Y0)
+# True log odds ratio: 0.5
 ```
+
+
+
 
 ## Propensity Score Model
 ```{r, echo = FALSE, warning = FALSE}
 exposureModel <- glm(A ~ L1 + L2 + L3, data = df, family = "binomial")
 #Note that Pr[A=0|L] = 1-Pr[A=1|L]
 
-df.obs <-
-  ifelse(df$A == 0,
-         1 - predict(exposureModel, type = "response"),
-         predict(exposureModel, type = "response"))
 
-df_with_weight <-
-  df %>%
-  mutate(w = 1/df.obs, #inverse propensity score (weight)
-         ps = df.obs) #propensity score
-
-df$ps <- predict(exposureModel, df, type="response")
+df$ps <- predict(exposureModel, df, type="response")  #getting estimated propensity score
 ```
 
 ## 500 pairs Propensity Score distribution
@@ -133,20 +125,20 @@ matched_df %>%
 nboot <- 100
 # set up a matrix to store results
 boots <- data.frame(i = 1:nboot,
-                    se = NA,
+                    se_OR = NA,
+                    mean_log_OR = NA,
                     mean1 = NA,
                     mean0 = NA,
-                    beta1 = NA, 
-                    ATE = NA
+                    difference = NA
                     )
 # loop to perform the bootstrapping
   
 for(i in 1:nboot) {
   # sample with replacement
-  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),494, replace =  TRUE))
+  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),487, replace =  TRUE))
   
   bootmod <- glm(Y ~ A + ps, data = sampl, 
-                 weights = weights)
+                 weights = weights, family = binomial)
   
   # create new data sets
   sampl.treated <- sampl %>%
@@ -157,21 +149,24 @@ for(i in 1:nboot) {
   
   # predict values
   sampl.treated$pred.y <- 
-    predict(bootmod, sampl.treated)
+    predict(bootmod, sampl.treated, type = "response")
   
   sampl.untreated$pred.y <- 
-    predict(bootmod, sampl.untreated)
+    predict(bootmod, sampl.untreated, type = "response")
   
    # output results
   
-  boots[i, "beta1"] <- summary(bootmod)$coeff[2,1]
+  boots[i, "mean_log_OR"] <- summary(bootmod)$coeff[2,1]
+  
+  boots[i, "se_OR"] <- summary(bootmod)$coeff[2,2]
+  
   boots[i, "mean1"] <- mean(sampl.treated$pred.y)
   boots[i, "mean0"] <- mean(sampl.untreated$pred.y)
-  boots[i, "ATE"] <- boots[i, "mean1"] - boots[i, "mean0"]
+  boots[i, "difference"] <- boots[i, "mean1"] - boots[i, "mean0"]
   
-  se_ATE <- sd(boots$ATE)
+  se_ATE <- sd(boots$difference)
 
-  ATE <- mean(boots$ATE)
+  ATE <- mean(boots$difference)
   
   # once loop is done, print the results
   if (i == nboot){
@@ -190,15 +185,26 @@ for(i in 1:nboot) {
     cat("\n")
     cat("\n")
     cat("log OR:")
-    cat(mean(boots$beta1))
-
+    cat(mean(boots$mean_log_OR))
+    cat("\n")
+    cat("\n")
+    cat("se_OR:")
+    cat(mean(boots$se_OR))
+    cat("\n")
+    cat("\n")
+    cat("95% CI for log odds ratio:")
+    cat(mean(boots$mean_log_OR) - 1.96*mean(boots$se_OR), 
+        ",",
+        mean(boots$mean_log_OR) + 1.96*mean(boots$se_OR))
   }
 }
 
 ```
 
 ```{r}
-hist(boots$ATE)
+hist(boots$mean_log_OR)
+
+hist(boots$se_OR)
 ```
 
 
