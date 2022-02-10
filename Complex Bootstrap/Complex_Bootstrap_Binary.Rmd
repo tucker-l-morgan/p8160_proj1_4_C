@@ -97,6 +97,10 @@ for(i in 1:nboot) {
 
 ## Result
 ```{r}
+mean(unlist(boot_mean_log_OR))
+
+mean(unlist(boot_mean_se_log_OR))
+
 par(mfrow=c(1,2))
 hist(unlist(boot_mean_log_OR), breaks = 10, 
      main = " mean log OR of 1000 boot samples", xlab = "mean log OR")
