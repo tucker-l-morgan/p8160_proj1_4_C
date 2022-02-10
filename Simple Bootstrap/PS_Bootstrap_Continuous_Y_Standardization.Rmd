@@ -124,7 +124,7 @@ boots <- data.frame(i = 1:nboot,
   
 for(i in 1:nboot) {
   # sample with replacement
-  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),487, replace =  TRUE))
+  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),500, replace =  TRUE))
   
   bootmod <- glm(Y ~ A + ps, data = sampl, 
                  weights = weights)
@@ -155,7 +155,7 @@ for(i in 1:nboot) {
   ATE <- mean(boots$ATE)
   
   # once loop is done, print the results
-  if (i == nboot){
+  if (i == nboot) {
     cat("ATE:")
     cat(ATE)
     cat("\n")

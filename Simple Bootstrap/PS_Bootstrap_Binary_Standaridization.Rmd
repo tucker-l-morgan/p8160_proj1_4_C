@@ -50,7 +50,7 @@ exposureModel <- glm(A ~ L1 + L2 + L3, data = df, family = "binomial")
 #Note that Pr[A=0|L] = 1-Pr[A=1|L]
 
 
-df$ps <- predict(exposureModel, df, type="response")  #getting estimated propensity score
+df$ps <- predict(exposureModel, df, type = "response")  #getting estimated propensity score
 ```
 
 ## 500 pairs Propensity Score distribution
@@ -135,7 +135,7 @@ boots <- data.frame(i = 1:nboot,
   
 for(i in 1:nboot) {
   # sample with replacement
-  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),487, replace =  TRUE))
+  sampl <- matched_df %>% filter(subclass %in% sample(levels(subclass),500, replace =  TRUE))
   
   bootmod <- glm(Y ~ A + ps, data = sampl, 
                  weights = weights, family = binomial)
