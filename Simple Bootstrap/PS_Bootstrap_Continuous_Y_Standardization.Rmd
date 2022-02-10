@@ -106,6 +106,19 @@ matched_df %>%
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank())
 ```
+## Empirical standard deviation of the estimated effects
+```{r}
+empirical_df <-
+  matched_df %>% select(A,Y,subclass) %>% 
+  pivot_wider(values_from = Y, names_from = A) %>%
+  group_by(subclass) %>%
+  summarise(difference = `1` - `0`)
+
+sd(empirical_df$difference)
+
+summary(glm(Y ~ A + ps, data = matched_df, 
+                 weights = weights))
+```
 
 
 ## simple bootstrap
@@ -146,13 +159,16 @@ for(i in 1:nboot) {
    # output results
   
   boots[i, "beta1"] <- summary(bootmod)$coeff[2,1]
+  boots[i, "se"] <- summary(bootmod)$coeff[2,2]
   boots[i, "mean1"] <- mean(sampl.treated$pred.y)
   boots[i, "mean0"] <- mean(sampl.untreated$pred.y)
   boots[i, "ATE"] <- boots[i, "mean1"] - boots[i, "mean0"]
   
-  se_ATE <- sd(boots$ATE)
+  Empirical_sd <- sd(boots$ATE)
 
   ATE <- mean(boots$ATE)
+  
+  mean_se <- mean(boots$se)
   
   # once loop is done, print the results
   if (i == nboot) {
@@ -160,14 +176,18 @@ for(i in 1:nboot) {
     cat(ATE)
     cat("\n")
     cat("\n")
-    cat("se_ATE:")
-    cat(se_ATE)
+    cat("Empirical_sd:")
+    cat(Empirical_sd)
+    cat("\n")
+    cat("\n")
+    cat("mean_se:")
+    cat(mean_se)
     cat("\n")
     cat("\n")
     cat("95% CI for ATE:")
-    cat(ATE - 1.96*se_ATE, 
+    cat(ATE - 1.96*mean_se, 
         ",",
-        ATE + 1.96*se_ATE)
+        ATE + 1.96*mean_se)
     cat("\n")
     cat("\n")
     cat("ATE from beta:") #checking if our computation is correct
@@ -180,7 +200,9 @@ for(i in 1:nboot) {
 
 ```{r}
 hist(boots$ATE)
+hist(boots$se)
 ```
+
 
 
 
