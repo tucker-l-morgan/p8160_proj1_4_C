@@ -194,10 +194,24 @@ for(i in seq_try) {
       values_from = n
     )
   
+  data_gen %>%
+    group_by(treat) %>%
+    summarize(
+      mean_out = mean(y_binary)
+    ) %>% pivot_wider(
+      names_from = treat,
+      values_from = mean_out
+    ) %>% mutate (
+      diff = `0`-`1`
+    ) %>% pull(diff)
+  
+  
   prop = (table_prop %>% filter(y_binary == 1) %>% pull(treated)/
        table_prop %>% filter(y_binary == 0) %>% pull(treated))-
     (table_prop %>% filter(y_binary == 1) %>%  pull(nontreated) /  
        table_prop %>% filter(y_binary == 0) %>% pull(nontreated))
+  
+  table_prop
   
   seq_select$prop_save[count] = prop
 }
