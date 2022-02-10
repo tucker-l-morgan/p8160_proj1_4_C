@@ -106,19 +106,6 @@ matched_df %>%
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank())
 ```
-## Empirical standard deviation of the estimated effects
-```{r}
-empirical_df <-
-  matched_df %>% select(A,Y,subclass) %>% 
-  pivot_wider(values_from = Y, names_from = A) %>%
-  group_by(subclass) %>%
-  summarise(difference = `1` - `0`)
-
-sd(empirical_df$difference)
-
-summary(glm(Y ~ A + ps, data = matched_df, 
-                 weights = weights))
-```
 
 
 ## simple bootstrap
