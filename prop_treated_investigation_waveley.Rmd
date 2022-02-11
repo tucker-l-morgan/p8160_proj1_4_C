@@ -1,0 +1,178 @@
+---
+title: "Proportion Treated"
+author: "Waveley Qiu"
+date: "2022-02-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# load necessary packages
+library(tidyverse)
+library(simstudy)
+library(MatchIt)
+library(dplyr)
+
+# set knitr defaults
+knitr::opts_chunk$set(
+    echo      = TRUE
+  , fig.align = "center"
+  , fig.width = 6
+  , fig.asp   = .6
+  , out.width = "90%"
+)
+
+# set theme defaults
+theme_set(
+  theme_bw() +
+  theme(
+    legend.position = "bottom"
+    , plot.title    = element_text(hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5)
+    , plot.caption  = element_text(hjust = 0.0)
+  )
+)
+
+# set color scale defaults
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill   = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete   = scale_fill_viridis_d
+```
+
+
+  \[ h(x) = \log \left( \frac{x}{1 - x} \right). \]
+
+Fix $n \in \mathbb{N}$, and consider a population of individuals $i \in \{ 1, \ldots, n \}$. Let $X_{1i}, X_{2i}, X_{3i} \sim N(0, 1)$ be covariates associated with individual $i$. Let $T_i$ be a binary variable indicating some treatment, and let the data-generating process for $T_i$ satisfy
+
+  \[
+    h \Big( P \big(T_i = 1 \; | \; \mathbf{X}_i, \boldsymbol{\alpha} \big) \Big)
+    = \alpha_0 + \alpha_1 X_{1i} + \alpha_2 X_{2i} + \varepsilon_i
+  \]
+
+for $\varepsilon_i \sim N(0, \sigma_\varepsilon^2)$. That is, the probability of receiving treatment $T_i$ for individual $i$ is determined by $X_{1i}, X_{2i},$ and random noise. 
+
+If we want to set a certain proportion of the population to be treated, we want to fix $E(T_i) = \pi_0$, for a given $\pi_0$. 
+
+$$
+\begin{aligned}
+E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
+\\
+&= E\left[\frac{\exp(\alpha_0 + \alpha_1 X_{1i} + \alpha_2 X_{2i} + \varepsilon_i)}{1+\exp(\alpha_0 + \alpha_1 X_{1i}+ \alpha_2 X_{2i} + \varepsilon_i)}\right]
+\\
+&= \frac{\exp(\alpha_0 + \alpha_1 E(X_{1i}) + \alpha_2 E(X_{2i}) + E(\varepsilon_i))}{1+\exp(\alpha_0 + \alpha_1 E(X_{1i}) + \alpha_2 E(X_{2i}) + E(\varepsilon_i))}
+\\
+&= \frac{\exp(\alpha_0)}{1+\exp(\alpha_0)}
+\\
+\implies \pi_0 &= \frac{\exp(\alpha_0)}{1+\exp(\alpha_0)}
+\\
+\implies \alpha_0 &= \frac{\log{\pi_0}}{\log(1-\pi_0)}
+\end{aligned}
+$$
+
+## Finding the right beta_effect estimate for binary data  
+```{r message=TRUE, warning=TRUE}
+binary_outcome_rate <- function(desired_diff, seq_try, df, logit_formula ) {
+  seq_select = tibble(seq_try, prop_save = rep(0, length(seq_try)))
+  for(i in c(1:length(seq_try))) {
+    beta_effect = seq_try[i]
+    
+    # binary outcome 
+    y_logit   <-eval(parse(text=logit_formula ))  
+    p_outcome <- exp(y_logit)/(1+ exp(y_logit))
+    y_binary  <- rbinom(N, 1, p_outcome)
+    
+    # finding difference between groups
+    prop = tibble(y_binary, A = df$A) %>%
+      group_by(A) %>% 
+      summarise( mean_out = mean(y_binary)) %>% 
+      pivot_wider(
+        names_from = A,
+        values_from = mean_out
+      ) %>% 
+      mutate (diff = `1`-`0`) %>% 
+      pull(diff)
+    
+    # having the difference 
+    seq_select$prop_save[i] = prop
+  }
+
+  # graphing 
+  # seq_select %>%
+  #   ggplot(aes(x=seq_try, y=prop_save))+
+  #   geom_point()
+
+ # saving the best beta. 
+  beta_effect = seq_select %>% 
+    filter(prop_save < desired_diff + 0.01) %>%
+    filter(prop_save > desired_diff - 0.01) %>%
+    summarise(
+      avg = mean(seq_try)
+    ) %>% pull(avg)
+ return( beta_effect)
+}
+```
+
+
+## Generating data, using alpha_0 = logit(desired_prop) 
+```{r message=FALSE, warning=FALSE}
+N = 100000
+desired_prop = 0.5
+
+data_gen <- function(N, desired_prop) {
+
+  # setting the covariates
+  L1 <- rnorm(N, 0, 1)
+  L2 <- rnorm(N, 0, 1)
+  L3 <- rnorm(N, 0, 1)
+  
+  # adding covariates to dataset
+  df <- tibble(L1, L2, L3)
+  
+  # get the desired treatment rate 
+  alpha_0_treat = log(desired_prop/(1 - desired_prop))
+  
+  # Creating the treatment assignment, setting alpha_1=0.4, alpha_2 = 0.5, no error term
+  A_logit <- alpha_0_treat + 0.4*df$L1 + 0.5*df$L2
+  p_A     <- exp(A_logit)/(1 + exp(A_logit))
+  A       <- rbinom(N, 1, p_A)
+  
+  ### sanity check. mean(A) should be close to desired_prop
+  #mean(A)
+  
+  # adding the treated untreated data to the dataset 
+  df$A = A
+  
+  # continuous outcome 
+  y_continous <- 1*df$A +  0.5*df$L2 + 0.3*df$L3 +  rnorm(N, 0,1)
+  
+  df$y_continous = y_continous
+  
+  # binary outcome 
+  logit_formula <- "beta_effect*df$A + 0.5*df$L2 + 0.3*df$L3"
+  seq_try = seq(-4,4, 0.01)
+  desired_diff = 0.4
+  beta_effect = binary_outcome_rate(desired_diff, seq_try, df, logit_formula)
+  
+  y_logit   <- eval(parse(text = logit_formula ))  
+  p_outcome <- exp(y_logit)/(1 + exp(y_logit))
+  y_binary  <- rbinom(N, 1, p_outcome)
+  
+  df$y_binary = y_binary
+  
+  # propensity scores 
+  exposureModel <- glm(A ~ L1 + L2 + L3, data = df, family = "binomial")
+  #Note that Pr[A=0|L] = 1-Pr[A=1|L]
+
+  #getting estimated propensity score
+  df$ps <- predict(exposureModel, df, type = "response") 
+  
+  return(df)
+}
+
+# calling the data gen function 
+
+df = data_gen(N, desired_prop)
+```
+
