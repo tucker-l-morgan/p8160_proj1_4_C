@@ -71,48 +71,164 @@ E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 \end{aligned}
 $$
 
-## Finding the right beta_effect estimate for binary data  
-```{r message=TRUE, warning=TRUE, echo=FALSE}
-binary_outcome_rate <- function(desired_diff, seq_try, df, logit_formula ) {
+## Treatment Assignment
+
+```{r assign_treatments}
+# assign_treatments() produces a vector of treatments.
+# inputs:
+# - df: input dataframe
+# - p: desired proportion of treated individuals
+# - alpha_vec: vector of alpha coefficients excluding alpha_0 
+# - var_mat: selected variables (also need to specify error term)
+# - cov_expval_vec: vector of covariate expected values (if X_i ~ N(0,1), all 0)
+assign_treatments <- function(df, p, alpha_vec = c(0.4, 0.5), var_mat = c("L1", "L2"), cov_expval_vec = c(0, 0)){
+  
+  # turn alpha coefficients into vector
+  alpha_vec_loc <- alpha_vec %>% as.vector()
+  
+  # turn covariates from input df into matrix
+  var_mat_loc <- df %>% select(var_mat) %>% as.matrix()
+  
+  # turn covariate expected values into vector
+  cov_expval_vec_loc <- cov_expval_vec %>% as.vector()
+  
+  
+  # calculating logit parameter
+  # a linear combination of:
+  # - alpha coefficients
+  # - covariate expected values
+  # - desired proportion of treated individuals
+  
+  alpha_0_logit_param <- sum(alpha_vec_loc %*% t(cov_expval_vec_loc)) + p
+  
+  # sanity check
+  # print(alpha_0_logit_param)
+  
+  # calculate alpha_0 (if E(X_i) all 0, alpha_0 is just simple logit(p))
+  alpha_0 <- log(alpha_0_logit_param/(1 - alpha_0_logit_param))
+  
+  # set treatments
+  A_logit <- alpha_0 + var_mat_loc %*% alpha_vec_loc # adding alpha_0 to product of var_mat and alpha_vec
+  p_A     <- exp(A_logit)/(1 + exp(A_logit)) # probability is inverse logit of A_logit
+  A       <- rbinom(N, 1, p_A) # assigning treatments
+  
+  # return treatment column
+  return(A)
+}
+
+# test
+df$A <- assign_treatments(df, 0.5)
+```
+
+
+## Binary Outcome Assignment
+```{r assign_binary_outcome message=TRUE, warning=TRUE, echo=FALSE}
+assign_binary_outcome <- function(desired_diff, seq_try, df, logit_formula) {
+  
+  #################### REMOVE LATER ####################
+  #setting the covariates
+  L1 <- rnorm(N, 0, 1)
+  L2 <- rnorm(N, 0, 1)
+  L3 <- rnorm(N, 0, 1)
+  
+  # adding covariates to dataset
+  df <- tibble(L1, L2, L3)
+  logit_formula <- "beta_effect*df$A + 0.5*df$L2 + 0.3*df$L3"
+  seq_try = seq(-4,4, 0.01)
+  desired_diff = 0.4
   seq_select = tibble(seq_try, prop_save = rep(0, length(seq_try)))
-  for(i in c(1:length(seq_try))) {
+  #################### END REMOVE LATER ####################
+  
+  df$A <- assign_treatments(df, 0.2)
+  
+  for (i in c(1:length(seq_try))) {
     beta_effect = seq_try[i]
     
     # binary outcome 
-    y_logit   <-eval(parse(text=logit_formula ))  
-    p_outcome <- exp(y_logit)/(1+ exp(y_logit))
+    y_logit   <- eval(parse(text = logit_formula))  
+    p_outcome <- exp(y_logit)/(1 + exp(y_logit))
     y_binary  <- rbinom(N, 1, p_outcome)
     
     # finding difference between groups
-    prop = tibble(y_binary, A = df$A) %>%
+    prop = 
+      tibble(y_binary, A = df$A) %>%
       group_by(A) %>% 
       summarise( mean_out = mean(y_binary)) %>% 
       pivot_wider(
         names_from = A,
         values_from = mean_out
       ) %>% 
-      mutate (diff = `1`-`0`) %>% 
+      mutate(diff = `1` - `0`) %>% 
       pull(diff)
     
-    # having the difference 
+    # saving the difference 
     seq_select$prop_save[i] = prop
   }
-
-  # graphing 
-  # seq_select %>%
-  #   ggplot(aes(x=seq_try, y=prop_save))+
-  #   geom_point()
-
- # saving the best beta. 
+  
+  # plots beautiful logit function
+  # indicates we can do this mathematically
+  # seq_select %>% ggplot(aes(x = seq_try, y = prop_save)) + geom_point()
+  
+  # saving the best beta. 
   beta_effect = seq_select %>% 
     filter(prop_save < desired_diff + 0.01) %>%
     filter(prop_save > desired_diff - 0.01) %>%
     summarise(
       avg = mean(seq_try)
     ) %>% pull(avg)
- return( beta_effect)
+  
+  beta_effect
+  
+  return(beta_effect)
 }
+
+# treatment should already be assigned
+assign_binary_outcome <- function(df, treat_col = A, p=0.4, beta_vec = c(0.5, 0.3), var_mat = c("L1", "L2")){
+  
+  for (i in c(1:length(seq_try))) {
+    beta_effect = seq_try[i]
+    
+    # binary outcome 
+    y_logit   <- eval(parse(text = logit_formula))  
+    p_outcome <- exp(y_logit)/(1 + exp(y_logit))
+    y_binary  <- rbinom(N, 1, p_outcome)
+    
+    # finding difference between groups
+    prop = 
+      tibble(y_binary, A = df$A) %>%
+      group_by(A) %>% 
+      summarise( mean_out = mean(y_binary)) %>% 
+      pivot_wider(
+        names_from = A,
+        values_from = mean_out
+      ) %>% 
+      mutate(diff = `1` - `0`) %>% 
+      pull(diff)
+    
+    # saving the difference 
+    seq_select$prop_save[i] = prop
+  }
+  
+  # plots beautiful logit function
+  # indicates we can do this mathematically
+  # maybe not. math seems difficult.
+  # seq_select %>% ggplot(aes(x = seq_try, y = prop_save)) + geom_point()
+  
+  # saving the best beta. 
+  beta_effect = seq_select %>% 
+    filter(prop_save < desired_diff + 0.01) %>%
+    filter(prop_save > desired_diff - 0.01) %>%
+    summarise(
+      avg = mean(seq_try)
+    ) %>% pull(avg)
+  
+  beta_effect
+  
+  return(beta_effect)
+}                 
 ```
+
+## Continuous Outcome Assignment
 
 
 ## Generating data, using alpha_0 = logit(desired_prop) 
@@ -130,22 +246,11 @@ data_gen <- function(N, desired_prop) {
   # adding covariates to dataset
   df <- tibble(L1, L2, L3)
   
-  # get the desired treatment rate 
-  alpha_0_treat = log(desired_prop/(1 - desired_prop))
-  
-  # Creating the treatment assignment, setting alpha_1=0.4, alpha_2 = 0.5, no error term
-  A_logit <- alpha_0_treat + 0.4*df$L1 + 0.5*df$L2
-  p_A     <- exp(A_logit)/(1 + exp(A_logit))
-  A       <- rbinom(N, 1, p_A)
-  
-  ### sanity check. mean(A) should be close to desired_prop
-  # mean(A)
-  
-  # adding the treated untreated data to the dataset 
-  df$A = A
+  # new treatment assignment
+  df$A <- assign_treatments(df, 0.5)
   
   # continuous outcome 
-  y_continous <- 1*df$A +  0.5*df$L2 + 0.3*df$L3 +  rnorm(N, 0,1)
+  y_continous <- 1*df$A +  0.5*df$L2 + 0.3*df$L3 +  rnorm(N, 0, 1)
   
   df$y_continous = y_continous
   

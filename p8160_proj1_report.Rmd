@@ -1,6 +1,6 @@
 ---
 title: "P8160 - Comparing Bootstrapping Methods Report"
-author: "Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qui"
+author: "Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu"
 date: "2/11/2022"
 output: pdf_document
 ---
