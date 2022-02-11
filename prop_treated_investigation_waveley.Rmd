@@ -72,7 +72,7 @@ E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 $$
 
 ## Finding the right beta_effect estimate for binary data  
-```{r message=TRUE, warning=TRUE}
+```{r message=TRUE, warning=TRUE, echo=FALSE}
 binary_outcome_rate <- function(desired_diff, seq_try, df, logit_formula ) {
   seq_select = tibble(seq_try, prop_save = rep(0, length(seq_try)))
   for(i in c(1:length(seq_try))) {
@@ -139,7 +139,7 @@ data_gen <- function(N, desired_prop) {
   A       <- rbinom(N, 1, p_A)
   
   ### sanity check. mean(A) should be close to desired_prop
-  #mean(A)
+  # mean(A)
   
   # adding the treated untreated data to the dataset 
   df$A = A
@@ -163,7 +163,6 @@ data_gen <- function(N, desired_prop) {
   
   # propensity scores 
   exposureModel <- glm(A ~ L1 + L2 + L3, data = df, family = "binomial")
-  #Note that Pr[A=0|L] = 1-Pr[A=1|L]
 
   #getting estimated propensity score
   df$ps <- predict(exposureModel, df, type = "response") 
@@ -175,4 +174,9 @@ data_gen <- function(N, desired_prop) {
 
 df = data_gen(N, desired_prop)
 ```
+
+The proportion of subjects assigned to treatment should be approximately `r desired_prop`. We see that our generated dataframe has a proportion treated of about `r df$A %>% mean()`.
+
+
+
 

@@ -197,45 +197,6 @@ E(T_i) &amp;= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 \]</span></p>
 <div id="finding-the-right-beta_effect-estimate-for-binary-data" class="section level2">
 <h2>Finding the right beta_effect estimate for binary data</h2>
-<pre class="r"><code>binary_outcome_rate &lt;- function(desired_diff, seq_try, df, logit_formula ) {
-  seq_select = tibble(seq_try, prop_save = rep(0, length(seq_try)))
-  for(i in c(1:length(seq_try))) {
-    beta_effect = seq_try[i]
-    
-    # binary outcome 
-    y_logit   &lt;-eval(parse(text=logit_formula ))  
-    p_outcome &lt;- exp(y_logit)/(1+ exp(y_logit))
-    y_binary  &lt;- rbinom(N, 1, p_outcome)
-    
-    # finding difference between groups
-    prop = tibble(y_binary, A = df$A) %&gt;%
-      group_by(A) %&gt;% 
-      summarise( mean_out = mean(y_binary)) %&gt;% 
-      pivot_wider(
-        names_from = A,
-        values_from = mean_out
-      ) %&gt;% 
-      mutate (diff = `1`-`0`) %&gt;% 
-      pull(diff)
-    
-    # having the difference 
-    seq_select$prop_save[i] = prop
-  }
-
-  # graphing 
-  # seq_select %&gt;%
-  #   ggplot(aes(x=seq_try, y=prop_save))+
-  #   geom_point()
-
- # saving the best beta. 
-  beta_effect = seq_select %&gt;% 
-    filter(prop_save &lt; desired_diff + 0.01) %&gt;%
-    filter(prop_save &gt; desired_diff - 0.01) %&gt;%
-    summarise(
-      avg = mean(seq_try)
-    ) %&gt;% pull(avg)
- return( beta_effect)
-}</code></pre>
 </div>
 <div id="generating-data-using-alpha_0-logitdesired_prop" class="section level2">
 <h2>Generating data, using alpha_0 = logit(desired_prop)</h2>
@@ -261,7 +222,7 @@ data_gen &lt;- function(N, desired_prop) {
   A       &lt;- rbinom(N, 1, p_A)
   
   ### sanity check. mean(A) should be close to desired_prop
-  mean(A)
+  # mean(A)
   
   # adding the treated untreated data to the dataset 
   df$A = A
@@ -285,7 +246,6 @@ data_gen &lt;- function(N, desired_prop) {
   
   # propensity scores 
   exposureModel &lt;- glm(A ~ L1 + L2 + L3, data = df, family = &quot;binomial&quot;)
-  #Note that Pr[A=0|L] = 1-Pr[A=1|L]
 
   #getting estimated propensity score
   df$ps &lt;- predict(exposureModel, df, type = &quot;response&quot;) 
@@ -296,6 +256,7 @@ data_gen &lt;- function(N, desired_prop) {
 # calling the data gen function 
 
 df = data_gen(N, desired_prop)</code></pre>
+<p>The proportion of subjects assigned to treatment should be approximately 0.5. We see that our generated dataframe has a proportion treated of about 0.50028.</p>
 </div>
 
 
