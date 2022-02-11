@@ -17,7 +17,7 @@ The goal of this document is to combine a lot of the functions that Hun has made
 
 ## Function to find the intercept to attain the desired treatment rate 
 ```{r message=FALSE, warning=FALSE}
-treatment_rate_coef <- function(desired_prop, seq_try, df, logit_formula ) {
+treatment_rate_coef <- function(desired_prop, seq_try, df, logit_formula) {
   # setting up data setting variables 
   seq_select = tibble(seq_try, mean_A = rep(0, length(seq_try))) 
   
@@ -26,9 +26,9 @@ treatment_rate_coef <- function(desired_prop, seq_try, df, logit_formula ) {
     beta_0_treat = seq_try[i]
 
     # this will be where the beta is updated. Must have beta_0_treat in formula
-    A_logit <- eval(parse(text=logit_formula )) 
+    A_logit <- eval(parse(text=logit_formula)) 
     p_A     <- exp(A_logit)/(1+ exp(A_logit))
-    A       <- rbinom(N, 1, p_A) # this decided treat and and non treated
+    A       <- rbinom(N, 1, p_A) # this decides treat and and non treated
     
     # getting the mean treated
     seq_select$mean_A[i] = mean(A)
@@ -40,7 +40,7 @@ treatment_rate_coef <- function(desired_prop, seq_try, df, logit_formula ) {
   #   geom_point()
   
   # selecting coeff that gives desired treated untreated proportion 
-  if( sum(seq_select$mean_A == desired_prop) > 0) {
+  if (sum(seq_select$mean_A == desired_prop) > 0) {
     beta_0_treat = seq_select %>%  filter(mean_A == desired_prop ) %>% pull(seq_try)
   } else {
     beta_0_treat = seq_select %>% 
@@ -121,7 +121,7 @@ data_gen <- function(N, desired_prop) {
   # adding the covaraites to dataset 
   df <- tibble(L1, L2, L3)
   
-  desired_prop = 0.2
+  desired_prop = 0.2 # TM - is this correct as a constant or should it be a variable?
   seq_try      = seq(-2,2, 0.01)
   logit_formula <- "beta_0_treat+ 0.5*df$L1 + 0.4*df$L2" 
   
