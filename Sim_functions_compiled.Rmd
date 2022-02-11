@@ -56,6 +56,9 @@ treatment_rate_coef <- function(desired_prop, seq_try, df, logit_formula) {
   
 }
 
+
+
+
 ```
 
 ## Finding the right beta_effect estimate for binary data  
@@ -170,6 +173,26 @@ desired_prop = 0.2
 df = data_gen(N, desired_prop)
 ```
 
+
+## This is in response to Waveley's notion that logit(desired_prop) = alpha_0
+
+```{r}
+seq_try      = seq(-6,6, 0.01)
+logit_formula <- "beta_0_treat+ 0.5*df$L1 + 0.4*df$L2" 
+desired_diff_try <- seq(0.05,0.7, 0.01)
+coef_gathered <- map_dbl(1:length(desired_diff_try), function(i) treatment_rate_coef(desired_diff_try[i], seq_try, df, logit_formula))
+
+# plotting the gathered values from my function against the logit. 
+tibble(desired_diff_try, coef_gathered, 
+       logit_prop = log(desired_diff_try / (1-desired_diff_try))) %>% 
+  pivot_longer(
+    cols = c(coef_gathered, logit_prop),
+    names_to = "type",
+    values_to = "vals"
+  ) %>% ggplot(aes(x=desired_diff_try, y=vals, color = type) ) +
+    geom_line() 
+
+```
 
 
 ## Nearest neighbor propensity score matching
