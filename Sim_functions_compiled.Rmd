@@ -121,7 +121,7 @@ data_gen <- function(N, desired_prop) {
   # adding the covaraites to dataset 
   df <- tibble(L1, L2, L3)
   
-  desired_prop = 0.2 # TM - is this correct as a constant or should it be a variable?
+  #desired_prop = 0.2 # TM - is this correct as a constant or should it be a variable?
   seq_try      = seq(-2,2, 0.01)
   logit_formula <- "beta_0_treat+ 0.5*df$L1 + 0.4*df$L2" 
   
