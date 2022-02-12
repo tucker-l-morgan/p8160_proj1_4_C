@@ -112,7 +112,7 @@ data_gen <- function(desired_prop) {
      
    }
    
-   return(c(alpha_0,  mean_treated_proportion, 
+   return(tibble(alpha_0,  mean_treated_proportion, 
             desired_coef_L1, desired_coef_L2, desired_coef_L3))
 }
 
@@ -150,7 +150,6 @@ mean(predict(fit, sampl.treated, type = "response") - predict(fit, sampl.untreat
 ```
 
 Even though this is one simulation, we can check that the estimated ATE is somewhat reasonable in comparison to 0.15 (True ATE) considering we add two more covariates (L2 and L3) for the outcome data generation and haven't used propensity score matching to tackle confounders. We expect propensity score mathcing + standardization + bootstrap to result in better prediction. 
-
 
 
 
