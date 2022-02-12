@@ -11,7 +11,7 @@ In this project, we want to simulate the binary outcome so that the treatment (i
 
 We set our desired proportion of treatment is 0.14 given that 14% of U.S. adults were current smokers in 2019.
 
-Based on this simulation design, we can obtain our $\alpha_0$ coefficient for our propensity score model and $\beta_0$ and $\beta_1$ with some algebra computation.
+Based on this simulation design, we can obtain our $\alpha_0$ coefficient for our propensity score model and $\beta_0$ and $\beta_1$ for our logistic model with some algebra computation.
 
 With logit model and standardization method (creating pseudo population),
 
