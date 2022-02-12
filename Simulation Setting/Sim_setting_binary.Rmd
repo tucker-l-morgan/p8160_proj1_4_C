@@ -41,7 +41,7 @@ $\Rightarrow  \ \beta_0 + \beta_1A + log{\frac{0.2}{0.8}} + \beta_0 = log{\frac{
 
 $\Leftrightarrow  \ \beta_0 \approx (-0.619 + 1.386 + 0.767A)/2$
 
-$\Rightarrow \ E[\hat{\beta_0}] \approx E[-0.619 + 1.386 + 0.767A]$
+$\Rightarrow \ E[\hat{\beta_0}] \approx E[-0.619 + 1.386 + 0.767A]/2$
 
 $\Rightarrow \ \hat{\beta_0} \approx (-0.619 + 1.386 + 0.767E[A])/2$
 
