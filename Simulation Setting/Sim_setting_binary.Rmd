@@ -55,7 +55,10 @@ library(simstudy)
 library(stats)
 ```
 
-## Simulation
+## Finding $\alpha_0$ and coefficients for L1, L2 ,L3 in propensity score model
+
+This process allows us to find the values of coefficients for our propensity score model in order to achieve the expected proportion of the treated in our data simulation. 
+
 ```{r}
 pre_data <- defData(varname = "L1", formula = "0", variance = 1,
                 dist = "normal")
@@ -63,17 +66,77 @@ pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
                 dist = "normal")
 pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
                 dist = "normal")
-pre_data <- defData(pre_data, varname = "A", 
-                    formula = 0.14, 
-                dist = "binary")
-pre_data <- defData(pre_data, varname = "Y", 
-                    formula = "0.437 + 0.767*A + 1.89*L2 -0.7*L3" , 
-                dist = "binary", link = "logit")
 
 set.seed(777)
 df <- genData(5000, pre_data)
 
-fit <- glm(Y~ A, data = df, family = "binomial")
+
+data_gen <- function(desired_prop) {
+  
+   alpha_0 = log(desired_prop/(1 - desired_prop))
+   
+   coef_L1 <- sample(df$L1, 1000, replace = TRUE)
+   
+   coef_L2 <- sample(df$L2, 1000, replace = TRUE)
+   
+   coef_L3 <- sample(df$L3, 1000, replace = TRUE)
+   
+   A_logit <- vector(mode = "list",length = length(coef_L2))
+   p_A <-  vector(mode = "numeric",length = length(coef_L2))
+   
+   p_A[1] <-  mean(alpha_0 + coef_L2[1]*df$L1 + coef_L2[1]*df$L2 - coef_L3[1]*df$L3)
+   
+   tol <- 1e-2
+   
+   i = 1
+   
+   while (abs(p_A[i] - 0.14) > tol) {
+     
+     i = i + 1
+     
+     A_logit[[i]] <- 
+       alpha_0 + coef_L2[i]*df$L1 + coef_L2[i]*df$L2 - coef_L3[i]*df$L3
+     
+     p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
+     
+     if (abs(p_A[i] - 0.14) < tol) {
+       mean_treated_proportion <- p_A[i]
+       desired_coef_L1 <- coef_L1[i]
+       desired_coef_L2 <- coef_L2[i]
+       desired_coef_L3 <- coef_L3[i]
+     }
+     
+     if (i > length(coef_L2)) {
+       stop("You need better coverage, mate.")
+    }
+     
+   }
+   
+   return(c(alpha_0,  mean_treated_proportion, 
+            desired_coef_L1, desired_coef_L2, desired_coef_L3))
+}
+
+set.seed(777)
+data_gen(0.14)
+```
+
+
+## Generating the treatment and outcome data
+
+Here, our intention is to introduce confouders in the data generation process in order to see how using propensity matching and standardization can tackle the problems caused by confounders in predicting the average treatment effect.
+
+```{r}
+pre_data <- defData(pre_data, varname = "A", 
+                    formula = "-1.815 + -0.877*L1 - 0.118*L2 + 0.352*L3", 
+                dist = "binary", link = "logit")
+pre_data <- defData(pre_data, varname = "Y", 
+                    formula = "0.437 + 0.767*A + 1.89*L2 -0.7*L3" , 
+                dist = "binary", link = "logit")
+
+
+df <- genData(5000, pre_data)
+
+fit <- glm(Y~ A + L2 + L3, data = df, family = "binomial")
 
 summary(fit)
 
@@ -86,11 +149,7 @@ sampl.untreated <- df %>%
 mean(predict(fit, sampl.treated, type = "response") - predict(fit, sampl.untreated, type = "response"))
 ```
 
-Even though this is one simulation, we can check that the estimated ATE is somewhat reasonable in comparison to 0.15 (True ATE) considering we add two more covariates (L2 and L3) for the outcome data generation and haven't used propensity score matching to tackle confounders.. 
-
-
-
-
+Even though this is one simulation, we can check that the estimated ATE is somewhat reasonable in comparison to 0.15 (True ATE) considering we add two more covariates (L2 and L3) for the outcome data generation and haven't used propensity score matching to tackle confounders. We expect propensity score mathcing + standardization + bootstrap to result in better prediction. 
 
 
 
