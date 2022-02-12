@@ -49,6 +49,8 @@ $\Rightarrow \ \hat{\beta_0} \approx (-0.619 + 1.386 + 0.767*0.14)/2$
 
 $\Rightarrow \ \hat{\beta_0} \approx 0.437$
 
+From this computation, we can see that no matter what other covariates are in the model, we can obtain $\hat{\beta_0}$.
+
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(simstudy)
