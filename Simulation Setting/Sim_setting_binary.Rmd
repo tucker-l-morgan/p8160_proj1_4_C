@@ -71,7 +71,7 @@ pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
 pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
                 dist = "normal")
 
-set.seed(777)
+set.seed(77)
 df <- genData(5000, pre_data)
 
 
@@ -79,16 +79,16 @@ data_gen <- function(desired_prop) {
   
    alpha_0 = log(desired_prop/(1 - desired_prop))
    
-   coef_L1 <- sample(df$L2, 1000, replace = TRUE)
+   coef_L1 <- sample(df$L1, 1000, replace = TRUE)
    
    coef_L2 <- sample(df$L2, 1000, replace = TRUE)
    
-   coef_L3 <- sample(df$L2, 1000, replace = TRUE)
+   coef_L3 <- sample(df$L3, 1000, replace = TRUE)
    
    A_logit <- vector(mode = "list",length = length(coef_L2))
    p_A <-  vector(mode = "numeric",length = length(coef_L2))
    
-   u <- alpha_0 + coef_L2[1]*df$L1 + coef_L2[1]*df$L2 - coef_L3[1]*df$L3
+   u <- alpha_0 + coef_L1[1]*df$L1 + coef_L2[1]*df$L2 - coef_L3[1]*df$L3
    
    p_A[1] <-  mean(exp(u)/(1 + exp(u)))
    
@@ -122,7 +122,7 @@ data_gen <- function(desired_prop) {
             desired_coef_L1, desired_coef_L2, desired_coef_L3))
 }
 
-set.seed(17)
+set.seed(77)
 data_gen(0.14)
 ```
 
@@ -133,7 +133,7 @@ Here, our intention is to introduce confouders in the data generation process in
 
 ```{r}
 pre_data <- defData(pre_data, varname = "A", 
-                    formula = "-1.815 + 0.38*L1 + 0.167*L2 + 0.19*L3", 
+                    formula = "-1.815 - 0.977*L1 + 0.127*L2 - 0.285*L3", 
                 dist = "binary", link = "logit")
 pre_data <- defData(pre_data, varname = "Y", 
                     formula = "0.437 + 0.767*A + 1.39*L2 -0.7*L3" , 
@@ -142,7 +142,7 @@ pre_data <- defData(pre_data, varname = "Y",
 
 df <- genData(5000, pre_data)
 
-mean(df$A) #proportion of getting treated
+mean(df$A) #proportion of getting treated (true proportion: 0.14)
 ```
 
 
@@ -275,3 +275,8 @@ for (i in 1:nboot) {
   }
 }
 ```
+
+
+True ATE: 0.15
+
+True log OR: 0.767
