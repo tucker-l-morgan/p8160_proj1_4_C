@@ -7,7 +7,7 @@ output: pdf_document
 
 For dichotomous outcomes, we use a logit link i.e., $log\frac{E[Y|X]}{1-E[Y|X]} = \sum_{i=0}^{p}\theta_iX_i$ and the true average treatment effect is $E[Y^{1} = 1] - E[Y^{0} = 1]$.
 
-In this project, we want to simulate the binary outcome so that the treatment (i.e. smoking status) causes an increases in the probability of the occurrence of the outcome (i.e. lung cancer) by 15 percent. For our population without treatment (smoking) history, we assume that the probability of getting lung cancer is 0.2. Namely, E[Y^{0} = 1] = 0.2. From this fact, we know that our true log odds ratio $(\beta_1)$ for our binary logistic regression is approximatelyn0.767.
+In this project, we want to simulate the binary outcome so that the treatment (i.e. smoking status) causes an increases in the probability of the occurrence of the outcome (i.e. lung cancer) by 15 percent. For our population without treatment (smoking) history, we assume that the probability of getting lung cancer is 0.2. Namely, E[Y^{0} = 1] = 0.2. From this fact, we know that our true log odds ratio $(\beta_1)$ for our binary logistic regression is approximately 0.767.
 
 We set our desired proportion of treatment is 0.14 given that 14% of U.S. adults were current smokers in 2019.
 
