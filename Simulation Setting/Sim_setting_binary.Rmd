@@ -59,6 +59,7 @@ library(dplyr)
 library(stats)
 ```
 
+
 ## Finding $\alpha_0$ and coefficients for L1, L2 ,L3 in propensity score model
 
 This process allows us to find the values of coefficients for our propensity score model in order to achieve the expected proportion of the treated in our data simulation. 
@@ -164,6 +165,24 @@ matched_df <-
   match.data(matched, distance = "ps")
 ```
 
+## Generating large data close to true model and get its variance covariance matrix.
+```{r}
+True <- defData(varname = "A", 
+                    formula = 0.14, 
+                dist = "binary")
+
+True <- defData(True, varname = "Y", 
+                    formula = "0.437 + 0.767*A" , 
+                dist = "binary", link = "logit")
+
+set.seed(7)
+close_true_df <- genData(500000, True)
+
+model <- glm(Y~A, data = close_true_df, family = "binomial")
+model
+
+vcov(model)
+```
 
 ## PS matched model varianec-covariance matrix
 ```{r}
