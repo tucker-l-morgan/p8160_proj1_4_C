@@ -254,7 +254,7 @@ boot_out <-
   boot_estimates %>% 
   group_by(seq) %>% 
   summarize(simulated_se = sd(estimate), 
-            mean = mean(estimate))
+            mean_e = mean(estimate))
 
 # preparing the data to be plotted
 boot_mean_se <- 
@@ -262,7 +262,7 @@ boot_mean_se <-
   summarize(fin_sim_se = mean(simulated_se)) %>% 
   mutate(x = fin_sim_se, y = 1, label = "Boots")
 
-boot_out %>% select(mean, simulated_se)
+boot_out %>% select(mean_e, simulated_se)
 ```
 
 ## Maybe a Plot?
