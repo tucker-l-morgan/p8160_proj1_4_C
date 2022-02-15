@@ -195,65 +195,52 @@ E(T_i) &amp;= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 \implies \alpha_0 &amp;= \frac{\log{\pi_0}}{\log(1-\pi_0)}
 \end{aligned}
 \]</span></p>
-<div id="generating-data-using-alpha_0-logitdesired_prop" class="section level2">
-<h2>Generating data, using alpha_0 = logit(desired_prop)</h2>
-<pre class="r"><code>N = 100000
-desired_prop = 0.5
+<div id="treatment-assignment" class="section level2">
+<h2>Treatment Assignment</h2>
+<pre class="r"><code># assign_treatments() produces a vector of treatments.
+# inputs:
+# - df: input dataframe
+# - p: desired proportion of treated individuals
+# - alpha_vec: vector of alpha coefficients excluding alpha_0 
+# - var_mat: selected variables (also need to specify error term)
+# - cov_expval_vec: vector of covariate expected values (if X_i ~ N(0,1), all 0)
 
-data_gen &lt;- function(N, desired_prop) {
-
-  # setting the covariates
-  L1 &lt;- rnorm(N, 0, 1)
-  L2 &lt;- rnorm(N, 0, 1)
-  L3 &lt;- rnorm(N, 0, 1)
+assign_treatments &lt;- function(df, p, alpha_vec = c(0.4, 0.5), var_mat = c(&quot;L1&quot;, &quot;L2&quot;), cov_expval_vec = c(0, 0)){
   
-  # adding covariates to dataset
-  df &lt;- tibble(L1, L2, L3)
+  # turn alpha coefficients into vector
+  alpha_vec_loc &lt;- alpha_vec %&gt;% as.vector()
   
-  # get the desired treatment rate 
-  alpha_0_treat = log(desired_prop/(1 - desired_prop))
+  # turn covariates from input df into matrix
+  var_mat_loc &lt;- df %&gt;% select(var_mat) %&gt;% as.matrix()
   
-  # Creating the treatment assignment, setting alpha_1=0.4, alpha_2 = 0.5, no error term
-  A_logit &lt;- alpha_0_treat + 0.4*df$L1 + 0.5*df$L2
-  p_A     &lt;- exp(A_logit)/(1 + exp(A_logit))
-  A       &lt;- rbinom(N, 1, p_A)
   
-  ### sanity check. mean(A) should be close to desired_prop
-  # mean(A)
   
-  # adding the treated untreated data to the dataset 
-  df$A = A
+  # turn covariate expected values into vector
+  cov_expval_vec_loc &lt;- cov_expval_vec %&gt;% as.vector()
   
-  # continuous outcome 
-  y_continous &lt;- 1*df$A +  0.5*df$L2 + 0.3*df$L3 +  rnorm(N, 0,1)
   
-  df$y_continous = y_continous
+  # calculating logit parameter
+  # a linear combination of:
+  # - alpha coefficients
+  # - covariate expected values
+  # - desired proportion of treated individuals
   
-  # binary outcome 
-  logit_formula &lt;- &quot;beta_effect*df$A + 0.5*df$L2 + 0.3*df$L3&quot;
-  seq_try = seq(-4,4, 0.01)
-  desired_diff = 0.4
-  beta_effect = binary_outcome_rate(desired_diff, seq_try, df, logit_formula)
+  alpha_0_logit_param &lt;- sum(alpha_vec_loc %*% t(cov_expval_vec_loc)) + p
   
-  y_logit   &lt;- eval(parse(text = logit_formula ))  
-  p_outcome &lt;- exp(y_logit)/(1 + exp(y_logit))
-  y_binary  &lt;- rbinom(N, 1, p_outcome)
+  # sanity check
+  # print(alpha_0_logit_param)
   
-  df$y_binary = y_binary
+  # calculate alpha_0 (if E(X_i) all 0, alpha_0 is just simple logit(p))
+  alpha_0 &lt;- log(alpha_0_logit_param/(1 - alpha_0_logit_param))
   
-  # propensity scores 
-  exposureModel &lt;- glm(A ~ L1 + L2 + L3, data = df, family = &quot;binomial&quot;)
-
-  #getting estimated propensity score
-  df$ps &lt;- predict(exposureModel, df, type = &quot;response&quot;) 
+  # set treatments
+  A_logit &lt;- alpha_0 + var_mat_loc %*% alpha_vec_loc # adding alpha_0 to product of var_mat and alpha_vec
+  p_A     &lt;- exp(A_logit)/(1 + exp(A_logit)) # probability is inverse logit of A_logit
+  A       &lt;- rbinom(N, 1, p_A) # assigning treatments
   
-  return(df)
-}
-
-# calling the data gen function 
-
-df = data_gen(N, desired_prop)</code></pre>
-<p>The proportion of subjects assigned to treatment should be approximately 0.5. We see that our generated dataframe has a proportion treated of about 0.50147.</p>
+  # return treatment column
+  return(A)
+}</code></pre>
 </div>
 
 
