@@ -1,0 +1,58 @@
+---
+title: "Roadmap of Our Simulation Study"
+author: "Jimmy Kelliher"
+date: "2022-02-15"
+output:
+  pdf_document: default
+header-includes: 
+  - \usepackage{amsmath,amssymb,amsthm,amsfonts,bbm,graphics}
+  - \usepackage{geometry}
+  - \usepackage{tikz}
+  - \usepackage{pgfplots}
+  - \usetikzlibrary{shapes,arrows}
+---
+
+```{tikz, echo = FALSE}
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
+\tikzstyle{line} = [draw, -latex]
+
+\begin{tikzpicture}[node distance = 4cm, auto]
+    % Place nodes
+    \node [block] (init) {Data Generation};
+    \node [block, above right of = init] (psm0) {PSM};
+    \node [block, below right of = init] (bootc) {Bootstrap};
+    \node [block, above right of = psm0] (base) {$\hat{\sigma}_\beta^2$};
+    \node [block, below right of = psm0] (boots) {Bootstrap};
+    \node [block, right of = bootc] (sampc1) {Unmatched Sample 1};
+    \node [block, below of = sampc1, yshift = 2.25cm] (sampc2) {Unmatched Sample 2};
+    \node [block, below of = sampc2, yshift = 2.25cm] (sampc3) {Unmatched Sample $m$};
+    \node [block, right of = boots] (samps1) {Matched Sample $m$};
+    \node [block, above of = samps1, yshift = -2.25cm] (samps2) {Matched Sample 2};
+    \node [block, above of = samps2, yshift = -2.25cm] (samps3) {Matched Sample 1};
+    \node [block, right of = samps2] (simp) {$\hat{\sigma}_\beta^2$};
+    \node [block, right of = sampc1] (psm1) {PSM};
+    \node [block, right of = sampc2] (psm2) {PSM};
+    \node [block, right of = sampc3] (psm3) {PSM};
+    \node [block, right of = psm2] (comp) {$\hat{\sigma}_\beta^2$};
+    % Draw edges
+    \path [line] (init) -- (psm0);
+    \path [line] (init) -- node {Complex}(bootc);
+    \path [line] (psm0) -- node {Baseline}(base);
+    \path [line] (psm0) -- node {Simple}(boots);
+    \path [line] (boots) -- (samps1);
+    \path [line] (boots) -- (samps2);
+    \path [line] (boots) -- (samps3);
+    \path [line] (bootc) -- (sampc1);
+    \path [line] (bootc) -- (sampc2);
+    \path [line] (bootc) -- (sampc3);
+    \path [line] (sampc1) -- (psm1);
+    \path [line] (sampc2) -- (psm2);
+    \path [line] (sampc3) -- (psm3);
+    \path [line] (samps1) -- (simp);
+    \path [line] (samps2) -- (simp);
+    \path [line] (samps3) -- (simp);
+    \path [line] (psm1) -- (comp);
+    \path [line] (psm2) -- (comp);
+    \path [line] (psm3) -- (comp);
+\end{tikzpicture}
+```
