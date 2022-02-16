@@ -65,6 +65,7 @@ library(stats)
 This process allows us to find the values of coefficients for our propensity score model in order to achieve the expected proportion of the treated in our data simulation. 
 
 ```{r}
+
 pre_data <- defData(varname = "L1", formula = "0", variance = 1,
                 dist = "normal")
 pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
@@ -72,7 +73,6 @@ pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
 pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
                 dist = "normal")
 
-set.seed(77)
 df <- genData(5000, pre_data)
 
 
@@ -93,7 +93,7 @@ data_gen <- function(desired_prop) {
    
    p_A[1] <-  mean(exp(u)/(1 + exp(u)))
    
-   tol <- 0.005
+   tol <- 0.001
    
    i = 1
    
@@ -102,7 +102,7 @@ data_gen <- function(desired_prop) {
      i = i + 1
      
      A_logit[[i]] <- 
-       alpha_0 + coef_L2[i]*df$L1 + coef_L2[i]*df$L2 - coef_L3[i]*df$L3
+       alpha_0 + coef_L1[i]*df$L1 + coef_L2[i]*df$L2 - coef_L3[i]*df$L3
      
      p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
      
@@ -123,8 +123,9 @@ data_gen <- function(desired_prop) {
             desired_coef_L1, desired_coef_L2, desired_coef_L3))
 }
 
-set.seed(77)
-data_gen(0.14)
+
+covariate_df <- data_gen(0.14)
+covariate_df
 ```
 
 
@@ -133,8 +134,17 @@ data_gen(0.14)
 Here, our intention is to introduce confouders in the data generation process in order to see how using propensity matching and standardization can tackle the problems caused by confounders in predicting the average treatment effect.
 
 ```{r}
+
+L1_coef <- covariate_df$desired_coef_L1
+L2_coef <- covariate_df$desired_coef_L2
+L3_coef <- covariate_df$desired_coef_L3
+
+pre_data <- defData(pre_data, varname = "L1_coef", formula = L1_coef)
+pre_data <- defData(pre_data, varname = "L2_coef", formula = L2_coef)
+pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
+
 pre_data <- defData(pre_data, varname = "A", 
-                    formula = "-1.815 - 0.977*L1 + 0.127*L2 - 0.285*L3", 
+                    formula = "-1.815 + L1_coef*L1 + L2_coef*L2 + L3_coef*L3", 
                 dist = "binary", link = "logit")
 pre_data <- defData(pre_data, varname = "Y", 
                     formula = "0.437 + 0.767*A + 1.39*L2 -0.7*L3" , 
@@ -180,15 +190,21 @@ close_true_df <- genData(500000, True)
 
 model <- glm(Y~A, data = close_true_df, family = "binomial")
 model
+```
 
-vcov(model)
+
+```{r}
+sqrt(vcov(model)[2,2]) ## standard error of Beta_1
 ```
 
 ## PS matched model varianec-covariance matrix
 ```{r}
 matched_ps_model <- glm(Y ~ A + ps, data = matched_df, family = "binomial")
+```
 
-vcov(matched_ps_model)
+
+```{r}
+sqrt(vcov(matched_ps_model)[2,2]) ## standard of Beta_1
 ```
 
 
@@ -246,13 +262,16 @@ for (i in 1:nboot) {
   
   mean_log_OR <- mean(boots$log_OR)
   
+  se_log_OR <- sqrt(sum((boots$log_OR - mean(boots$log_OR))^2) / (nrow(boots - 1)))
+  
   Empirical_se_ATE <- sd(boots$difference)
   
   mean_se_ATE <- mean(boots$se_ATE)
   
-  Empirical_se_log_OR <- sd(boots$log_OR)
+  Empirical_se_log_OR <- sd(boots$log_OR) # = se_log_OR (manually calculated)
   
   mean_se_log_OR <- mean(boots$se_OR)
+  
   ATE <- mean(boots$difference)
   
   # once loop is done, print the results
@@ -288,9 +307,9 @@ for (i in 1:nboot) {
     cat("\n")
     cat("\n")
     cat("95% CI for log odds ratio:")
-    cat(mean_log_OR - 1.96*mean_se_log_OR, 
+    cat(mean_log_OR - 1.96*Empirical_se_log_OR, 
         ",",
-        mean_log_OR + 1.96*mean_se_log_OR)
+        mean_log_OR + 1.96*Empirical_se_log_OR)
   }
 }
 ```
@@ -299,3 +318,7 @@ for (i in 1:nboot) {
 True ATE: 0.15
 
 True log OR: 0.767
+
+
+
+
