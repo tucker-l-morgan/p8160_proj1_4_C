@@ -100,7 +100,7 @@ generate_noboot_data <- function(n, size = 5000, seeds = seed_vec, defData = pre
   df <- list()
   
   # adding progress bar for sanity
-  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
+  pb <- progress_bar$new(format = "generating data... [:bar] :percent eta: :eta", total = n)
   
   for (i in 1:n) {
     pb$tick()
@@ -167,7 +167,7 @@ df_tib <-
 
 # running glm function
 # adding progress bar for sanity
-pb1 <- progress_bar$new(format = "glming... [:bar]", total = nrow(df_tib))
+pb1 <- progress_bar$new(format = "glming... [:bar] :percent eta: :eta", total = nrow(df_tib))
 df_tib <- 
   df_tib %>% 
   mutate(
@@ -232,8 +232,8 @@ simple_boot <- function(df, n, size = 500, seeds = seed_vec_2){
 }
 
 # adding progress bars for sanity
-pb2 <- progress_bar$new(format = "bootstrapping... [:bar]", total = nrow(df_tib))
-pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(df_tib))
+pb2 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", total = nrow(df_tib))
+pb3 <- progress_bar$new(format = "performing glm... [:bar] :percent eta: :eta", total = nrow(df_tib))
 
 # creating booted tibbles, applying functions through purr:map.
 
