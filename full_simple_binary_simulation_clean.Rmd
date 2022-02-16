@@ -150,7 +150,7 @@ Taken as standard deviation of estimated treatment effect ($\beta_1$) from `r `l
 
 outcome_model_df <- function(df) {
   pb1$tick()
-    mod <- glm(Y ~ A + L2 + L3, 
+    mod <- glm(Y ~ A + ps, 
                data = df, 
                weights = weights, 
                family = "binomial") %>% 
@@ -188,7 +188,7 @@ empirical_out %>% select(mean, simulated_se)
 ```
 
 
-## simple Bootstrap
+## Simple Bootstrap
 
 ```{r}
 # ### function to iterate glm over a list, to be used in purr:map ###
@@ -198,7 +198,7 @@ outcome_model_list <- function(list) {
   tib_coef <- tibble()
   pb3$tick()
   for (i in 1:length(list)) {
-    mod <- glm(Y ~ A + L2 + L3, 
+    mod <- glm(Y ~ A + ps, 
                data = list[[i]], 
                weights = weights, 
                family = "binomial") %>% 
@@ -254,7 +254,10 @@ boot_out <-
   boot_estimates %>% 
   group_by(seq) %>% 
   summarize(simulated_se = sd(estimate), 
-            mean = mean(estimate))
+            mean = mean(estimate),
+            lower_ci_limit = mean - 1.96*simulated_se,
+            upper_ci_limit = mean + 1.96*simulated_se
+            )
 
 # preparing the data to be plotted
 boot_mean_se <- 
