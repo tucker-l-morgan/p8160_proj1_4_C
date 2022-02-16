@@ -46,8 +46,9 @@ scale_fill_discrete   = scale_fill_viridis_d
 
 ```{r}
 
-covariate_coef <- function(desired_prop) {
-  
+covariate_coef <- function(desired_prop, n, cov_df) {
+   
+     
    alpha_0 = log(desired_prop/(1 - desired_prop))
    
    coef_L1 <- sample(cov_df$L1, 10000, replace = TRUE)
@@ -96,14 +97,23 @@ covariate_coef <- function(desired_prop) {
 
 ```
 
-## Creating Covariates data frame list
+
+## Generating 100 no boot samples
+
 ```{r}
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
-covariate_df <- function(seeds, n){
-    cov_df <- list()
-    
+generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
+  
+  df <- list()
+  
+  cov_df <- list()
+  
+  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
+  
     for (i in 1:n) {
+    pb$tick()
+    set.seed(seeds[i])
     
     set.seed(seeds[i])
     pre_data <- defData(varname = "L1", formula = "0", variance = 1,
@@ -116,33 +126,8 @@ covariate_df <- function(seeds, n){
                 dist = "normal")
     
     cov_df[[i]] <- genData(5000, pre_data)
-  
-    }
-  return(cov_df)
-}
-
-
-cov_df <- covariate_df(seed_vec, 2)
-```
-
-
-## Generating 100 no boot samples
-
-```{r}
-
-generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
-  
-  df <- list()
-  
-  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
-  
-    for (i in 1:n) {
-    pb$tick()
-    set.seed(seeds[i])
     
-    cov_df <- cov_df[[i]]
-    
-    cov_coef_df <- covariate_coef(0.14)
+    cov_coef_df <- covariate_coef(0.14, 2, covariate_df[[i]])
     
     L1_coef <- cov_coef_df$desired_coef_L1
     L2_coef <- cov_coef_df$desired_coef_L2
@@ -161,11 +146,12 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
                     dist = "binary", link = "logit")
     
     df[[i]] <- genData(size, pre_data)
+    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef, -L3_coef)
     }
   return(df)
 }
 
-no_boot_list <- generate_no_boot_data(1)
+no_boot_list <- generate_no_boot_data(2)
 ```
 
 
