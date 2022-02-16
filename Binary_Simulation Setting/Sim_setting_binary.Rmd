@@ -80,11 +80,11 @@ data_gen <- function(desired_prop) {
   
    alpha_0 = log(desired_prop/(1 - desired_prop))
    
-   coef_L1 <- sample(df$L1, 1000, replace = TRUE)
+   coef_L1 <- sample(df$L1, 10000, replace = TRUE)
    
-   coef_L2 <- sample(df$L2, 1000, replace = TRUE)
+   coef_L2 <- sample(df$L2, 10000, replace = TRUE)
    
-   coef_L3 <- sample(df$L3, 1000, replace = TRUE)
+   coef_L3 <- sample(df$L3, 10000, replace = TRUE)
    
    A_logit <- vector(mode = "list",length = length(coef_L2))
    p_A <-  vector(mode = "numeric",length = length(coef_L2))

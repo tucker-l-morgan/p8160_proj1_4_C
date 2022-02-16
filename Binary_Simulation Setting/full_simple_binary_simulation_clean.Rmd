@@ -47,6 +47,7 @@ First, let's generate some data.
 
 ```{r}
 set.seed(20220214)
+
 pre_data <- 
     defData(
       varname = "L1", 
@@ -228,7 +229,7 @@ simple_boot <- function(df, n, size = 500, seeds = seed_vec_2){
                                 replace =  TRUE))
   }
   return(boots)
-} 
+}
 
 # adding progress bars for sanity
 pb2 <- progress_bar$new(format = "bootstrapping... [:bar]", total = nrow(df_tib))
