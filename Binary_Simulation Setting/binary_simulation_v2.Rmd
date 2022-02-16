@@ -235,7 +235,7 @@ pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(matche
 boot_tib <- 
   matched_tib %>% 
   mutate(
-    boots = map(.x = data, ~simple_boot(.x, n = 100))
+    boots = map(.x = data, ~simple_boot(.x, n = 1000))
     ) %>%
   mutate(coef = map(.x = boots, ~outcome_model_list(.x)))
 
@@ -250,7 +250,7 @@ boot_estimates <-
 ```
 
 
-## 100 bootstrap summary
+## Summary of 1000 bootstrap of 100 no boot
 
 ```{r}
 boot_result <-
@@ -261,10 +261,11 @@ boot_result <-
 fig1 <-
   boot_result %>%
   ggplot(aes(x = sd_log_OR, color = sd_log_OR)) +
-  geom_histogram(fill = "light blue",  bins = 30) +
-  geom_density(aes(y = ..density..*0.25), colour = "red") + 
+  geom_histogram(fill = "light blue",  bins = 12,  color = "black") +
+  geom_density(aes(y = ..density..*0.5), colour = "red", 
+               fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$sd_log_OR), linetype = "dashed") + 
-  labs(title = "Distribution of 100 bootstrap SD of log OR",
+  labs(title = "Distribution of 1000 bootstrap SD of log OR",
        subtitle = "Distribution of bias",
   caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
   theme(
@@ -277,10 +278,11 @@ fig1 <-
 fig2 <- 
   boot_result %>%
   ggplot(aes(x = mean_log_OR)) + 
-  geom_histogram(fill = "light blue", bins = 30) +
-  geom_density(aes(y = ..density..*3), colour = "red") + 
+  geom_histogram(fill = "light blue", bins = 12, color = "black") +
+  geom_density(aes(y = ..density..*5), colour = "red", 
+               fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$mean_log_OR), linetype = "dashed") +
-  labs(title = "Distribution of 100 bootstrap log OR", 
+  labs(title = "Distribution of 1000 bootstrap log OR", 
        caption = "Ideal center: 0.767", x = "Log OR", y = "Frequency") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
@@ -290,7 +292,10 @@ fig2 <-
 plot_grid(fig1, fig2)
 ```
 
-## 100 Confidence Intervals Coverage Rate
+
+
+
+## 1000 Confidence Intervals Coverage Rate
 
 ```{r}
 CI_coverate_rate <- function(nboot){
