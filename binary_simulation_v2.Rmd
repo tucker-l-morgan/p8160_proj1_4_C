@@ -98,6 +98,7 @@ covariate_coef <- function(desired_prop, n, cov_df) {
 ```
 
 
+
 ## Generating 100 no boot samples
 
 ```{r}
@@ -127,7 +128,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     
     cov_df[[i]] <- genData(5000, pre_data)
     
-    cov_coef_df <- covariate_coef(0.14, 2, covariate_df[[i]])
+    cov_coef_df <- covariate_coef(0.14, 2, cov_df[[i]])
     
     L1_coef <- cov_coef_df$desired_coef_L1
     L2_coef <- cov_coef_df$desired_coef_L2
@@ -151,7 +152,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   return(df)
 }
 
-no_boot_list <- generate_no_boot_data(2)
+no_boot_list <- generate_no_boot_data(100)
 ```
 
 
