@@ -2,7 +2,14 @@
 title: "P8160 - Comparing Bootstrapping Methods Report"
 author: "Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu"
 date: "2/11/2022"
-output: pdf_document
+output:
+  pdf_document: default
+header-includes: 
+  - \usepackage{amsmath,amssymb,amsthm,amsfonts,bbm,graphics}
+  - \usepackage{geometry}
+  - \usepackage{tikz}
+  - \usepackage{pgfplots}
+  - \usetikzlibrary{shapes,arrows}
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Aims
 
-The primary goal of this simulation study is to assess the performance of two bootstrap methods (detailed below) in estimating the sampling variability of treatment effects obtained from a nearest-neighbor propensity-score matching (NNM). In this study, NNM will select a treated subject at random from simulated observational data. The untreated subject with the nearest propensity score is then selected to be paired with the treated subject, without replacement. Treatment effects can then be estimated by comparing outcomes (continuous or binary) between the treated and untreated subjects. The bootstrapping methods will be used to assess the estimates of variance of treatment effect.
+The primary goal of this simulation study is to assess the performance of two bootstrap methods (detailed below) in estimating the sampling variability of treatment effects obtained from a nearest-neighbor propensity-score matching (NNM). In this study, NNM will select a treated subject at random from simulated observational data. The untreated subject with the nearest propensity score is then selected to be paired with the treated subject, without replacement. Treatment effects can then be estimated by comparing outcomes (continuous or binary) between the treated and untreated subjects. The bootstrapping methods will be used to assess the variance of estimated treatment effects.
 
 ## Data Generation
 
@@ -43,21 +50,75 @@ E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 $$
 for a given $\pi_0$.
 
-**Add details here**
+For each type of outcome (continuous and binary) and each bootstrapping method (simple and complex), 100 sub-populations of 5,000 subjects will be generated using the following parametric model:
+$$
+Y_i = \beta_o + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i} + \epsilon_0
+$$
+where $Y_i$ indicates the binary or continuous outcome for each subject, $A_i$ indicates the treatment status of each subject (0 or 1), and $L_{2i}$ and $L_{3i}$ indicate covariate values for each subject.
+
+**More details...**
 
 ## Methods for Evaluation
 
 Two bootstrap methods will be assessed in this simulation: the simple bootstrap and the complex bootstrap.
 
-In the simple bootstrap, one draws repeated samples from the original sample with replacement to imitate the process of drawing repeated samples from a population. Here, repeated samples will be drawn from the matched pairs of observations. The standard deviation of the resulting samples will be used as an estimate of the standard error of the estimated treatment effect in the original sample of matched pairs.
+In the simple bootstrap, one draws repeated samples from an original sample with replacement to imitate the process of drawing repeated samples from a population. Here, 1,000 repeated samples ($m_{boot}$) of 500 pairs ($n_{boot}$) will be drawn from the matched pairs of observations for each of the 100 sub-populations ($m_{sample}$). *The standard deviation of the resulting estimated treatment effects will be used as an estimate of the standard error of the true treatment effect*.
+```{r}
+# Do I have the above italicized section and parameter specifications correct?
+```
 
-The complex bootstrap considers two additional sources of variability compared to the simple bootstrap. In this approach, a sample is drawn with replacement from the original, unmatched observational data. The propensity-score model is estimated using this bootstrap sample, and NNM proceeds as before. The treatment effect is estimated from the newly matched sample.
+The complex bootstrap considers two additional sources of variability compared to the simple bootstrap. In this approach, a sample is drawn with replacement from the original, unmatched observational data. The propensity-score model is estimated using this bootstrap sample, and NNM proceeds as before. The treatment effect is estimated from the newly matched sample. This process is repeated 1,000 times ($m_{boot}$) for each of the 100 sub-populations ($m_{sample}$).
 
-The resulting standard error estimates will be the primary targets of this analysis.
+The resulting standard error estimates, $\sigma^2_{\beta}$, will be the primary targets of this analysis.
+
+```{tikz, echo = FALSE}
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
+\tikzstyle{line} = [draw, -latex]
+
+\begin{tikzpicture}[node distance = 4cm, auto]
+    % Place nodes
+    \node [block] (init) {Data Generation};
+    \node [block, above right of = init] (psm0) {PSM};
+    \node [block, below right of = init] (bootc) {Bootstrap};
+    \node [block, above right of = psm0] (base) {$\hat{\sigma}_\beta^2$};
+    \node [block, below right of = psm0] (boots) {Bootstrap};
+    \node [block, right of = bootc] (sampc1) {Unmatched Sample 1};
+    \node [block, below of = sampc1, yshift = 2.25cm] (sampc2) {Unmatched Sample 2};
+    \node [block, below of = sampc2, yshift = 2.25cm] (sampc3) {Unmatched Sample $m$};
+    \node [block, right of = boots] (samps1) {Matched Sample $m$};
+    \node [block, above of = samps1, yshift = -2.25cm] (samps2) {Matched Sample 2};
+    \node [block, above of = samps2, yshift = -2.25cm] (samps3) {Matched Sample 1};
+    \node [block, right of = samps2] (simp) {$\hat{\sigma}_\beta^2$};
+    \node [block, right of = sampc1] (psm1) {PSM};
+    \node [block, right of = sampc2] (psm2) {PSM};
+    \node [block, right of = sampc3] (psm3) {PSM};
+    \node [block, right of = psm2] (comp) {$\hat{\sigma}_\beta^2$};
+    % Draw edges
+    \path [line] (init) -- (psm0);
+    \path [line] (init) -- node {Complex}(bootc);
+    \path [line] (psm0) -- node {Baseline}(base);
+    \path [line] (psm0) -- node {Simple}(boots);
+    \path [line] (boots) -- (samps1);
+    \path [line] (boots) -- (samps2);
+    \path [line] (boots) -- (samps3);
+    \path [line] (bootc) -- (sampc1);
+    \path [line] (bootc) -- (sampc2);
+    \path [line] (bootc) -- (sampc3);
+    \path [line] (sampc1) -- (psm1);
+    \path [line] (sampc2) -- (psm2);
+    \path [line] (sampc3) -- (psm3);
+    \path [line] (samps1) -- (simp);
+    \path [line] (samps2) -- (simp);
+    \path [line] (samps3) -- (simp);
+    \path [line] (psm1) -- (comp);
+    \path [line] (psm2) -- (comp);
+    \path [line] (psm3) -- (comp);
+\end{tikzpicture}
+```
 
 ## Performance Measures
 
-The standard error estimates from each bootstrap method will be assessed in two ways. First, standard error estimates will be compared to the standard deviation of treatment effect from the generated population to determine if the bootstrapping methods under- or over-estimated the parameter. Second, coverage rates of confidence intervals will be analyzed to assess how frequently the true average treatment effect is included in confidence intervals using the bootstrap-estimated standard errors.
+The standard error estimates from each bootstrap method will be assessed in two ways. First, coverage rates of confidence intervals will be analyzed to assess how frequently the true average treatment effect is included in confidence intervals using the bootstrap-estimated standard errors. Second, standard error estimates from each bootstrap method will be compared to the sample standard deviation of treatment effects of the generated sub-populations to determine how bootstrapping aligns with a simpler approach.
 
 # Simulation Execution
 
