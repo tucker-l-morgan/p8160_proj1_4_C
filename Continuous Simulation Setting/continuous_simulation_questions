@@ -1,7 +1,8 @@
 Open questions for continuous simulation:
-1. Does it make sense for this setting to overestimate SE when we saw an underestimation for binary?
+1. Now that I've removed the L3 coef from A ~, the data generation function pretty consistently breaks for large m. I get an error code "object 'mean_treated_proportion' not found". I had some success when increasing the tolerance from 0.001 to 0.05, but that eventually met issues as well. What could be going on with the function? Is it taking too long to find the solution coefficients? I am really not sure.
 
-2. Is there a way for us to mathematically determine the beta_0 intercept for this model similar to how we did in the binary model? Does this matter for our final performance measures?
+2. Does it make sense for this setting to overestimate SE when we saw an underestimation for binary?
+- could be that PSM is really strong with continuous outcome
+
+3. Is there a way for us to mathematically determine the beta_0 intercept for this model similar to how we did in the binary model? Does this matter for our final performance measures?
 - Similar results for very different coefficients, more in line with Hun's work on continuous in "Simple Bootstrap" folder.
-
-3. Is there a coding mistake that might contribute to this result?

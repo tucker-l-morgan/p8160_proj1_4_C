@@ -56,12 +56,12 @@ covariate_coef <- function(desired_prop, cov_df) {
    
    coef_L2 <- sample(cov_df$L2, 10000, replace = TRUE)
    
-   coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
+  # coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
    
    A_logit <- vector(mode = "list",length = length(coef_L2))
    p_A <-  vector(mode = "numeric",length = length(coef_L2))
    
-   u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 - coef_L3[1]*cov_df$L3
+   u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 #- coef_L3[1]*cov_df$L3
    
    p_A[1] <-  mean(exp(u)/(1 + exp(u)))
    
@@ -74,7 +74,7 @@ covariate_coef <- function(desired_prop, cov_df) {
      i = i + 1
      
      A_logit[[i]] <- 
-       alpha_0 + coef_L1[i]*cov_df$L1 + coef_L2[i]*cov_df$L2 - coef_L3[i]*cov_df$L3
+       alpha_0 + coef_L1[i]*cov_df$L1 + coef_L2[i]*cov_df$L2 #- coef_L3[i]*cov_df$L3
      
      p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
      
@@ -82,7 +82,7 @@ covariate_coef <- function(desired_prop, cov_df) {
        mean_treated_proportion <- p_A[i]
        desired_coef_L1 <- coef_L1[i]
        desired_coef_L2 <- coef_L2[i]
-       desired_coef_L3 <- coef_L3[i]
+      # desired_coef_L3 <- coef_L3[i]
      }
      
      if (i > length(coef_L2)) {
@@ -92,7 +92,7 @@ covariate_coef <- function(desired_prop, cov_df) {
    }
    
    return(tibble(alpha_0,  mean_treated_proportion, 
-            desired_coef_L1, desired_coef_L2, desired_coef_L3))
+            desired_coef_L1, desired_coef_L2))#, desired_coef_L3))
 }
 ```
 
@@ -129,14 +129,14 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     
     L1_coef <- cov_coef_df$desired_coef_L1
     L2_coef <- cov_coef_df$desired_coef_L2
-    L3_coef <- cov_coef_df$desired_coef_L3
+    #L3_coef <- cov_coef_df$desired_coef_L3
 
     pre_data <- defData(pre_data, varname = "L1_coef", formula = L1_coef)
     pre_data <- defData(pre_data, varname = "L2_coef", formula = L2_coef)
-    pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
+    #pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
   
     pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2 + L3_coef*L3", 
+                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2",# + L3_coef*L3", 
                     dist = "binary", link = "logit")
     
     pre_data <- defData(pre_data, varname = "Y", 
@@ -144,7 +144,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
                     dist = "nonrandom")
     
     df[[i]] <- genData(size, pre_data)
-    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef, -L3_coef)
+    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef)#, -L3_coef)
     }
   return(df)
 }
