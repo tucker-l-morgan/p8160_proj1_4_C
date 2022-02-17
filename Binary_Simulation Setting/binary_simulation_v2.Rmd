@@ -163,6 +163,16 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
 no_boot_list <- generate_no_boot_data(100)
 ```
 
+## checking dist of treatment rate. 
+
+```{r}
+hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)  ), 
+     main = "Hist of Treatment Dist",
+     xlab = "Treat Rate",
+     ylab = "Count")
+```
+
+
 ## Function for no boot bias distribution
 ```{r}
 

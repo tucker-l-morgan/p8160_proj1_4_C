@@ -119,7 +119,10 @@ df <- generate_noboot_data(100)
 
 Checking treatment rate 
 ```{r}
-hist(map_dbl(1:length(df), function(i)mean(df[[i]]$A)  ))
+hist(map_dbl(1:length(df), function(i)mean(df[[i]]$A) ), 
+     main = "Hist of Treatment Dist",
+     xlab = "Treat Rate",
+     ylab = "Count")
 ```
 
 
