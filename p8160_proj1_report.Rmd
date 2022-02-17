@@ -28,18 +28,18 @@ The primary goal of this simulation study is to assess the performance of two bo
 
 ## Data Generation
 
-The data for this simulation study were generated from a parametric model. For each subject, three baseline covariates ($L_1, L_2, L_3$) were simulated from independent standard normal distributions. All three of these covariates affected treatment selection, while two ($L_2$ and $L_3$) affected the outcome. The probability of treatment for each subject was determined by the following model:
+The data for this simulation study were generated from a parametric model. For each subject, three baseline covariates ($L_1, L_2, L_3$) were simulated from independent standard normal distributions. Two of these covariates ($L_1$ and $L_2$) affected treatment selection, while two ($L_2$ and $L_3$) affected the outcome. The probability of treatment for each subject was determined by the following model:
 $$
-\text{logit}(\pi_i) = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i} + \alpha_3 L_{3i}
+\text{logit}(\pi_i) = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}
 $$
 where $\alpha_0$ was determined by:
 $$
 \begin{aligned}
 E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 \\
-&= E\left[\frac{\exp(\alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i} + \alpha_3 L_{3i} + \varepsilon_i)}{1+\exp(\alpha_0 + \alpha_1 L_{1i}+ \alpha_2 L_{2i} + \alpha_3 L_{3i} + \varepsilon_i)}\right]
+&= E\left[\frac{\exp(\alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i} + \varepsilon_i)}{1+\exp(\alpha_0 + \alpha_1 L_{1i}+ \alpha_2 L_{2i} + \varepsilon_i)}\right]
 \\
-&= \frac{\exp(\alpha_0 + \alpha_1 E(L_{1i}) + \alpha_2 E(L_{2i}) + \alpha_2 E(L_{3i}) + E(\varepsilon_i))}{1+\exp(\alpha_0 + \alpha_1 E(L_{1i}) + \alpha_2 E(L_{2i}) + \alpha_2 E(L_{3i}) + E(\varepsilon_i))}
+&= \frac{\exp(\alpha_0 + \alpha_1 E(L_{1i}) + \alpha_2 E(L_{2i}) + E(\varepsilon_i))}{1+\exp(\alpha_0 + \alpha_1 E(L_{1i}) + \alpha_2 E(L_{2i})  + E(\varepsilon_i))}
 \\
 &= \frac{\exp(\alpha_0)}{1+\exp(\alpha_0)}
 \\

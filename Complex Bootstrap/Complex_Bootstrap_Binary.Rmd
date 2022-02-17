@@ -42,54 +42,43 @@ ATE <- expit(sum(0.5 + 0.8*df$L2 - 0.1*df$L3)) - expit(sum(0.8*df$L2 - 0.1*df$L3
 
 ## Complex Bootstrap
 ```{r, warning = FALSE, message = FALSE}
-nboot <- 1000
 
-boot_samples <- vector(mode = "list", length = nboot)
+nboot <- 10
 
-matched_boot_df <- vector(mode = "list", length = nboot)
+seed_vec <- rnorm(10000, mean = 10000, sd = 100) %>% round(0) %>% unique()
 
-results <- vector(mode = "list", length = nboot)
 
-boot_log_OR <- vector(mode = "list", length = nboot)
+gen_boots <- function(df, iter = nboot, seeds = seed_vec){
+  
+  boot_samples <- list()
+  matched_boot_df <- list()
+  boot_log_or <- tibble()
+  results <- tibble(sd_log_or = 0)
+  
+    for (i in 1:iter) {
+      
+      set.seed(seeds[[i]])
+      
+      boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
+      
+      matched <- matchit(A ~ L1 + L2 + L3, data = boot_samples[[i]], 
+                         distance = "glm", link = "logit",
+                         method = "nearest", ratio = 1)
+      
+      matched_boot_df[[i]] <- match.data(matched, distance = "ps")
+      
+      bootmod <- glm(Y ~ A + ps, data = matched_boot_df[[i]], 
+                     weights = weights, family = binomial)
+      
+      sum_bootmod <- summary(bootmod)
+      estimate <- sum_bootmod$coef[2,1]
+      
+      boot_log_or <- bind_rows(boot_log_or, estimate)
+    }
+     
+    results$sd_log_or <- sd(boot_log_or$estimate)
 
-boot_se_log_OR <- vector(mode = "list", length = nboot)
-
-boot_CI_log_OR <- vector(mode = "list", length = nboot)
-
-count_true_value <- vector(length = nboot)
-
-boots <- data.frame(id = 1:nboot,
-                    se_OR = NA,
-                    log_OR = NA)
-
-for (i in 1:nboot) {
-  
-  boot_samples[[i]] <- sample_n(df, 1000, replace = FALSE)
-  
-  matched <- matchit(A ~ L1 + L2 + L3, data = boot_samples[[i]], 
-                     distance = "glm", link = "logit",
-                     method = "nearest", ratio = 1)
-  
-  matched_boot_df[[i]] <- match.data(matched, distance = "ps")
-  
-  results[[i]] <- boots
-  
-  bootmod <- glm(Y ~ A + ps, data = matched_boot_df[[i]], 
-                 weights = weights, family = binomial)
-  
-  results[[i]]$log_OR <- summary(bootmod)$coeff[2,1]
-  results[[i]]$se_OR <- summary(bootmod)$coeff[2,2]
-  
-  boot_log_OR[[i]] <- mean(results[[i]]$log_OR)
-  
-  boot_se_log_OR[[i]] <- mean(results[[i]]$se_OR)
-  
-  boot_CI_log_OR[[i]] <- 
-    c(boot_log_OR[[i]] - 1.96*boot_se_log_OR[[i]],
-       boot_log_OR[[i]] + boot_se_log_OR[[i]])
-  
-  count_true_value[i] <- 
-    between(0.5, range(boot_CI_log_OR[[i]])[1], range(boot_CI_log_OR[[i]])[2]) 
+  return(results)
 }
 
 ```

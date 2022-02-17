@@ -44,11 +44,11 @@ scale_fill_discrete   = scale_fill_viridis_d
 ```
 
 
-## Generating covariates and finding coefficits for covariates in propensity model. 
+## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
 
 ```{r}
 
-covariate_coef <- function(desired_prop, n, cov_df) {
+covariate_coef <- function(desired_prop, cov_df) {
    
      
    alpha_0 = log(desired_prop/(1 - desired_prop))
@@ -130,7 +130,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     
     cov_df[[i]] <- genData(5000, pre_data)
     
-    cov_coef_df <- covariate_coef(0.14, 2, cov_df[[i]])
+    cov_coef_df <- covariate_coef(0.14, cov_df[[i]])
     
     L1_coef <- cov_coef_df$desired_coef_L1
     L2_coef <- cov_coef_df$desired_coef_L2
@@ -157,6 +157,48 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
 no_boot_list <- generate_no_boot_data(100)
 ```
 
+## Function for no boot bias distribution
+```{r}
+
+no_boot_result <-
+  function(n)  {
+  b <- vector()
+    for (i in 1:n) {
+  a <- glm(Y ~ A + L2 + L3, data = no_boot_list[[i]], family = "binomial")
+  b[i] <- summary(a)$coef[2,1]
+}
+return(b)    
+  }
+
+no_boot_OR <- no_boot_result(100)
+```
+
+
+## No boot Bias plot
+```{r}
+no_boot_bias <- 
+  tibble(no_boot_OR = no_boot_OR) %>%
+  summarise(bias = (no_boot_OR - 0.767))
+
+no_boot_bias %>%
+  ggplot(aes(x = bias)) +
+  geom_histogram(fill = "light blue", bins = 15, color = "black") +
+  geom_density(aes(y = ..density..*5), colour = "red", 
+               fill = "black", alpha = 0.3) + 
+  geom_vline(xintercept = mean(no_boot_bias$bias), linetype = "dashed") +
+  labs(title = "Distribution of no boot mean log OR bias", 
+       caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
+  theme(
+  plot.title = element_text(color = "blue", size = 11, face = "bold"),
+  plot.caption = element_text(color = "orange", face = "italic")
+  )
+
+
+
+```
+
+
+
 
 ## Implementing nearest-neighbor matching (NNM)
 
@@ -178,6 +220,8 @@ for (i in 1:length(df)) {
   matched_df[[i]] <- match.data(matched, distance = "ps")
 }
 ```
+
+
 
 
 ## simple Bootstrap
@@ -235,11 +279,12 @@ pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(matche
 boot_tib <- 
   matched_tib %>% 
   mutate(
-    boots = map(.x = data, ~simple_boot(.x, n = 1000))
+    boots = map(.x = data, ~simple_boot(.x, n = 100))
     ) %>%
   mutate(coef = map(.x = boots, ~outcome_model_list(.x)))
 
 ```
+
 
 ## Unnesting bootstrap coefficients
 ```{r}
@@ -256,18 +301,18 @@ boot_estimates <-
 boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
-  summarize(mean_log_OR = mean(estimate), sd_log_OR = sd(estimate))
- 
+  summarize(mean_log_OR = mean(estimate), sd_log_OR = sd(estimate),
+            bias = (mean_log_OR - 0.767))
 fig1 <-
   boot_result %>%
   ggplot(aes(x = sd_log_OR, color = sd_log_OR)) +
   geom_histogram(fill = "light blue",  bins = 12,  color = "black") +
-  geom_density(aes(y = ..density..*0.5), colour = "red", 
+  geom_density(aes(y = ..density..*0.4), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$sd_log_OR), linetype = "dashed") + 
-  labs(title = "Distribution of 1000 bootstrap SD of log OR",
-       subtitle = "Distribution of bias",
-  caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
+  labs(title = "Distribution of 100 SD of mean log OR",
+       subtitle = "Distribution of bias", x = "Log OR", y = "Frequency",
+       caption = "Ideal shape: right-skewed shape with mode at 0 ") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.subtitle = element_text(color = "black"),
@@ -279,23 +324,42 @@ fig2 <-
   boot_result %>%
   ggplot(aes(x = mean_log_OR)) + 
   geom_histogram(fill = "light blue", bins = 12, color = "black") +
-  geom_density(aes(y = ..density..*5), colour = "red", 
+  geom_density(aes(y = ..density..*6), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$mean_log_OR), linetype = "dashed") +
-  labs(title = "Distribution of 1000 bootstrap log OR", 
-       caption = "Ideal center: 0.767", x = "Log OR", y = "Frequency") + 
+  labs(title = "Distribution of 100 mean log OR", 
+       caption = "Ideal center: 0.767 (true log OR)", x = "Log OR", y = "Frequency") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
 
+
+
 plot_grid(fig1, fig2)
 ```
 
 
+```{r}
+fig3 <- 
+  boot_result %>%
+  ggplot(aes(x = bias)) + 
+  geom_histogram(fill = "light blue", bins = 15, color = "black") +
+  geom_density(aes(y = ..density..*5), colour = "red", 
+               fill = "black", alpha = 0.3) + 
+  geom_vline(xintercept = mean(boot_result$bias), linetype = "dashed") +
+  labs(title = "Distribution of mean log OR bias", 
+       caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
+  theme(
+  plot.title = element_text(color = "blue", size = 11, face = "bold"),
+  plot.caption = element_text(color = "orange", face = "italic")
+  )
+
+fig3
+```
 
 
-## 1000 Confidence Intervals Coverage Rate
+## 100 Confidence Intervals Coverage Rate
 
 ```{r}
 CI_coverate_rate <- function(nboot){
@@ -313,16 +377,14 @@ CI_coverate_rate <- function(nboot){
   
   result = 
     as.vector(unlist(count_true)) %>% 
-    sum() %>% paste0("%")
+    sum() 
+  result = paste0("CI coverage rate:", result, "%")
   
   return(result)
 }
 
 CI_coverate_rate(100)
 
-
-
 ```
-
 
 
