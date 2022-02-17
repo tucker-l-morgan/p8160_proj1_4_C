@@ -13,6 +13,7 @@ library(dplyr)
 library(progress) 
 library(ggpmisc)
 library(cowplot)
+library(beepr)
 
 # set knitr defaults
 knitr::opts_chunk$set(
@@ -43,6 +44,18 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete   = scale_fill_viridis_d
 ```
 
+```{r echo = F}
+options(error = function(){    # Beep on error
+  beepr::beep()
+  Sys.sleep(1)
+  }
+ )
+
+.Last <- function() {          # Beep on exiting session
+  beepr::beep()
+  Sys.sleep(1)
+  }
+```
 
 ## Generating covariates and finding coefficients for covariates in propensity model. 
 
@@ -111,7 +124,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   
   cov_df <- list()
   
-  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
+  pb <- progress_bar$new(format = "generating data... [:bar] :percent eta: :eta", total = n)
   
     for (i in 1:n) {
     pb$tick()
@@ -153,7 +166,8 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   return(df)
 }
 
-no_boot_list <- generate_no_boot_data(100)
+###### change to 100 later ###
+no_boot_list <- generate_no_boot_data(10)
 ```
 
 ## Complex Bootstrap
@@ -162,8 +176,8 @@ no_boot_list <- generate_no_boot_data(100)
 
 seed_vec <- rnorm(10000, mean = 10000, sd = 100) %>% round(0) %>% unique()
 
-
-generate_boots <- function(df, iter = 100, seeds = seed_vec){
+###### change iter to 100 later ###
+generate_boots <- function(df, iter = 10, seeds = seed_vec){
   pb3$tick()
   boot_samples <- list()
   matched_boot_df <- list()
@@ -219,24 +233,35 @@ fin_estimate_df <- result_list %>% unnest(res_tib) %>% select(-nb)
 ## 1000 Confidence Intervals Coverage Rate
 
 ```{r}
-CI_coverate_rate <- function(fin_estimates){
+ci_and_coverage <- function(fin_estimates){
 
     fin_estimates <- 
       fin_estimates %>% 
       mutate(lower_ci = mean_log_odds - 1.96*sd_log_odds,
              upper_ci = mean_log_odds + 1.96 * sd_log_odds,
              count_true = lower_ci <= 0.767 & 0.767 <= upper_ci)
-    
-  result <-  
-    fin_estimates %>% 
+  
+  return(fin_estimates)
+}
+complex_coverage <- ci_and_coverage(fin_estimate_df)
+
+coverage_rate <-  
+    complex_coverage %>% 
     select(count_true) %>% 
     sum() %>% 
     paste0("%")
-  
-  return(result)
-}
+coverage_rate
 
-CI_coverate_rate(fin_estimate_df)
+complex_coverage <- complex_coverage %>% 
+    mutate(seq = seq(1:nrow(complex_coverage)))
+  
+plot = complex_coverage %>% 
+    ggplot(aes(x = mean_log_odds, y = seq)) +
+    geom_point() +
+    geom_errorbar(aes(xmin = lower_ci, xmax = upper_ci)) +
+    geom_vline(xintercept = 0.767, linetype = "dashed")
+
+plot
 ```
 
 
