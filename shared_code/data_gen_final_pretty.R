@@ -1,7 +1,14 @@
 # data gen file 
 
 # this is the function that will generate all the data 
-
+library(tidyverse)
+library(simstudy)
+library(MatchIt)
+library(dplyr)
+library(progress) 
+library(ggpmisc)
+library(cowplot)
+library(beepr)
 
 set.seed(1)
 
@@ -47,9 +54,6 @@ generate_no_boot_data <- function(n=m_sample, size = n_sample, seeds = seed_vec,
     
     pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 0.25,
                 dist = "normal")
-    
-    cov_df[[i]] <- genData(5000, pre_data)
-    
 
     alpha0 = log(desired_prop/(1 - desired_prop))
 
@@ -72,7 +76,7 @@ generate_no_boot_data <- function(n=m_sample, size = n_sample, seeds = seed_vec,
     
     df[[i]] <- genData(size, pre_data)
     df[[i]] <- df[[i]] %>% select(-alpha0, -alpha1, -alpha2,
-                                  -beta0, -beta1, -beta2, -beta3)
+                                  -beta0, -beta1, -beta2, -beta3, -beta_error)
     }
   return(df)
 }
