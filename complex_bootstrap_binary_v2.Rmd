@@ -166,8 +166,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   return(df)
 }
 
-###### change to 100 later ###
-no_boot_list <- generate_no_boot_data(10)
+no_boot_list <- generate_no_boot_data(100)
 ```
 
 ## Complex Bootstrap
@@ -176,8 +175,7 @@ no_boot_list <- generate_no_boot_data(10)
 
 seed_vec <- rnorm(10000, mean = 10000, sd = 100) %>% round(0) %>% unique()
 
-###### change iter to 100 later ###
-generate_boots <- function(df, iter = 10, seeds = seed_vec){
+generate_boots <- function(df, iter = 100, seeds = seed_vec){
   pb3$tick()
   boot_samples <- list()
   matched_boot_df <- list()
