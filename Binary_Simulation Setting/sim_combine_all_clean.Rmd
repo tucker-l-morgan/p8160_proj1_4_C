@@ -371,3 +371,15 @@ CI_coverate_rate(100)
 ```
 
 
+what we need to store 
+
+
+csv file that records the below info in the name of the file. 
+nsamp = small or big
+treat_rate = low med high
+beta1 =negative or positive 
+
+collect info on sd and est. 
+
+
+
