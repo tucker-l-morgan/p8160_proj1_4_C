@@ -140,7 +140,7 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
   
     pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2 + L3_coef*L3", 
+                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2", #+ L3_coef*L3", 
                     dist = "binary", link = "logit")
     
     pre_data <- defData(pre_data, varname = "Y", 
