@@ -44,9 +44,10 @@ scale_fill_discrete   = scale_fill_viridis_d
 ```
 
 
-## Generating covariates and finding coefficits for covariates in propensity model. 
+## Generating covariates and finding coefficients for covariates in propensity model. 
 
 ```{r}
+set.seed(20220216)
 
 covariate_coef <- function(desired_prop, n, cov_df) {
    
@@ -98,8 +99,6 @@ covariate_coef <- function(desired_prop, n, cov_df) {
 
 
 ```
-
-
 
 ## Generating 100 no boot samples
 
@@ -154,25 +153,23 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   return(df)
 }
 
-no_boot_list <- generate_no_boot_data(50)
+no_boot_list <- generate_no_boot_data(100)
 ```
 
-
 ## Complex Bootstrap
+
 ```{r, warning = FALSE, message = FALSE}
 
 seed_vec <- rnorm(10000, mean = 10000, sd = 100) %>% round(0) %>% unique()
 
 
-gen_boots <- function(df, iter = 50, seeds = seed_vec){
-  
+generate_boots <- function(df, iter = 100, seeds = seed_vec){
+  pb3$tick()
   boot_samples <- list()
   matched_boot_df <- list()
   boot_log_or <- tibble()
-  pb1 <- progress_bar$new(format = "bootstrapping... [:bar]", total = iter)
+  
     for (i in 1:iter) {
-      pb1$tick()
-      
       set.seed(seeds[[i]])
       
       boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
@@ -196,19 +193,53 @@ gen_boots <- function(df, iter = 50, seeds = seed_vec){
        results <-
        tibble(
          mean_log_odds = mean(boot_log_or$estimate),
-         sd_log_or = sd(boot_log_or$estimate)
+         sd_log_odds = sd(boot_log_or$estimate)
        )
 
   return(results)
 }
 ```
 
+## Run Complex Bootstrap
+
+5:54 PM Start
+6:15/20 PM End
 
 ```{r}
 nb_tib <- tibble(nb = no_boot_list)
 
-result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~gen_boots(.x)))
+pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", total = nrow(nb_tib))
+
+result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x)))
+
+fin_estimate_df <- result_list %>% unnest(res_tib) %>% select(-nb)
 ```
+
+
+## 1000 Confidence Intervals Coverage Rate
+
+```{r}
+CI_coverate_rate <- function(fin_estimates){
+
+    fin_estimates <- 
+      fin_estimates %>% 
+      mutate(lower_ci = mean_log_odds - 1.96*sd_log_odds,
+             upper_ci = mean_log_odds + 1.96 * sd_log_odds,
+             count_true = lower_ci <= 0.767 & 0.767 <= upper_ci)
+    
+  result <-  
+    fin_estimates %>% 
+    select(count_true) %>% 
+    sum() %>% 
+    paste0("%")
+  
+  return(result)
+}
+
+CI_coverate_rate(fin_estimate_df)
+```
+
+
 
 
 
