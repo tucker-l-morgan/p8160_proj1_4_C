@@ -80,7 +80,8 @@ covariate_coef <- function(desired_prop, cov_df) {
      
      p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
      
-     if (abs(p_A[i] - 0.14) < tol) {
+     if (abs(p_A[i] - 0.14) < tol) { ##### is this the treatment rate hard coded????? 
+       ###### might want to edit herre1!!!1!! 
        mean_treated_proportion <- p_A[i]
        desired_coef_L1 <- coef_L1[i]
        desired_coef_L2 <- coef_L2[i]
