@@ -63,6 +63,7 @@ covariate_coef <- function(desired_prop, cov_df) {
    p_A <-  vector(mode = "numeric",length = length(coef_L2))
    
    u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 - coef_L3[1]*cov_df$L3
+   # Is this deciding treatment effect? 
    
    p_A[1] <-  mean(exp(u)/(1 + exp(u)))
    
@@ -141,11 +142,16 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
   
     pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2 + L3_coef*L3", 
+                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2", # + L3_coef*L3",
+                        # L3 should not affect treatment status
+                        # why did you choose -1.815? 
+                        # this should be log(desired_treat_rate / (1- desired_treat_rate))
+                        # thus the rate is about 0.14% 
                     dist = "binary", link = "logit")
     
     pre_data <- defData(pre_data, varname = "Y", 
-                        formula = "0.437 + 0.767*A + 1.39*L2 -0.7*L3" , 
+                        formula = "0.437 + 0.767*A + 1.39*L2 -0.7*L3" ,
+                        # why are we hard coding the coef here but not in treatment status?
                     dist = "binary", link = "logit")
     
     df[[i]] <- genData(size, pre_data)

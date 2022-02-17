@@ -78,7 +78,10 @@ pre_data <-
   defData(
     pre_data, 
     varname = "A", 
-    formula = "0.5*L1 + 0.27*L2 - 0.17*L3", 
+    formula = " -2.197225 + 0.5*L1 + 0.27*L2", # - 0.17*L3", 
+    # taking out the L3 so treatment is only dependent on L1 and L2
+    # intecept is log(desired_treat_rate / (1- desired_treat_rate))
+    
     dist = "binary", 
     link = "logit"
     )
@@ -113,6 +116,12 @@ generate_noboot_data <- function(n, size = 5000, seeds = seed_vec, defData = pre
 
 df <- generate_noboot_data(100)
 ```
+
+Checking treatment rate 
+```{r}
+hist(map_dbl(1:length(df), function(i)mean(df[[i]]$A)  ))
+```
+
 
 ## Propensity Score Modeling and NNM
 
