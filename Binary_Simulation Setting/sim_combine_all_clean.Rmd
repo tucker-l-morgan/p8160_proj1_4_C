@@ -1,7 +1,7 @@
 ---
-title: "Binary_Simulation_v2"
-author: "Hun"
-date: "2/15/2022"
+title: "sim_combine_all_clean"
+author: "Amy Pitts"
+date: "2/17/2022"
 output: pdf_document
 ---
 
@@ -46,61 +46,20 @@ scale_fill_discrete   = scale_fill_viridis_d
 
 ## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
 
+## Decided appon hard coded vals
 ```{r}
+desired_prop = 0.2 # 0.2, 0.3 (AKA alpha0)
+alpha1 = log(1.25)
+alpha2 = log(1.75)
+beta0 = 0
+beta1 = 0.75 #1.25
+beta2 = log(1.75)
+beta3 = log(1.25)
 
-covariate_coef <- function(desired_prop, cov_df) {
-   
-     
-   alpha_0 = log(desired_prop/(1 - desired_prop))
-   
-   coef_L1 <- sample(cov_df$L1, 10000, replace = TRUE)
-   
-   coef_L2 <- sample(cov_df$L2, 10000, replace = TRUE)
-   
-   coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
-   
-   A_logit <- vector(mode = "list",length = length(coef_L2))
-   p_A <-  vector(mode = "numeric",length = length(coef_L2))
-   
-   u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 - coef_L3[1]*cov_df$L3
-   # Is this deciding treatment effect? 
-   
-   p_A[1] <-  mean(exp(u)/(1 + exp(u)))
-   
-   tol <- 0.001
-   
-   i = 1
-   
-   while (abs(p_A[i] - 0.14) > tol) {
-     
-     i = i + 1
-     
-     A_logit[[i]] <- 
-       alpha_0 + coef_L1[i]*cov_df$L1 + coef_L2[i]*cov_df$L2 - coef_L3[i]*cov_df$L3
-     
-     p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
-     
-     if (abs(p_A[i] - 0.14) < tol) { ##### is this the treatment rate hard coded????? 
-       ###### might want to edit herre1!!!1!! 
-       mean_treated_proportion <- p_A[i]
-       desired_coef_L1 <- coef_L1[i]
-       desired_coef_L2 <- coef_L2[i]
-       desired_coef_L3 <- coef_L3[i]
-     }
-     
-     if (i > length(coef_L2)) {
-       stop("You need better coverage, mate.")
-    }
-     
-   }
-   
-   return(tibble(alpha_0,  mean_treated_proportion, 
-            desired_coef_L1, desired_coef_L2, desired_coef_L3))
-}
-
-
+m_sample = 100
+m_boot = 500
+n_sample = 10000 # 1000
 ```
-
 
 
 ## Generating 100 no boot samples
@@ -120,7 +79,6 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     pb$tick()
     set.seed(seeds[i])
     
-    set.seed(seeds[i])
     pre_data <- defData(varname = "L1", formula = "0", variance = 1,
                 dist = "normal")
     
@@ -135,36 +93,34 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     
     cov_df[[i]] <- genData(5000, pre_data)
     
-    cov_coef_df <- covariate_coef(0.14, cov_df[[i]])
-    
-    L1_coef <- cov_coef_df$desired_coef_L1
-    L2_coef <- cov_coef_df$desired_coef_L2
-    L3_coef <- cov_coef_df$desired_coef_L3
 
-    pre_data <- defData(pre_data, varname = "L1_coef", formula = L1_coef)
-    pre_data <- defData(pre_data, varname = "L2_coef", formula = L2_coef)
-    pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
+    alpha0 = log(desired_prop/(1 - desired_prop))
+
+    pre_data <- defData(pre_data, varname = "alpha0", formula = alpha0)
+    pre_data <- defData(pre_data, varname = "alpha1", formula = alpha1)
+    pre_data <- defData(pre_data, varname = "alpha2", formula = alpha2)
+    pre_data <- defData(pre_data, varname = "beta0", formula = beta0)
+    pre_data <- defData(pre_data, varname = "beta1", formula = beta1)
+    pre_data <- defData(pre_data, varname = "beta2", formula = beta2)
+    pre_data <- defData(pre_data, varname = "beta3", formula = beta3)
+    
   
     pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2", # + L3_coef*L3",
-                        # L3 should not affect treatment status
-                        # why did you choose -1.815? 
-                        # this should be log(desired_treat_rate / (1- desired_treat_rate))
-                        # thus the rate is about 0.14% 
-                    dist = "binary", link = "logit")
+                        formula = "alpha0 + alpha1*L1 + alpha2*L2", 
+                        dist = "binary", link = "logit")
     
     pre_data <- defData(pre_data, varname = "Y", 
-                        formula = "0 + 0.767*A + 1.39*L2 -0.7*L3 + beta_error" ,
-                        # why are we hard coding the coef here but not in treatment status?
-                    dist = "binary", link = "logit")
+                        formula = "beta0 + beta1*A + beta2*L2 + beta3*L3 + beta_error" ,
+                        dist = "binary", link = "logit")
     
     df[[i]] <- genData(size, pre_data)
-    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef, -L3_coef)
+    df[[i]] <- df[[i]] %>% select(-alpha0, -alpha1, -alpha2,
+                                  -beta0, -beta1, -beta2, -beta3)
     }
   return(df)
 }
 
-no_boot_list <- generate_no_boot_data(100)
+no_boot_list <- generate_no_boot_data(m_sample)
 ```
 
 ## checking dist of treatment rate. 
@@ -174,6 +130,8 @@ hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)  ),
      main = "Hist of Treatment Dist",
      xlab = "Treat Rate",
      ylab = "Count")
+
+mean(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)))
 ```
 
 
@@ -231,7 +189,7 @@ matched_df <- list()
 # match_save <- rep(0, length(df))
 for (i in 1:length(df)) {
   
-  matched <- matchit(A ~ L1 + L2 + L3, 
+  matched <- matchit(A ~  L2 + L3, 
                           data = df[[i]], 
                           distance = "glm", 
                           link = "logit",
@@ -327,7 +285,7 @@ boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
   summarize(mean_log_OR = mean(estimate), sd_log_OR = sd(estimate),
-            bias = (mean_log_OR - 0.767))
+            bias = (mean_log_OR - beta1)) ######THis is where i am adding in beta1
 fig1 <-
   boot_result %>%
   ggplot(aes(x = sd_log_OR, color = sd_log_OR)) +
@@ -411,5 +369,17 @@ CI_coverate_rate <- function(nboot){
 CI_coverate_rate(100)
 
 ```
+
+
+what we need to store 
+
+
+csv file that records the below info in the name of the file. 
+nsamp = small or big
+treat_rate = low med high
+beta1 =negative or positive 
+
+collect info on sd and est. 
+
 
 
