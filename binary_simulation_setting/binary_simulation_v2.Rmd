@@ -44,6 +44,11 @@ scale_fill_discrete   = scale_fill_viridis_d
 ```
 
 
+```{r}
+source('./shared_code/data_gen_final_pretty.R')
+```
+
+
 ## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
 
 ```{r}

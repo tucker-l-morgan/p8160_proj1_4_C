@@ -18,7 +18,6 @@ source('./shared_code/data_gen_final_pretty.R')
 ## Complex Bootstrap
 
 ```{r, warning = FALSE, message = FALSE}
-
 generate_boots <- function(df, iter = 100, seeds = seed_vec){
   pb3$tick()
   boot_samples <- list()
@@ -63,7 +62,7 @@ nb_tib <- tibble(nb = no_boot_list)
 
 pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", total = nrow(nb_tib))
 
-result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x)))
+result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x, iter = 10)))
 
 fin_estimate_df <- result_list %>% unnest(res_tib) %>% select(-nb)
 ```
