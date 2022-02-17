@@ -10,3 +10,4 @@ Open questions for continuous simulation:
 I think this makes sense! - TM
 
 3. Now that I've removed the L3 coef from A ~, the data generation function pretty consistently breaks for large m. I get an error code "object 'mean_treated_proportion' not found". I had some success when increasing the tolerance from 0.001 to 0.05, but that eventually met issues as well. What could be going on with the function? Is it taking too long to find the solution coefficients? I am really not sure.
+- well, it is now working, but I'm not sure why...

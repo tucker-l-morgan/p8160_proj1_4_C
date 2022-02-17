@@ -58,8 +58,8 @@ covariate_coef <- function(desired_prop, cov_df) {
    
   # coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
    
-   A_logit <- vector(mode = "list",length = length(coef_L2))
-   p_A <-  vector(mode = "numeric",length = length(coef_L2))
+   A_logit <- vector(mode = "list",length = length(coef_L1))
+   p_A <-  vector(mode = "numeric",length = length(coef_L1))
    
    u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 #- coef_L3[1]*cov_df$L3
    
@@ -85,7 +85,7 @@ covariate_coef <- function(desired_prop, cov_df) {
       # desired_coef_L3 <- coef_L3[i]
      }
      
-     if (i > length(coef_L2)) {
+     if (i > length(coef_L1)) {
        stop("You need better coverage, mate.")
     }
      
@@ -117,10 +117,10 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
     pre_data <- defData(varname = "L1", formula = "0", variance = 1,
                 dist = "normal")
     
-    pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
+    pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 10,
                 dist = "normal")
     
-    pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
+    pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 10,
                 dist = "normal")
     
     cov_df[[i]] <- genData(5000, pre_data)
@@ -270,7 +270,7 @@ fig1 <-
   boot_result %>%
   ggplot(aes(x = sd_ate, color = sd_ate)) +
   geom_histogram(fill = "light blue",  bins = 12,  color = "black") +
-  geom_density(aes(y = ..density..*0.5), colour = "red", 
+  geom_density(aes(y = ..density..*4), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$sd_ate), linetype = "dashed") + 
   labs(title = "SD of ATE from 1000 Bootstraps in 100 Sub-Populations",
@@ -287,7 +287,7 @@ fig2 <-
   boot_result %>%
   ggplot(aes(x = avg_trt_eff)) + 
   geom_histogram(fill = "light blue", bins = 12, color = "black") +
-  geom_density(aes(y = ..density..*1), colour = "red", 
+  geom_density(aes(y = ..density..*8), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$avg_trt_eff), linetype = "dashed") +
   labs(title = "Distribution of ATE in 1000 Bootstraps of 100 Sub-Populations", 
