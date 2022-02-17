@@ -336,4 +336,3 @@ cvg_plot <- function(df){
 cvg_rate(boot_result)
 cvg_plot(boot_result)
 ```
-
