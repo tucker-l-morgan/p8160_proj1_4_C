@@ -6,5 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+source("./shared_code/setup.R")
+source("./shared_code/data_gen_binary.R")
 ```
+
