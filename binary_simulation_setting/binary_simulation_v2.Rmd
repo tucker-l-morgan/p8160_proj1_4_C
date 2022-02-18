@@ -5,7 +5,7 @@ date: "2/15/2022"
 output: pdf_document
 ---
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
 library(tidyverse)
 library(simstudy)
 library(MatchIt)
@@ -42,16 +42,7 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete   = scale_fill_viridis_d
 ```
-
-
-```{r}
-source('./shared_code/data_gen_final_pretty.R')
-```
-
-
-## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
-
-```{r}
+```{r function for optimal coefficients for desired prop}
 
 covariate_coef <- function(desired_prop, cov_df) {
    
@@ -105,12 +96,7 @@ covariate_coef <- function(desired_prop, cov_df) {
 
 
 ```
-
-
-
-## Generating 100 no boot samples
-
-```{r}
+```{r old data gen function, eval = FALSE, include = FALSE}
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
 generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
@@ -172,19 +158,21 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
 no_boot_list <- generate_no_boot_data(100)
 ```
 
-## checking dist of treatment rate. 
+## Generating 100 no boot samples
+```{r calling functions}
+source('./shared_code/data_gen_final_pretty.R')
+```
 
-```{r}
-hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)  ), 
+## checking dist of treatment rate. 
+```{r distribution of treatment rate}
+hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)), 
      main = "Hist of Treatment Dist",
      xlab = "Treat Rate",
      ylab = "Count")
 ```
 
-
-## Function for no boot bias distribution
-```{r}
-
+## No boot bias distribution
+```{r function for no boot bias}
 no_boot_result <-
   function(n)  {
   b <- vector()
@@ -198,9 +186,7 @@ return(b)
 no_boot_OR <- no_boot_result(100)
 ```
 
-
-## No boot Bias plot
-```{r}
+```{r no boot bias plot}
 no_boot_bias <- 
   tibble(no_boot_OR = no_boot_OR) %>%
   summarise(bias = (no_boot_OR - 0.767))
@@ -217,17 +203,10 @@ no_boot_bias %>%
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
-
-
-
 ```
 
-
-
-
 ## Implementing nearest-neighbor matching (NNM)
-
-```{r, warning=FALSE}
+```{r implement NNM, warning=FALSE}
 df <- no_boot_list
 
 # could possible turn this into a function later.
@@ -251,12 +230,8 @@ for (i in 1:length(df)) {
 
 ```
 
-
-
-
 ## simple Bootstrap
-
-```{r}
+```{r simple bootstrap}
 # creating the tibble to apply map function
 matched_tib <-
   tibble(data = matched_df)
@@ -315,24 +290,21 @@ boot_tib <-
 
 ```
 
-
 ## Unnesting bootstrap coefficients
-```{r}
+```{r unnesting bootstrap coefficients}
 boot_estimates <- 
   boot_tib %>% 
   mutate(seq = seq(1:nrow(boot_tib))) %>% 
   select(coef, seq) %>% unnest(coef)
 ```
 
-
 ## Summary of 1000 bootstrap of 100 no boot
-
-```{r}
+```{r summarizing bootstrap data}
 boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
   summarize(mean_log_OR = mean(estimate), sd_log_OR = sd(estimate),
-            bias = (mean_log_OR - 0.767))
+            bias = (mean_log_OR - 0.767)) # should be updated
 fig1 <-
   boot_result %>%
   ggplot(aes(x = sd_log_OR, color = sd_log_OR)) +
@@ -342,13 +314,12 @@ fig1 <-
   geom_vline(xintercept = mean(boot_result$sd_log_OR), linetype = "dashed") + 
   labs(title = "Distribution of 100 SD of mean log OR",
        subtitle = "Distribution of bias", x = "Log OR", y = "Frequency",
-       caption = "Ideal shape: right-skewed shape with mode at 0 ") + 
+       caption = "Ideal shape: right-skewed shape with mode at 0") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.subtitle = element_text(color = "black"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
-
 
 fig2 <- 
   boot_result %>%
@@ -358,13 +329,11 @@ fig2 <-
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$mean_log_OR), linetype = "dashed") +
   labs(title = "Distribution of 100 mean log OR", 
-       caption = "Ideal center: 0.767 (true log OR)", x = "Log OR", y = "Frequency") + 
+       caption = "Ideal center: 0.767 (true log OR)", x = "Log OR", y = "Frequency") +# ideal should be updated
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
-
-
 
 plot_grid(fig1, fig2)
 ```
@@ -388,9 +357,7 @@ fig3 <-
 fig3
 ```
 
-
 ## 100 Confidence Intervals Coverage Rate
-
 ```{r}
 CI_coverate_rate <- function(nboot){
   boot_CI_log_OR <- list()
@@ -414,7 +381,6 @@ CI_coverate_rate <- function(nboot){
 }
 
 CI_coverate_rate(100)
-
 ```
 
 
