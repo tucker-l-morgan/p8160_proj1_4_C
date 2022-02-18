@@ -6,9 +6,9 @@ set.seed(1)
 source("./shared_code/setup.R")
 
 # list of parameters
-desired_prop = 0.2 # 0.1, 0.2, 0.3 (AKA alpha0)
-alpha1   = 1
-alpha2   = 2
+desired_prop = 0.3 # 0.1, 0.2, 0.3 (AKA alpha0)
+alpha1   = log(1.25)
+alpha2   = log(1.75)
 beta0    = 0
 beta1    = 1       # 1, -1
 beta2    = 2
@@ -23,7 +23,7 @@ seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 # data gen function, continuous outcome
 generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_vec, 
                                   alpha0, alpha1, alpha2, beta0, beta1, beta2,
-                                  beta3) {
+                                  beta3, desired_prop) {
   
   df <- list()
   
@@ -75,4 +75,4 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
 
 no_boot_list <- generate_no_boot_data(n = m_sample, size = n_sample, seeds = seed_vec, 
                                       alpha0, alpha1, alpha2, beta0, beta1, beta2,
-                                      beta3)
+                                      beta3, desired_prop)
