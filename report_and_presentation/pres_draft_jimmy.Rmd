@@ -1,0 +1,121 @@
+---
+title: "Title in Progress"
+author: |
+  | Amy Pitts, Hun Lee, Jimmy Kelliher,
+  | Tucker Morgan, and Waveley Qiu
+date: "2022-02-21"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation
+
+>- Identifying the effect of a treatment or intervention is one of the most fundamental tasks we encounter as biostatisticians...
+ 
+>- ... but confounding variables can bias our estimates of treatment effects.
+ 
+>- Propensity score matching (PSM) is a tool that can help us mitigate the effects of confounders...
+ 
+>- ... but there is no consensus on the best way to estimate standard errors when using the PSM algorithm.
+ 
+>- How can we assess which procedures reliably estimate standard errors?
+
+## Motivation
+
+\begin{center}
+  A simulation study!
+\end{center}
+
+## Enter the Bootstrap
+
+>- Bootstrapping is one of the most common procedures for estimating standard errors.
+
+>- The PSM algorithm intakes an unmatched dataset and outputs a matched one.
+
+>- When do we execute the bootstrap - before the match or after it?
+
+>- Let's try both!
+
+## Roadmap of the Simulation Study
+
+```{tikz, echo = FALSE}
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
+\tikzstyle{line} = [draw, -latex]
+
+\begin{tikzpicture}[node distance = 4cm, auto]
+    % Place nodes
+    \node [block] (gen) {Data Generation};
+    \node [block, right of = gen] (init) {Sample i};
+    \node [block, above right of = init] (psm0) {PSM};
+    \node [block, below right of = init] (bootc) {Bootstrap};
+    \node [block, above right of = psm0] (base) {$\hat{\sigma}_\beta^2$};
+    \node [block, below right of = psm0] (boots) {Bootstrap};
+    \node [block, right of = bootc] (sampc1) {Unmatched Sample 1};
+    \node [block, below of = sampc1, yshift = 2.95cm] (sampc2) {Unmatched Sample 2};
+    \node [block, below of = sampc2, yshift = 2.95cm] (sampc3) {Unmatched Sample $m_{\text{b}}$};
+    \node [block, right of = boots] (samps1) {Matched Sample $m_{\text{b}}$};
+    \node [block, above of = samps1, yshift = -2.95cm] (samps2) {Matched Sample 2};
+    \node [block, above of = samps2, yshift = -2.95cm] (samps3) {Matched Sample 1};
+    \node [block, right of = samps2] (simp) {$\hat{\sigma}_\beta^2$};
+    \node [block, right of = sampc1] (psm1) {PSM};
+    \node [block, right of = sampc2] (psm2) {PSM};
+    \node [block, right of = sampc3] (psm3) {PSM};
+    \node [block, right of = psm2] (comp) {$\hat{\sigma}_\beta^2$};
+    % Draw edges
+    \path [line] (gen) -- (init);
+    \path [line] (init) -- (psm0);
+    \path [line] (init) -- node {Complex}(bootc);
+    \path [line] (psm0) -- node {Baseline}(base);
+    \path [line] (psm0) -- node {Simple}(boots);
+    \path [line] (boots) -- (samps1);
+    \path [line] (boots) -- (samps2);
+    \path [line] (boots) -- (samps3);
+    \path [line] (bootc) -- (sampc1);
+    \path [line] (bootc) -- (sampc2);
+    \path [line] (bootc) -- (sampc3);
+    \path [line] (sampc1) -- (psm1);
+    \path [line] (sampc2) -- (psm2);
+    \path [line] (sampc3) -- (psm3);
+    \path [line] (samps1) -- (simp);
+    \path [line] (samps2) -- (simp);
+    \path [line] (samps3) -- (simp);
+    \path [line] (psm1) -- (comp);
+    \path [line] (psm2) -- (comp);
+    \path [line] (psm3) -- (comp);
+    %
+    \node [yshift = -2.50cm, xshift = 1.75cm] (text) {$i \in \{ 1, \ldots, m_{\text{s}} \}$};
+    \draw[black, ->] (text) + (80:2.25cm) arc(80:-260:1cm);
+\end{tikzpicture}
+```
+
+
+
+
+
+## Data Generation - Continuous Outcome
+
+For each individual $i \in \{ 1, \ldots, n \}$, we consider covariates $L_{1i}, L_{2i}, L_{3i} \sim N(0, 1)$. Treatments are distributed according to law $A_i \sim B(\pi_i)$, where $\pi_i$ - the true propensity to be treated - is subject to the data-generating process
+  \[
+    \log \left( \frac{\pi_i}{1 - \pi_i} \right)
+    = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}.
+  \]
+Given this, we further define the data-generating process of our continuous outcome via
+  \[ Y_i = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i} + \varepsilon_i, \]
+where $\varepsilon_i$ denotes random error. Because $L_{2i}$ effects both $A_i$ and $Y_i$, it acts as a confounder in estimating the treatment effect.
+
+## Data Generation - Binary Outcome
+
+For each individual $i \in \{ 1, \ldots, n \}$, we consider covariates $L_{1i}, L_{2i}, L_{3i} \sim N(0, 1)$. Treatments are distributed according to law $A_i \sim B(\pi_i)$, where $\pi_i$ - the true propensity to be treated - is subject to the data-generating process
+  \[
+    \log \left( \frac{\pi_i}{1 - \pi_i} \right)
+    = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}.
+  \]
+Given this, we further define the data-generating process of our binary outcome via $Y_i \sim B(\tau_i)$ where
+  \[
+    \log \left( \frac{\tau_i}{1 - \tau_i} \right)
+    = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
+  \]
+Observe that we have omitted a random error term, as realizations of $Y_i$ are innately subject to noise.
