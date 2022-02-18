@@ -154,6 +154,13 @@ source("./shared_code/data_gen_continuous.R")
 
 Let's take a look at one of our "no-boot" aka sub-population data sets.
 
+```{r distribution of treatment rate}
+hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)  ), 
+     main = "Hist of Treatment Dist",
+     xlab = "Treat Rate",
+     ylab = "Count")
+```
+
 ```{r one sub-pop initial analysis}
 no_boot_df1 <- no_boot_list[[1]]
 
