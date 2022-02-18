@@ -67,7 +67,7 @@ E(T_i) &= E[E(T_i \; | \; \mathbf{X}_i, \boldsymbol{\alpha})]
 \\
 \implies \pi_0 &= \frac{\exp(\alpha_0)}{1+\exp(\alpha_0)}
 \\
-\implies \alpha_0 &= \frac{\log{\pi_0}}{\log(1-\pi_0)}
+\implies \alpha_0 &= \log(\frac{\pi_0}{1-\pi_0})
 \end{aligned}
 $$
 
