@@ -10,11 +10,11 @@ set.seed(20220217)
 desired_prop = 0.1 # 0.2, 0.3 (AKA alpha0)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
-beta0    = 0
+beta0    = 0.4 #change as needed
 beta1    = 0.75 #1.25
 beta2    = log(1.75)
 beta3    = log(1.25)
-m_sample = 1000
+m_sample = 10 
 m_boot   = 500
 n_sample = 100 # 1000
 

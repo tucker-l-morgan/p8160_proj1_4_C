@@ -18,11 +18,7 @@ source("./shared_code/data_gen_binary.R")
 
 ## Simple Bootstrap
 
-First, we will conduct simple bootstrapping.
-
 ### Nearest Neighbors Matching
-
-We want to establish matched pairs to sample from.
 
 ```{r}
 df <- no_boot_list
@@ -94,8 +90,6 @@ outcome_model_list <- function(list) {
 #### Running SBS
 
 ```{r}
-# ### input matched dataframe, output however many bootstrapped samples you want ###
-
 simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = seed_vec){
   boots <- list()
   pb2$tick()
@@ -139,7 +133,9 @@ boot_estimates <-
 boot_result <-
   boot_estimates %>% 
   group_by(seq) %>% 
-  summarize(mean_ATE = mean(difference), 
-            sd_mean_ATE = sd(difference))
+  summarize(ATE = mean(difference), 
+            sd_ATE = sd(difference),
+            ci_lower = ATE - qnorm(0.025)*sd_ATE,
+            ci_lower = ATE - qnorm(0.025)*sd_ATE)
 ```
 
