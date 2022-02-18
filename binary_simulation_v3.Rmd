@@ -1,171 +1,20 @@
 ---
-title: "Binary_Simulation_v2"
-author: "Hun"
-date: "2/15/2022"
+title: "Binary_Simulation_v3"
+author: "Waveley"
+date: "2022-02-17"
 output: pdf_document
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
-library(tidyverse)
-library(simstudy)
-library(MatchIt)
-library(dplyr)
-library(progress) 
-library(ggpmisc)
-library(cowplot)
-
-# set knitr defaults
-knitr::opts_chunk$set(
-    echo      = TRUE
-  , fig.align = "center"
-  , fig.width = 6
-  , fig.asp   = .6
-  , out.width = "90%"
-)
-
-# set theme defaults
-theme_set(
-  theme_bw() +
-  theme(
-    legend.position = "bottom"
-    , plot.title    = element_text(hjust = 0.5)
-    , plot.subtitle = element_text(hjust = 0.5)
-    , plot.caption  = element_text(hjust = 0.0)
-  )
-)
-
-# set color scale defaults
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill   = "viridis"
-)
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete   = scale_fill_viridis_d
+source("./shared_code/setup.R")
 ```
 
-```{r function for optimal coefficients for desired prop}
-
-covariate_coef <- function(desired_prop, cov_df) {
-   
-     
-   alpha_0 = log(desired_prop/(1 - desired_prop))
-   
-   coef_L1 <- sample(cov_df$L1, 10000, replace = TRUE)
-   
-   coef_L2 <- sample(cov_df$L2, 10000, replace = TRUE)
-   
-   coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
-   
-   A_logit <- vector(mode = "list",length = length(coef_L2))
-   p_A <-  vector(mode = "numeric",length = length(coef_L2))
-   
-   u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 - coef_L3[1]*cov_df$L3
-   # Is this deciding treatment effect? 
-   
-   p_A[1] <-  mean(exp(u)/(1 + exp(u)))
-   
-   tol <- 0.001
-   
-   i = 1
-   
-   while (abs(p_A[i] - 0.14) > tol) {
-     
-     i = i + 1
-     
-     A_logit[[i]] <- 
-       alpha_0 + coef_L1[i]*cov_df$L1 + coef_L2[i]*cov_df$L2 - coef_L3[i]*cov_df$L3
-     
-     p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
-     
-     if (abs(p_A[i] - 0.14) < tol) { ##### is this the treatment rate hard coded????? 
-       ###### might want to edit herre1!!!1!! 
-       mean_treated_proportion <- p_A[i]
-       desired_coef_L1 <- coef_L1[i]
-       desired_coef_L2 <- coef_L2[i]
-       desired_coef_L3 <- coef_L3[i]
-     }
-     
-     if (i > length(coef_L2)) {
-       stop("You need better coverage, mate.")
-    }
-     
-   }
-   
-   return(tibble(alpha_0,  mean_treated_proportion, 
-            desired_coef_L1, desired_coef_L2, desired_coef_L3))
-}
-
-
-```
-
-```{r old data gen function, eval = FALSE, include = FALSE}
-seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
-
-generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
-  
-  df <- list()
-  
-  cov_df <- list()
-  
-  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
-  
-    for (i in 1:n) {
-    pb$tick()
-    set.seed(seeds[i])
-    
-    set.seed(seeds[i])
-    pre_data <- defData(varname = "L1", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 0.25,
-                dist = "normal")
-    
-    cov_df[[i]] <- genData(5000, pre_data)
-    
-    cov_coef_df <- covariate_coef(0.14, cov_df[[i]])
-    
-    L1_coef <- cov_coef_df$desired_coef_L1
-    L2_coef <- cov_coef_df$desired_coef_L2
-    L3_coef <- cov_coef_df$desired_coef_L3
-
-    pre_data <- defData(pre_data, varname = "L1_coef", formula = L1_coef)
-    pre_data <- defData(pre_data, varname = "L2_coef", formula = L2_coef)
-    pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
-  
-    pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2", # + L3_coef*L3",
-                        # L3 should not affect treatment status
-                        # why did you choose -1.815? 
-                        # this should be log(desired_treat_rate / (1- desired_treat_rate))
-                        # thus the rate is about 0.14% 
-                    dist = "binary", link = "logit")
-    
-    pre_data <- defData(pre_data, varname = "Y", 
-                        formula = "0 + 0.767*A + 1.39*L2 -0.7*L3 + beta_error" ,
-                        # why are we hard coding the coef here but not in treatment status?
-                    dist = "binary", link = "logit")
-    
-    df[[i]] <- genData(size, pre_data)
-    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef, -L3_coef)
-    }
-  return(df)
-}
-
-no_boot_list <- generate_no_boot_data(100)
-```
-
-## Generating 100 no boot samples
+## Generating 100 No Boot Samples
 ```{r calling functions}
-source('./shared_code/data_gen_final_pretty.R')
+source('./shared_code/data_gen_binary.R')
 ```
 
-## checking dist of treatment rate. 
+## Checking Distribution of Treatment Rate
 ```{r distribution of treatment rate}
 hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)), 
      main = "Hist of Treatment Dist",
