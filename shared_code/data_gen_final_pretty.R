@@ -73,7 +73,7 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
     
     df[[i]] <- genData(size, pre_data)
     df[[i]] <- df[[i]] %>% select(-alpha0, -alpha1, -alpha2,
-                                  -beta0, -beta1, -beta2, -beta3, -beta_error)
+                                  -beta0, -beta1, -beta2, -beta3)
     }
   return(df)
 }
