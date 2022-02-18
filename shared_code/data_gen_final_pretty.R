@@ -15,11 +15,11 @@ set.seed(1)
 
 # here is all the decided upon parameters 
 
-desired_prop = 0.2    # 0.1, 0.2, 0.3 (AKA alpha0)
+desired_prop = 0.14    # 0.1, 0.2, 0.3 (AKA alpha0)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
-beta0    = 0
-beta1    = 0.75       # 0.75, 1.25
+beta0    = 0.437
+beta1    = 0.767       # 0.75, 1.25
 beta2    = log(1.75)
 beta3    = log(1.25)
 m_sample = 100        # 100
@@ -30,7 +30,7 @@ n_sample = 10000      # 1000, 10000
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
 generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_vec, 
-                                  alpha0, alpha1, alpha2, beta0, beta1, beta2,
+                                  desired_prop, alpha1, alpha2, beta0, beta1, beta2,
                                   beta3) {
   
   df <- list()
@@ -52,7 +52,7 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
     pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
                 dist = "normal")
     
-    pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 0.25,
+    pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 1,
                 dist = "normal")
 
     alpha0 = log(desired_prop/(1 - desired_prop))
@@ -71,7 +71,7 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
                         dist = "binary", link = "logit")
     
     pre_data <- defData(pre_data, varname = "Y", 
-                        formula = "beta0 + beta1*A + beta2*L2 + beta3*L3 + beta_error" ,
+                        formula = "beta0 + beta1*A + beta2*L2 + beta3*L3 " ,
                         dist = "binary", link = "logit")
     
     df[[i]] <- genData(size, pre_data)
@@ -82,5 +82,5 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
 }
 
 no_boot_list <- generate_no_boot_data(n=m_sample, size = n_sample, seeds = seed_vec, 
-                                  alpha0, alpha1, alpha2, beta0, beta1, beta2,
+                                      desired_prop, alpha1, alpha2, beta0, beta1, beta2,
                                   beta3)
