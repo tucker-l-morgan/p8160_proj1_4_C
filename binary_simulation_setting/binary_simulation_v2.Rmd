@@ -42,7 +42,7 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete   = scale_fill_viridis_d
 ```
-```{r function for optimal coefficients for desired prop}
+```{r function for optimal coefficients for desired prop, eval = FALSE, include = FALSE}
 
 covariate_coef <- function(desired_prop, cov_df) {
    
