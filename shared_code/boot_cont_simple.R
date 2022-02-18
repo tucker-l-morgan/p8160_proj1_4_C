@@ -42,7 +42,7 @@ outcome_model_df <- function(df) {
 # running glm function
 # adding progress bar for sanity
 pb1 <- progress_bar$new(format = "glming... [:bar] :percent eta: :eta", total = nrow(matched_tib))
-continous_empirical_mean_se <- 
+continuous_empirical_mean_se <- 
   matched_tib %>% 
   mutate(
     outcoef = map(.x = data, ~outcome_model_df(.x))
