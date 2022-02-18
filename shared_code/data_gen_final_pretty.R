@@ -13,9 +13,9 @@ library(beepr)
 set.seed(1)
 
 
-# here is all the decided appon parameters 
+# here is all the decided upon parameters 
 
-desired_prop = 0.2 # 0.2, 0.3 (AKA alpha0)
+desired_prop = 0.2 # 0.1, 0.2, 0.3 (AKA alpha0)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
 beta0    = 0
@@ -29,7 +29,7 @@ n_sample = 10000 # 1000
 
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
-generate_no_boot_data <- function(n=m_sample, size = n_sample, seeds = seed_vec, 
+generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_vec, 
                                   alpha0, alpha1, alpha2, beta0, beta1, beta2,
                                   beta3) {
   
