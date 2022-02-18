@@ -1,0 +1,10 @@
+---
+title: "Binary Simulation"
+author: "Waveley Qiu"
+date: "2022-02-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
