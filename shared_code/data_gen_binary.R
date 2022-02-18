@@ -91,3 +91,14 @@ no_boot_list <-
   beta2,
   beta3
   )
+
+
+
+# creating a data frame will all the senarios 
+
+
+all_scenarios <- tibble(
+  n_sample = c(rep(1000, 6), rep(10000, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
+  beta1 = rep(c(0.75, 1.75),6)
+)
