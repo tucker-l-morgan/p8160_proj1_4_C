@@ -1,0 +1,10 @@
+---
+title: "binary_simulation"
+author: "Waveley Qiu"
+date: "2022-02-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+source("./shared_code/setup.R")
+```

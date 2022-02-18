@@ -71,9 +71,6 @@ no_boot_bias %>%
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
-
-
-
 ```
 
 
@@ -296,9 +293,6 @@ CI_coverage_rate <- function(nboot){
 }
 
 CI_coverage_rate(100)
-
-
-
 ```
 
 
