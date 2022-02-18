@@ -189,95 +189,27 @@ for (i in 1:length(df)) {
 }
 ```
 
-Again, we'll look at one of our matched sub-pops.
-
-```{r one matched sub-pop analysis}
-matched_df1 <- matched_df[[1]]
-summary(matched_df1)
-str(matched_df1)
-```
-
 ## The Simple Bootstrap
 
-```{r implement simple bootstrap}
-# creating the tibble to apply map function
-matched_tib <-
-  tibble(data = matched_df)
-
-# ### function to iterate glm over a list, to be used in purr:map ###
-# returns tibble of parameter estimates and standard errors.
-
-outcome_model_list <- function(list) {
-  tib_coef <- tibble()
-  pb3$tick()
-  for (i in 1:length(list)) {
-    mod <- glm(Y ~ A + ps, 
-               data = list[[i]], 
-               weights = weights) %>% summary()
-    coefs <- mod$coefficients[2,1:2]
-    tib_coef <- bind_rows(tib_coef, tibble(estimate = coefs[1], se = coefs[2]))
-  }
-    return(tib_coef)
-}
-
-# ### input matched dataframe, output however many bootstrapped samples you want ###
-# first, set seed vector for reproducibility
-
-
-# now, define function
-
-seed_vec_2 <- rnorm(100000, mean = 0, sd = 10000) %>% round(0) %>% unique()
-
-simple_boot <- function(df, n, size = m_boot, seeds = seed_vec_2){
-  boots <- list()
-  pb2$tick()
-  for (i in 1:n) {
-  set.seed(seeds[i])
-  boots[[i]] <- 
-    df %>% 
-    filter(subclass %in% sample(levels(subclass), 
-                                size, 
-                                replace =  TRUE))
-  }
-  return(boots)
-}
-
-
-# adding progress bars for sanity
-pb2 <- progress_bar$new(format = "bootstrapping... [:bar]", total = nrow(matched_tib))
-pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(matched_tib))
-
-# creating booted tibbles, applying functions through purr:map.
-boot_tib <- 
-  matched_tib %>% 
-  mutate(
-    boots = map(.x = data, ~simple_boot(.x, n = n_sample * desired_prop))
-    ) %>%
-  mutate(coef = map(.x = boots, ~outcome_model_list(.x)))
+```{r calling in simple bootstrap}
+source("./shared_code/boot_cont_simple.R")
 ```
 
-```{r unnesting bootstrap coefficients}
-boot_estimates <- 
-  boot_tib %>% 
-  mutate(seq = seq(1:nrow(boot_tib))) %>% 
-  select(coef, seq) %>% unnest(coef)
-```
-
-## Summary of 1000 Bootstraps in 100 Sub-Populations
+## Summary of 1000 Simple Bootstraps in 100 Sub-Populations
 
 ```{r summary of results}
 boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
-  summarize(avg_trt_eff = mean(estimate), sd_ate = sd(estimate))
+  summarize(ATE = mean(estimate), sd_ATE = sd(estimate))
  
 fig1 <-
   boot_result %>%
-  ggplot(aes(x = sd_ate, color = sd_ate)) +
+  ggplot(aes(x = sd_ATE, color = sd_ATE)) +
   geom_histogram(fill = "light blue",  bins = 12,  color = "black") +
-  geom_density(aes(y = ..density..*4), colour = "red", 
+  geom_density(aes(y = ..density..*2), colour = "red", 
                fill = "black", alpha = 0.3) + 
-  geom_vline(xintercept = mean(boot_result$sd_ate), linetype = "dashed") + 
+  geom_vline(xintercept = mean(boot_result$sd_ATE), linetype = "dashed") + 
   labs(title = "SD of ATE from 1000 Bootstraps in 100 Sub-Populations",
        subtitle = "Distribution of bias",
   caption = "Ideal center: 0", x = "SD of ATE", y = "Frequency") + 
@@ -290,11 +222,11 @@ fig1 <-
 
 fig2 <- 
   boot_result %>%
-  ggplot(aes(x = avg_trt_eff)) + 
+  ggplot(aes(x = ATE)) + 
   geom_histogram(fill = "light blue", bins = 12, color = "black") +
-  geom_density(aes(y = ..density..*8), colour = "red", 
+  geom_density(aes(y = ..density..*2), colour = "red", 
                fill = "black", alpha = 0.3) + 
-  geom_vline(xintercept = mean(boot_result$avg_trt_eff), linetype = "dashed") +
+  geom_vline(xintercept = mean(boot_result$ATE), linetype = "dashed") +
   labs(title = "Distribution of ATE in 1000 Bootstraps of 100 Sub-Populations", 
        caption = "Ideal center: 0.15", x = "Average Treatment Effect", y = "Frequency") + 
   theme(
@@ -305,16 +237,26 @@ fig2 <-
 plot_grid(fig1, fig2)
 ```
 
+```{r cleaning up the environment}
+rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
+```
+
+## Running Complex Bootstraps
+```{r calling in complex boots}
+source("./shared_code/boot_cont_complex.R")
+```
+
+
 ## Confidence Intervals Coverage Rates
 
-```{r coverage rate calculation}
+```{r coverage rate calculation, eval = FALSE, include = FALSE}
 cvg_rate <- function(df){
   res = df %>% 
-    mutate(ci_low = avg_trt_eff - 1.96*sd(avg_trt_eff),
-         ci_high = avg_trt_eff + 1.96*sd(avg_trt_eff),
+    mutate(ci_lower = ATE - 1.96*sd(ATE),
+         ci_upper = ATE + 1.96*sd(ATE),
          covered = case_when(
-           ci_low <= beta1 & ci_high >= beta1 ~ 1,
-                                         TRUE ~ 0
+           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
+                                            TRUE ~ 0
          ))
   
   return(sum(res$covered) / nrow(res))
@@ -322,17 +264,17 @@ cvg_rate <- function(df){
 
 cvg_plot <- function(df){
   res = df %>% 
-    mutate(ci_low = avg_trt_eff - 1.96*sd(avg_trt_eff),
-         ci_high = avg_trt_eff + 1.96*sd(avg_trt_eff),
+    mutate(ci_lower = ATE - 1.96*sd(ATE),
+         ci_upper = ATE + 1.96*sd(ATE),
          covered = case_when(
-           ci_low <= beta1 & ci_high >= beta1 ~ 1,
-                                         TRUE ~ 0
+           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
+                                            TRUE ~ 0
          ))
   
   plot = res %>% 
-    ggplot(aes(x = avg_trt_eff, y = seq)) +
+    ggplot(aes(x = ATE, y = seq)) +
     geom_point() +
-    geom_errorbar(aes(xmin = ci_low, xmax = ci_high)) +
+    geom_errorbar(aes(xmin = ci_lower, xmax = ci_upper)) +
     geom_vline(xintercept = beta1, linetype = "dashed")
   
   return(plot)
@@ -342,7 +284,41 @@ cvg_rate(boot_result)
 cvg_plot(boot_result)
 ```
 
+## Generating Output
+
 ```{r output}
-save(boot_result, file = "./continuous_simulation_setting/continuous_big_med_pos_clt.RData")
+cont_simple_df <- 
+  boot_result %>% 
+  mutate(ci_lower = ATE - 1.96*sd(ATE),
+         ci_upper = ATE + 1.96*sd(ATE),
+         covered = case_when(
+           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
+                                            TRUE ~ 0
+         ),
+         boot_type = c(0),
+         scenario_id = c(0), # this needs to be updated each run
+         empirical_mean = continuous_empirical_mean_se$empircal_mean,
+         empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
+  tibble()
+
+cont_complex_df <- 
+  fin_estimate_df %>% 
+  mutate(ci_lower = ATE - 1.96*sd(ATE),
+         ci_upper = ATE + 1.96*sd(ATE),
+         covered = case_when(
+           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
+                                            TRUE ~ 0
+         ),
+         boot_type = c(1),
+         scenario_id = c(0), # this needs to be updated each run
+         empirical_mean = continuous_empirical_mean_se$empircal_mean,
+         empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
+  tibble() %>% 
+  relocate(seq)
+
+cont_df_scen_0 <- bind_rows(cont_simple_df, cont_complex_df)
+  
+
+save(cont_df_scen_0, file = "./output_data/continuous_test.RData")
 ```
 
