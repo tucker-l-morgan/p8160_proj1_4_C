@@ -5,7 +5,7 @@ date: "2/15/2022"
 output: pdf_document
 ---
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(simstudy)
 library(MatchIt)
@@ -14,167 +14,31 @@ library(progress)
 library(ggpmisc)
 library(cowplot)
 
-# set knitr defaults
-knitr::opts_chunk$set(
-    echo      = TRUE
-  , fig.align = "center"
-  , fig.width = 6
-  , fig.asp   = .6
-  , out.width = "90%"
-)
-
-# set theme defaults
-theme_set(
-  theme_bw() +
-  theme(
-    legend.position = "bottom"
-    , plot.title    = element_text(hjust = 0.5)
-    , plot.subtitle = element_text(hjust = 0.5)
-    , plot.caption  = element_text(hjust = 0.0)
-  )
-)
-
-# set color scale defaults
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill   = "viridis"
-)
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete   = scale_fill_viridis_d
 ```
 
-```{r function for optimal coefficients for desired prop}
-
-covariate_coef <- function(desired_prop, cov_df) {
-   
-     
-   alpha_0 = log(desired_prop/(1 - desired_prop))
-   
-   coef_L1 <- sample(cov_df$L1, 10000, replace = TRUE)
-   
-   coef_L2 <- sample(cov_df$L2, 10000, replace = TRUE)
-   
-   coef_L3 <- sample(cov_df$L3, 10000, replace = TRUE)
-   
-   A_logit <- vector(mode = "list",length = length(coef_L2))
-   p_A <-  vector(mode = "numeric",length = length(coef_L2))
-   
-   u <- alpha_0 + coef_L1[1]*cov_df$L1 + coef_L2[1]*cov_df$L2 - coef_L3[1]*cov_df$L3
-   # Is this deciding treatment effect? 
-   
-   p_A[1] <-  mean(exp(u)/(1 + exp(u)))
-   
-   tol <- 0.001
-   
-   i = 1
-   
-   while (abs(p_A[i] - 0.14) > tol) {
-     
-     i = i + 1
-     
-     A_logit[[i]] <- 
-       alpha_0 + coef_L1[i]*cov_df$L1 + coef_L2[i]*cov_df$L2 - coef_L3[i]*cov_df$L3
-     
-     p_A[i] <- mean(exp(A_logit[[i]])/(1 + exp(A_logit[[i]])))
-     
-     if (abs(p_A[i] - 0.14) < tol) { ##### is this the treatment rate hard coded????? 
-       ###### might want to edit herre1!!!1!! 
-       mean_treated_proportion <- p_A[i]
-       desired_coef_L1 <- coef_L1[i]
-       desired_coef_L2 <- coef_L2[i]
-       desired_coef_L3 <- coef_L3[i]
-     }
-     
-     if (i > length(coef_L2)) {
-       stop("You need better coverage, mate.")
-    }
-     
-   }
-   
-   return(tibble(alpha_0,  mean_treated_proportion, 
-            desired_coef_L1, desired_coef_L2, desired_coef_L3))
-}
-
-
+```{r}
+source('./shared_code/data_gen_final_pretty.R')
 ```
 
 ```{r old data gen function, eval = FALSE, include = FALSE}
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
-generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
-  
-  df <- list()
-  
-  cov_df <- list()
-  
-  pb <- progress_bar$new(format = "generating data... [:bar]", total = n)
-  
-    for (i in 1:n) {
-    pb$tick()
-    set.seed(seeds[i])
-    
-    set.seed(seeds[i])
-    pre_data <- defData(varname = "L1", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "L2", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
-                dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 0.25,
-                dist = "normal")
-    
-    cov_df[[i]] <- genData(5000, pre_data)
-    
-    cov_coef_df <- covariate_coef(0.14, cov_df[[i]])
-    
-    L1_coef <- cov_coef_df$desired_coef_L1
-    L2_coef <- cov_coef_df$desired_coef_L2
-    L3_coef <- cov_coef_df$desired_coef_L3
+## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
 
-    pre_data <- defData(pre_data, varname = "L1_coef", formula = L1_coef)
-    pre_data <- defData(pre_data, varname = "L2_coef", formula = L2_coef)
-    pre_data <- defData(pre_data, varname = "L3_coef", formula = L3_coef)
-  
-    pre_data <- defData(pre_data, varname = "A", 
-                        formula = "-1.815 + L1_coef*L1 + L2_coef*L2", # + L3_coef*L3",
-                        # L3 should not affect treatment status
-                        # why did you choose -1.815? 
-                        # this should be log(desired_treat_rate / (1- desired_treat_rate))
-                        # thus the rate is about 0.14% 
-                    dist = "binary", link = "logit")
-    
-    pre_data <- defData(pre_data, varname = "Y", 
-                        formula = "0 + 0.767*A + 1.39*L2 -0.7*L3 + beta_error" ,
-                        # why are we hard coding the coef here but not in treatment status?
-                    dist = "binary", link = "logit")
-    
-    df[[i]] <- genData(size, pre_data)
-    df[[i]] <- df[[i]] %>% select(-L1_coef, -L2_coef, -L3_coef)
-    }
-  return(df)
-}
-
-no_boot_list <- generate_no_boot_data(100)
-```
-
-## Generating 100 no boot samples
-```{r calling functions}
-source('./shared_code/data_gen_final_pretty.R')
-```
 
 ## checking dist of treatment rate. 
-```{r distribution of treatment rate}
+
+```{r}
 hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)), 
      main = "Hist of Treatment Dist",
      xlab = "Treat Rate",
      ylab = "Count")
 ```
 
-## No boot bias distribution
-```{r function for no boot bias}
+
+## Function for no boot bias distribution
+```{r}
+
 no_boot_result <-
   function(n)  {
   b <- vector()
@@ -188,7 +52,9 @@ return(b)
 no_boot_OR <- no_boot_result(100)
 ```
 
-```{r no boot bias plot}
+
+## No boot Bias plot
+```{r}
 no_boot_bias <- 
   tibble(no_boot_OR = no_boot_OR) %>%
   summarise(bias = (no_boot_OR - 0.767))
@@ -196,28 +62,37 @@ no_boot_bias <-
 no_boot_bias %>%
   ggplot(aes(x = bias)) +
   geom_histogram(fill = "light blue", bins = 15, color = "black") +
-  geom_density(aes(y = ..density..*5), colour = "red", 
+  geom_density(aes(y = ..density..*2), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(no_boot_bias$bias), linetype = "dashed") +
-  labs(title = "Distribution of no boot mean log OR bias", 
-       caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
+  labs(title = "Distribution of no boot ATE bias", 
+       caption = "Ideal center: 0", x = "Risk difference", y = "Frequency") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
+
+
+
 ```
 
+
+
+
 ## Implementing nearest-neighbor matching (NNM)
-```{r implement NNM, warning=FALSE}
+
+```{r, warning=FALSE}
 df <- no_boot_list
+pb4 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+                        total = length(df))
 
 # could possible turn this into a function later.
 matched_df <- list()
 # mean_treat_save <- rep(0, length(df))
 # match_save <- rep(0, length(df))
 for (i in 1:length(df)) {
-  
-  matched <- matchit(A ~ L1 + L2 + L3, 
+  pb4$tick()
+  matched <- matchit(A ~  L2 + L3, 
                           data = df[[i]], 
                           distance = "glm", 
                           link = "logit",
@@ -232,8 +107,10 @@ for (i in 1:length(df)) {
 
 ```
 
+
 ## simple Bootstrap
-```{r simple bootstrap}
+
+```{r}
 # creating the tibble to apply map function
 matched_tib <-
   tibble(data = matched_df)
@@ -243,18 +120,40 @@ matched_tib <-
 
 outcome_model_list <- function(list) {
   tib_coef <- tibble()
+  boots <- tibble(mean1 = NA,
+                  mean0 = NA,
+                  difference = NA)
   pb3$tick()
   for (i in 1:length(list)) {
     mod <- glm(Y ~ A + ps, 
                data = list[[i]], 
                weights = weights, 
-               family = "binomial") %>% summary()
-    coefs <- mod$coefficients[2,1:2]
-    tib_coef <- bind_rows(tib_coef, tibble(estimate = coefs[1], se = coefs[2]))
+               family = "binomial")
+    
+    sampl_all_treated <- list[[i]] %>%
+    mutate(A = 1)
+    
+    sampl_all_untreated <- list[[i]] %>%
+    mutate(A = 0)
+    
+    sampl_all_treated$pred.y <- 
+    predict(mod, sampl_all_treated, type = "response")
+    
+    sampl_all_untreated$pred.y <- 
+    predict(mod, sampl_all_untreated, type = "response")
+    
+    boots[i, "mean1"] <- mean(sampl_all_treated$pred.y)
+    boots[i, "mean0"] <- mean(sampl_all_untreated$pred.y)
+    boots[i, "difference"] <- boots[i, "mean1"] - boots[i, "mean0"]
+    #coefs <- mod$coefficients[2,1:2]
+    #tib_coef <- bind_rows(tib_coef, tibble(estimate = coefs[1]))
   }
-    return(tib_coef)
+    return(boots)
 }
+```
 
+
+```{r}
 # ### input matched dataframe, output however many bootstrapped samples you want ###
 # first, set seed vector for reproducibility
 
@@ -279,8 +178,10 @@ simple_boot <- function(df, n, size = 500, seeds = seed_vec_2){
 
 
 # adding progress bars for sanity
-pb2 <- progress_bar$new(format = "bootstrapping... [:bar]", total = nrow(matched_tib))
-pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(matched_tib))
+pb2 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+                        total = length(df))
+pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+                        total = length(df))
 
 # creating booted tibbles, applying functions through purr:map.
 boot_tib <- 
@@ -288,54 +189,64 @@ boot_tib <-
   mutate(
     boots = map(.x = data, ~simple_boot(.x, n = 100))
     ) %>%
-  mutate(coef = map(.x = boots, ~outcome_model_list(.x)))
+  mutate(ATE = map(.x = boots, ~outcome_model_list(.x)))
 
 ```
 
+
 ## Unnesting bootstrap coefficients
-```{r unnesting bootstrap coefficients}
+```{r}
 boot_estimates <- 
   boot_tib %>% 
   mutate(seq = seq(1:nrow(boot_tib))) %>% 
-  select(coef, seq) %>% unnest(coef)
+  select(ATE, seq) %>% unnest(ATE)
 ```
 
+
 ## Summary of 1000 bootstrap of 100 no boot
-```{r summarizing bootstrap data}
+
+```{r}
 boot_result <-
-  boot_estimates %>%
-  group_by(seq) %>%
-  summarize(mean_log_OR = mean(estimate), sd_log_OR = sd(estimate),
-            bias = (mean_log_OR - 0.767)) # should be updated
+  boot_estimates %>% 
+  group_by(seq) %>% 
+  summarize(mean_ATE = mean(difference), 
+            sd_mean_ATE = sd(difference),
+            bias = mean_ATE - 0.15)
+
 fig1 <-
   boot_result %>%
-  ggplot(aes(x = sd_log_OR, color = sd_log_OR)) +
+  ggplot(aes(x = sd_mean_ATE)) +
   geom_histogram(fill = "light blue",  bins = 12,  color = "black") +
-  geom_density(aes(y = ..density..*0.4), colour = "red", 
+  geom_density(aes(y = ..density..*0.07), colour = "red", 
                fill = "black", alpha = 0.3) + 
-  geom_vline(xintercept = mean(boot_result$sd_log_OR), linetype = "dashed") + 
-  labs(title = "Distribution of 100 SD of mean log OR",
-       subtitle = "Distribution of bias", x = "Log OR", y = "Frequency",
-       caption = "Ideal shape: right-skewed shape with mode at 0") + 
+  geom_vline(xintercept = mean(boot_result$sd_mean_ATE), linetype = "dashed") + 
+  labs(title = "Distribution of 100 SD of average treatment effect",
+       subtitle = "Distribution of bias", 
+       x = "Sample Standard Deviation", y = "Frequency",
+       caption = "Ideal shape: right-skewed shape with mode at 0 ") + 
   theme(
-  plot.title = element_text(color = "blue", size = 11, face = "bold"),
+  plot.title = element_text(color = "blue", size = 10, face = "bold"),
   plot.subtitle = element_text(color = "black"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
 
+
 fig2 <- 
   boot_result %>%
-  ggplot(aes(x = mean_log_OR)) + 
+  ggplot(aes(x = mean_ATE)) + 
   geom_histogram(fill = "light blue", bins = 12, color = "black") +
-  geom_density(aes(y = ..density..*6), colour = "red", 
+  geom_density(aes(y = ..density..*1), colour = "red", 
                fill = "black", alpha = 0.3) + 
-  geom_vline(xintercept = mean(boot_result$mean_log_OR), linetype = "dashed") +
-  labs(title = "Distribution of 100 mean log OR", 
-       caption = "Ideal center: 0.767 (true log OR)", x = "Log OR", y = "Frequency") +# ideal should be updated
+  geom_vline(xintercept = mean(boot_result$mean_ATE), linetype = "dashed") +
+  labs(title = "Distribution of 100 average treatment effect", 
+       caption = "Ideal center: 0.15 (true ATE)", 
+       x = "Risk difference", y = "Frequency") + 
   theme(
-  plot.title = element_text(color = "blue", size = 11, face = "bold"),
+  plot.title = element_text(color = "blue", size = 10, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
+
+
 
 plot_grid(fig1, fig2)
 ```
@@ -346,11 +257,11 @@ fig3 <-
   boot_result %>%
   ggplot(aes(x = bias)) + 
   geom_histogram(fill = "light blue", bins = 15, color = "black") +
-  geom_density(aes(y = ..density..*5), colour = "red", 
+  geom_density(aes(y = ..density..*0.7), colour = "red", 
                fill = "black", alpha = 0.3) + 
   geom_vline(xintercept = mean(boot_result$bias), linetype = "dashed") +
-  labs(title = "Distribution of mean log OR bias", 
-       caption = "Ideal center: 0", x = "Log OR", y = "Frequency") + 
+  labs(title = "Distribution of average treatment effect", 
+       caption = "Ideal center: 0", x = "Risk difference", y = "Frequency") + 
   theme(
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
@@ -359,19 +270,21 @@ fig3 <-
 fig3
 ```
 
-## 100 Confidence Intervals Coverage Rate
+
+## 100 Confidence Intervals Coverage Rate using central limit theorem
+
 ```{r}
-CI_coverate_rate <- function(nboot){
-  boot_CI_log_OR <- list()
+CI_coverage_rate <- function(nboot){
+  boot_CI_ATE <- list()
   count_true <- list()
   
   for (i in 1:nboot) {
-     boot_CI_log_OR[[i]] <- 
-       c(boot_result$mean_log_OR[i] - 1.96*boot_result$sd_log_OR,
-         boot_result$mean_log_OR[i] + 1.96*boot_result$sd_log_OR)
-     
+     boot_CI_ATE[[i]] <- 
+       c(boot_result$mean_ATE[i] + qnorm(0.025)*sd(boot_result$mean_ATE),
+         boot_result$mean_ATE[i] + qnorm(0.975)*sd(boot_result$mean_ATE))    
+    
       count_true[i] <- 
-        between(0.767, range(boot_CI_log_OR[[i]])[1], range(boot_CI_log_OR[[i]])[2]) 
+         between(0.15, range(boot_CI_ATE[[i]])[1], range(boot_CI_ATE[[i]])[2]) 
   }
   
   result = 
@@ -382,7 +295,19 @@ CI_coverate_rate <- function(nboot){
   return(result)
 }
 
-CI_coverate_rate(100)
+CI_coverage_rate(100)
+
+
+
 ```
 
+
+
+## Sample mean central limit theorem to build confidence interval
+
+```{r}
+(qnorm(0.025) * sd(boot_result$mean_ATE)) + 0.15 #Lower CI range
+ 
+(qnorm(0.975) * sd(boot_result$mean_ATE)) + 0.15 #Upper CI range
+```
 

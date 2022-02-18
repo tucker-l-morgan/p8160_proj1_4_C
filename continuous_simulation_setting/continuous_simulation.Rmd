@@ -155,7 +155,7 @@ source("./shared_code/data_gen_continuous.R")
 Let's take a look at one of our "no-boot" aka sub-population data sets.
 
 ```{r distribution of treatment rate}
-hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)  ), 
+hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)), 
      main = "Hist of Treatment Dist",
      xlab = "Treat Rate",
      ylab = "Count")
@@ -310,8 +310,8 @@ plot_grid(fig1, fig2)
 ```{r coverage rate calculation}
 cvg_rate <- function(df){
   res = df %>% 
-    mutate(ci_low = avg_trt_eff - 1.96*sd_ate,
-         ci_high = avg_trt_eff + 1.96*sd_ate,
+    mutate(ci_low = avg_trt_eff - 1.96*sd(avg_trt_eff),
+         ci_high = avg_trt_eff + 1.96*sd(avg_trt_eff),
          covered = case_when(
            ci_low <= beta1 & ci_high >= beta1 ~ 1,
                                          TRUE ~ 0
@@ -322,8 +322,8 @@ cvg_rate <- function(df){
 
 cvg_plot <- function(df){
   res = df %>% 
-    mutate(ci_low = avg_trt_eff - 1.96*sd_ate,
-         ci_high = avg_trt_eff + 1.96*sd_ate,
+    mutate(ci_low = avg_trt_eff - 1.96*sd(avg_trt_eff),
+         ci_high = avg_trt_eff + 1.96*sd(avg_trt_eff),
          covered = case_when(
            ci_low <= beta1 & ci_high >= beta1 ~ 1,
                                          TRUE ~ 0
@@ -343,6 +343,6 @@ cvg_plot(boot_result)
 ```
 
 ```{r output}
-save(boot_result, file = "./continuous_simulation_setting/continuous_test.RData")
+save(boot_result, file = "./continuous_simulation_setting/continuous_big_med_pos_clt.RData")
 ```
 
