@@ -5,7 +5,7 @@ date: "2/16/2022"
 output: pdf_document
 ---
 
-```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
 library(tidyverse)
 library(simstudy)
 library(MatchIt)
@@ -42,10 +42,7 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete   = scale_fill_viridis_d
 ```
-
-## Generating Covariates and Finding Coefficients in Propensity Model
-
-```{r covariate coef function}
+```{r covariate coef function, eval = FALSE, include = FALSE}
 set.seed(100)
 covariate_coef <- function(desired_prop, cov_df) {
    
@@ -95,10 +92,7 @@ covariate_coef <- function(desired_prop, cov_df) {
             desired_coef_L1, desired_coef_L2))#, desired_coef_L3))
 }
 ```
-
-## Generating 100 Sub-Populations
-
-```{r sub-pop generation}
+```{r sub-pop generation, eval = FALSE, include = FALSE}
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
 generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
@@ -149,8 +143,13 @@ generate_no_boot_data <- function(n, size = 5000, seeds = seed_vec) {
   return(df)
 }
 
-ate_true = 0.15
+# ate_true = 0.15
 no_boot_list <- generate_no_boot_data(100)
+```
+
+## Generating 100 Samples from Our Population
+```{r calling data gen script}
+source("./shared_code/data_gen_continuous.R")
 ```
 
 Let's take a look at one of our "no-boot" aka sub-population data sets.
@@ -158,10 +157,9 @@ Let's take a look at one of our "no-boot" aka sub-population data sets.
 ```{r one sub-pop initial analysis}
 no_boot_df1 <- no_boot_list[[1]]
 
-sum(no_boot_df1$A) / nrow(no_boot_df1) # similar to 0.14
+sum(no_boot_df1$A) / nrow(no_boot_df1) # similar to desired_prop?
 hist(no_boot_df1$Y, breaks = 100) # continuous distribution of outcome
 ```
-
 
 ## Implementing Nearest-Neighbor Matching
 
@@ -173,12 +171,12 @@ matched_df <- list()
 
 for (i in 1:length(df)) {
   
-  matched <- matchit(A ~ L1 + L2 + L3, 
-                          data = df[[i]], 
-                          distance = "glm", 
-                          link = "logit",
-                          method = "nearest", 
-                          ratio = 1) # perform NNM
+  matched <- matchit(A ~ L2 + L3, 
+                     data = df[[i]], 
+                     distance = "glm", 
+                     link = "logit",
+                     method = "nearest", 
+                     ratio = 1) # perform NNM
   
   matched_df[[i]] <- match.data(matched, distance = "ps")
 }
@@ -223,7 +221,7 @@ outcome_model_list <- function(list) {
 
 seed_vec_2 <- rnorm(100000, mean = 0, sd = 10000) %>% round(0) %>% unique()
 
-simple_boot <- function(df, n, size = 500, seeds = seed_vec_2){
+simple_boot <- function(df, n, size = m_boot, seeds = seed_vec_2){
   boots <- list()
   pb2$tick()
   for (i in 1:n) {
@@ -246,7 +244,7 @@ pb3 <- progress_bar$new(format = "performing glm... [:bar]", total = nrow(matche
 boot_tib <- 
   matched_tib %>% 
   mutate(
-    boots = map(.x = data, ~simple_boot(.x, n = 1000))
+    boots = map(.x = data, ~simple_boot(.x, n = n_sample * desired_prop))
     ) %>%
   mutate(coef = map(.x = boots, ~outcome_model_list(.x)))
 ```
@@ -308,8 +306,8 @@ cvg_rate <- function(df){
     mutate(ci_low = avg_trt_eff - 1.96*sd_ate,
          ci_high = avg_trt_eff + 1.96*sd_ate,
          covered = case_when(
-           ci_low <= ate_true & ci_high >= ate_true ~ 1,
-                                               TRUE ~ 0
+           ci_low <= beta1 & ci_high >= beta1 ~ 1,
+                                         TRUE ~ 0
          ))
   
   return(sum(res$covered) / nrow(res))
@@ -320,15 +318,15 @@ cvg_plot <- function(df){
     mutate(ci_low = avg_trt_eff - 1.96*sd_ate,
          ci_high = avg_trt_eff + 1.96*sd_ate,
          covered = case_when(
-           ci_low <= ate_true & ci_high >= ate_true ~ 1,
-                                               TRUE ~ 0
+           ci_low <= beta1 & ci_high >= beta1 ~ 1,
+                                         TRUE ~ 0
          ))
   
   plot = res %>% 
     ggplot(aes(x = avg_trt_eff, y = seq)) +
     geom_point() +
     geom_errorbar(aes(xmin = ci_low, xmax = ci_high)) +
-    geom_vline(xintercept = ate_true, linetype = "dashed")
+    geom_vline(xintercept = beta1, linetype = "dashed")
   
   return(plot)
 }
@@ -336,3 +334,8 @@ cvg_plot <- function(df){
 cvg_rate(boot_result)
 cvg_plot(boot_result)
 ```
+
+```{r output}
+save(boot_result, file = "./continuous_simulation_setting/continuous_test.RData")
+```
+
