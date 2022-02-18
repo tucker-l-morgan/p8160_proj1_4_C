@@ -29,6 +29,36 @@ for (i in 1:length(df)) {
 matched_tib <-
   tibble(data = matched_df)
 
+# finding the empirical estimates for all the matched data sets. 
+#########################################
+outcome_model_df <- function(df) {
+  pb1$tick()
+    mod <- glm(Y ~ A + ps, 
+               data = df, 
+               weights = weights,
+               family = "binomial"
+               ) %>% 
+      summary()
+    coefs <- mod$coefficients[2,1:2]
+    tib_coef <- tibble(estimate = coefs[1], se = coefs[2])
+    return(tib_coef)
+}
+
+# running glm function
+# adding progress bar for sanity
+pb1 <- progress_bar$new(format = "glming... [:bar] :percent eta: :eta", total = nrow(matched_tib))
+binary_empirical_mean_se <- 
+  matched_tib %>% 
+  mutate(
+    outcoef = map(.x = data, ~outcome_model_df(.x))
+    ) %>% 
+  unnest(cols = outcoef) %>%  # preparing dataset to get estimates
+  select(estimate, se)  %>% 
+  summarize(empircal_se = sd(estimate), 
+            empircal_mean = mean(estimate))
+
+##################################
+
 # ### function to iterate glm over a list, to be used in purr:map ###
 # returns tibble of parameter estimates and standard errors.
 
