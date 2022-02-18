@@ -105,6 +105,7 @@ simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = se
 }
 
 # adding progress bars for sanity
+
 pb2 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
                         total = length(df))
 pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
@@ -127,15 +128,95 @@ boot_estimates <-
   unnest(ATE)
 ```
 
-### Summary of 1000 bootstrap of 100 no boot
+### Simple Boot Results
 
 ```{r}
-boot_result <-
+simple_boot_result <-
   boot_estimates %>% 
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
             ci_lower = ATE - qnorm(0.025)*sd_ATE,
-            ci_lower = ATE - qnorm(0.025)*sd_ATE)
+            ci_upper = ATE - qnorm(0.025)*sd_ATE,
+            covered = ci_lower <= 0.767 & 0.767 <= ci_upper,
+            boot_type = 0,
+            scenario = "test"
+            )
 ```
+
+## Complex Bootstrap
+
+### Writing Bootstrap Function
+
+```{r}
+generate_boots <- function(df, iter = 100, seeds = seed_vec){
+  
+  pb3$tick()
+  boot_samples <- list()
+  matched_boot_df <- list()
+  boot_results <- tibble()
+  
+    for (i in 1:iter) {
+      set.seed(seeds[[i]])
+      
+      boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
+      
+      matched <- matchit(A ~ L2 + L3, data = boot_samples[[i]], 
+                         distance = "glm", link = "logit",
+                         method = "nearest", ratio = 1)
+      
+      matched_boot_df[[i]] <- match.data(matched, distance = "ps")
+    }
+
+  return(matched_boot_df)
+}
+```
+
+
+### Run Complex Bootstrap
+
+```{r}
+nb_tib <- tibble(
+  seq = seq(1, length(no_boot_list)),
+  nb = no_boot_list
+  )
+
+pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+                        total = length(nb_tib$nb))
+booted_tib <- nb_tib %>% 
+  mutate(
+   complex_boot = map(.x = nb, ~generate_boots(.x))
+)
+
+pb3 <- progress_bar$new(format = "calculating outcomes.. [:bar] :percent eta: :eta",
+                        total = length(nb_tib$nb))
+result_list <- booted_tib %>% 
+  mutate(
+  outcomes = map(.x = complex_boot, ~outcome_model_list(.x))
+  )
+
+complex_boot_estimates <- result_list %>% unnest(outcomes)
+
+complex_boot_result <-
+  complex_boot_estimates %>% 
+  group_by(seq) %>% 
+  summarize(ATE = mean(difference), 
+            sd_ATE = sd(difference),
+            ci_lower = ATE - qnorm(0.025)*sd_ATE,
+            ci_upper = ATE - qnorm(0.025)*sd_ATE,
+            covered = ci_lower <= 0.767 & 0.767 <= ci_upper,
+            boot_type = 1,
+            scenario = "test"
+            )
+```
+
+## Put it All Together
+
+```{r}
+binary_test <- bind_rows(simple_boot_result, complex_boot_result) 
+
+save(binary_test, "./output_data/binary_test.RData")
+```
+
+
 

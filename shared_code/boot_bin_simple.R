@@ -137,11 +137,15 @@ boot_estimates <-
 
 ### Summary of 1000 bootstrap of 100 no boot
 
-boot_result <-
+simple_boot_result <-
   boot_estimates %>% 
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
             ci_lower = ATE - qnorm(0.025)*sd_ATE,
-            ci_lower = ATE - qnorm(0.025)*sd_ATE)
+            ci_upper = ATE - qnorm(0.025)*sd_ATE,
+            covered = ci_lower <= 0.767 & 0.767 <= ci_upper,
+            boot_type = 0,
+            scenario = "test"
+  )
 
