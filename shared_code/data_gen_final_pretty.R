@@ -15,16 +15,16 @@ set.seed(1)
 
 # here is all the decided upon parameters 
 
-desired_prop = 0.2 # 0.1, 0.2, 0.3 (AKA alpha0)
+desired_prop = 0.2    # 0.1, 0.2, 0.3 (AKA alpha0)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
 beta0    = 0
-beta1    = 0.75 #1.25
+beta1    = 0.75       # 0.75, 1.25
 beta2    = log(1.75)
 beta3    = log(1.25)
-m_sample = 100
-m_boot   = 500
-n_sample = 10000 # 1000
+m_sample = 100        # 100
+m_boot   = 500        # 500
+n_sample = 10000      # 1000, 10000
 
 
 seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
