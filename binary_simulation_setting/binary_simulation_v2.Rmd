@@ -17,7 +17,7 @@ library(cowplot)
 ```
 
 ```{r}
-source('./shared_code/data_gen_final_pretty.R')
+source('./shared_code/data_gen_binary.R')
 ```
 
 ```{r old data gen function, eval = FALSE, include = FALSE}
