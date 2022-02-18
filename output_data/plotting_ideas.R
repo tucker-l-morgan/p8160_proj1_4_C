@@ -21,14 +21,14 @@ df_plot <- tibble(
                0.01, 0.02, 0.05))
 # plot the point plot
 ggplot(df_plot, aes(x=bias, y=treat_rate, color=Method)) + 
- geom_point(position=position_dodge(0.3))+
- geom_errorbar(aes(xmin=bias-sd_bias, xmax=bias+sd_bias), width=.2,
+  geom_point(position=position_dodge(0.3))+
+  geom_errorbar(aes(xmin=bias-sd_bias, xmax=bias+sd_bias), width=.2,
                position=position_dodge(0.3)) +
- #theme(legend.position="none") +
- geom_vline(xintercept=0, linetype="dashed", color = "black") +
- labs(
+  #theme(legend.position="none") +
+  geom_vline(xintercept=0, linetype="dashed", color = "black") +
+  labs(
    title = "Bias and Bias Standard Error rate of Simulations", 
    y = "Treatment Rate",
    x = "Bias"
- )+theme_bw()
+  )+theme_bw()
 
