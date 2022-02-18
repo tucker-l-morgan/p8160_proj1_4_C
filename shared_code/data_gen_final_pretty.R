@@ -51,9 +51,6 @@ generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_ve
     
     pre_data <- defData(pre_data, varname = "L3", formula = "0", variance = 1,
                 dist = "normal")
-    
-    pre_data <- defData(pre_data, varname = "beta_error", formula = "0", variance = 1,
-                dist = "normal")
 
     alpha0 = log(desired_prop/(1 - desired_prop))
 
