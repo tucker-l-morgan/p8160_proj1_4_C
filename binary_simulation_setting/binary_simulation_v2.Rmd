@@ -278,8 +278,8 @@ CI_coverage_rate <- function(nboot){
   
   for (i in 1:nboot) {
      boot_CI_ATE[[i]] <- 
-       c(boot_result$mean_ATE[i] + qnorm(0.025)*sd(boot_result$mean_ATE),
-         boot_result$mean_ATE[i] + qnorm(0.975)*sd(boot_result$mean_ATE))    
+       c(boot_result$mean_ATE[i] + qnorm(0.025)*boot_result$sd_mean_ATE[i],
+         boot_result$mean_ATE[i] + qnorm(0.975)*boot_result$sd_mean_ATE[i])    
     
       count_true[i] <- 
          between(0.15, range(boot_CI_ATE[[i]])[1], range(boot_CI_ATE[[i]])[2]) 
@@ -299,13 +299,4 @@ CI_coverage_rate(100)
 
 ```
 
-
-
-## Sample mean central limit theorem to build confidence interval
-
-```{r}
-(qnorm(0.025) * sd(boot_result$mean_ATE)) + 0.15 #Lower CI range
- 
-(qnorm(0.975) * sd(boot_result$mean_ATE)) + 0.15 #Upper CI range
-```
 
