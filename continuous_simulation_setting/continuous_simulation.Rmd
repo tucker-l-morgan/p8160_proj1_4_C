@@ -343,6 +343,6 @@ cvg_plot(boot_result)
 ```
 
 ```{r output}
-save(boot_result, file = "./continuous_simulation_setting/continuous_test.RData")
+save(boot_result, file = "./continuous_simulation_setting/continuous_big_med_pos.RData")
 ```
 
