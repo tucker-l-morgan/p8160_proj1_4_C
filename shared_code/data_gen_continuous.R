@@ -14,16 +14,16 @@ all_scenarios <- tibble(
 )
 
 # list of parameters
-desired_prop = 0.1 # 0.1, 0.2, 0.3 (AKA alpha0)
+desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
 beta0    = 0
-beta1    = 1       # 1, -1
+beta1    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta1)
 beta2    = 2
 beta3    = 1
-m_sample = 10     # 100
+m_sample = 100     # 100
 m_boot   = 500     # 500
-n_sample = 1000   # 1000, 10000
+n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
 # creating vector of seeds from which to generate m samples
 seed_vec <- runif(100000, min = 100, max = 99999999) %>% round(0) %>% unique()
