@@ -13,7 +13,7 @@ beep()
 
 ### Set Parameters
 
-scenario_id <- 13
+scenario_id <- 6
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -156,6 +156,8 @@ simple_boot_result <-
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
+            perc_25 = quantile(difference, probs = 0.025),
+            perc_975 = quantile(difference, probs = 0.975),
             ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
@@ -199,7 +201,6 @@ generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
 
 beep()
 
-
 ### Run Complex Bootstrap
 
 nb_tib <- tibble(
@@ -228,6 +229,8 @@ complex_boot_result <-
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
+            perc_25 = quantile(difference, probs = 0.025),
+            perc_975 = quantile(difference, probs = 0.975),
             ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
