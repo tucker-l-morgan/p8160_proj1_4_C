@@ -1,0 +1,172 @@
+---
+title: "Result Graph Summary"
+author: "Hun"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r}
+library(kableExtra)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+
+Jimmy needs to give me the right esitamte of effect right now here is what I am using 
+```{r}
+smaller_true_ATE <- 0.15
+bigger_true_ATE <- 0.3
+```
+
+
+```{r}
+load("./output_data/binary_scen_1.RData")
+load("./output_data/binary_scen_2.RData")
+load("./output_data/binary_scen_3.RData")
+load("./output_data/binary_scen_4.RData")
+load("./output_data/binary_scen_5.RData")
+load("./output_data/binary_scen_6.RData")
+load("./output_data/binary_scen_15.RData")
+load("./output_data/binary_scen_16.RData")
+load("./output_data/binary_scen_17.RData")
+load("./output_data/binary_scen_18.RData")
+```
+
+```{r}
+view(binary_scen_1)
+```
+
+
+```{r}
+all_scenarios <- tibble(
+  id = c(1:18),
+  n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
+  beta1 = rep(c(0.767, 1.587),9),
+  beta0 = rep(c(0.422, 0.873, 0.46, 0.952, 0.499, 1.032), 3)
+)
+```
+
+
+Get all the odd numbers $\beta_1 = 0.767$
+```{r}
+binary_final_odd <- binary_scen_1 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.1) %>% 
+  bind_rows(binary_scen_3 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_5 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.3)) %>%
+ # rbind(binary_scen_13 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.1)) %>%
+ bind_rows(binary_scen_15 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_17 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.3))
+
+binary_final_odd <- binary_final_odd %>% 
+  mutate(
+    ATE_bias = ATE - smaller_true_ATE,
+    empirical_bias = empirical_mean - smaller_true_ATE,
+    boot_type = ifelse(boot_type == 0, "Simple", "Complex")
+  ) 
+```
+
+Get all the even numbers $\beta_1 = 1.587$
+```{r}
+binary_final_even <- binary_scen_2 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.1) %>% 
+  bind_rows(binary_scen_4 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_6 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.3)) %>%
+ # bind_rows(binary_scen_14 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.1)) %>%
+ bind_rows(binary_scen_16 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_18 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.3))
+ 
+
+binary_final_even <- binary_final_even %>% 
+  mutate(
+    ATE_bias = ATE - bigger_true_ATE,
+    empirical_bias = empirical_mean - bigger_true_ATE,
+    boot_type = ifelse(boot_type == 0, "Simple", "Complex")
+  ) 
+```
+
+
+```{r}
+binary_final <- binary_final_even %>% bind_rows(binary_final_odd)
+```
+
+```{r}
+binary_final %>% group_by(scenario) %>% 
+  summarise(E_Bias = mean(empirical_bias),
+            E_se = mean(empirical_se))
+```
+
+
+```{r}
+cr_df <-
+  binary_final %>%
+  group_by(scenario, boot_type) %>%
+  summarize(cr = (sum(covered) / 100) %>% round(digits = 3)) %>%
+  pivot_wider(names_from = boot_type, values_from = cr) %>% 
+  rename(S_CR = Simple, C_CR = Complex)
+
+```
+```{r}
+se_df <-
+  binary_final %>%
+  group_by(scenario, boot_type) %>%
+  summarize(se_ATE = sd(ATE) %>% round(digits = 3)) %>%
+  pivot_wider(names_from = boot_type, values_from = se_ATE) %>% 
+  rename(S_SE = Simple, C_SE = Complex)
+```
+
+
+```{r}
+bias_df <-
+  binary_final %>%
+  group_by(scenario, boot_type) %>%
+  summarize(bias = mean(ATE_bias) %>% round(digits = 3)) %>%
+  pivot_wider(names_from = boot_type, values_from = bias) %>% 
+  rename(S_Bias = Simple, C_Bias = Complex)
+
+```
+
+```{r}
+all_result <-
+  se_df %>% 
+  full_join(bias_df) %>% 
+  full_join(cr_df)
+
+all_result
+```
+
+```{r}
+all_result <- 
+  all_result %>% 
+  relocate(starts_with("S")) %>% 
+  relocate(scenario) %>%
+  rename(Scenario = scenario)
+ 
+all_result 
+```
+
+```{r}
+all_result["Scenario"] <- c("Large Sample, ATE = 0.15, p = 0.1", 
+                            "Large Sample, ATE = 0.30, p = 0.1",
+                            "Large Sample, ATE = 0.15, p = 0.2",
+                            "Large Sample, ATE = 0.30, p = 0.2",
+                            "Large Sample, ATE = 0.15, p = 0.3",
+                            "Large Sample, ATE = 0.30, p = 0.3",
+                            "Small Sample, ATE = 0.15, p = 0.2",
+                            "Small Sample, ATE = 0.30, p = 0.2",
+                            "Small Sample, ATE = 0.15, p = 0.3",
+                            "Small Sample, ATE = 0.30, p = 0.3")
+```
+
+```{r}
+all_result %>%
+  kbl() %>%
+  kable_classic("striped", full_width = F , html_font = "Cambria") %>%
+  column_spec(5, width = "5cm")  %>%
+  column_spec(1:7, border_left = T, border_right = T) %>%
+  add_header_above(c(" " = 1, "Simple" = 2, "Empirical(no boot)" = 2, "Complex" = 2))
+```
+
+
