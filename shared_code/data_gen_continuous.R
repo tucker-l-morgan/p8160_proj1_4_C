@@ -1,6 +1,6 @@
 # data gen file for continuous outcomes
 
-set.seed(1)
+set.seed(20220217)
 
 # set up R script should be run prior to this
 source("./shared_code/setup.R")
@@ -26,7 +26,7 @@ m_boot   = 500     # 500
 n_sample = 1000   # 1000, 10000
 
 # creating vector of seeds from which to generate m samples
-seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
+seed_vec <- runif(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
 
 # data gen function, continuous outcome
 generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_vec, 
