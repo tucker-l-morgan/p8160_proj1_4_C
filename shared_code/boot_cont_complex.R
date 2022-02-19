@@ -1,6 +1,6 @@
 # complex bootstrap function for continuous outcomes
 
-generate_boots <- function(df, iter = 100, seeds = seed_vec){
+generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
   pb3$tick()
   boot_samples <- list()
   matched_boot_df <- list()
@@ -47,7 +47,7 @@ pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", t
 
 # iter = 500 later
 
-result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x, iter = 100)))
+result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x, iter = m_boot)))
 
 fin_estimate_df <- 
   result_list %>% 
