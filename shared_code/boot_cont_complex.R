@@ -33,7 +33,9 @@ generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
   results <-
     tibble(
       ATE = mean(boot_ate$estimate),
-      sd_ATE = sd(boot_ate$estimate)
+      sd_ATE = sd(boot_ate$estimate),
+      perc_25 = quantile(boot_ate$estimate, probs = 0.025),
+      perc_975 = quantile(boot_ate$estimate, probs = 0.975)
     )
   
   return(results)
@@ -44,8 +46,6 @@ generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
 nb_tib <- tibble(nb = no_boot_list)
 
 pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", total = nrow(nb_tib))
-
-# iter = 500 later
 
 result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x, iter = m_boot)))
 
