@@ -7,26 +7,26 @@ source("./shared_code/setup.R")
 
 # a tibble of all scenarios to be tested
 all_scenarios <- tibble(
-  id = c(1:12),
-  n_sample = c(rep(1000, 6), rep(10000, 6)),
-  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
-  beta1 = rep(c(1, -1),6)
+  id = c(1:18),
+  n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
+  beta1 = rep(c(1, -1),9)
 )
 
 # list of parameters
-desired_prop = 0.1 # 0.1, 0.2, 0.3 (AKA alpha0)
+desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
 beta0    = 0
-beta1    = 1       # 1, -1
+beta1    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta1)
 beta2    = 2
 beta3    = 1
 m_sample = 100     # 100
 m_boot   = 500     # 500
-n_sample = 10000   # 1000, 10000
+n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
 # creating vector of seeds from which to generate m samples
-seed_vec <- runif(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
+seed_vec <- runif(100000, min = 100, max = 99999999) %>% round(0) %>% unique()
 
 # data gen function, continuous outcome
 generate_no_boot_data <- function(n = m_sample, size = n_sample, seeds = seed_vec, 

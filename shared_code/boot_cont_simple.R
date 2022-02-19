@@ -74,7 +74,7 @@ outcome_model_list <- function(list) {
 # ### input matched dataframe, output however many bootstrapped samples you want ###
 
 # now define function
-simple_boot <- function(df, n = m_boot, size = n_sample * desired_prop, seeds = seed_vec){
+simple_boot <- function(df, n = m_boot, size = df %>% pull(A) %>% sum(), seeds = seed_vec){
   boots <- list()
   pb2$tick()
   for (i in 1:n) {
