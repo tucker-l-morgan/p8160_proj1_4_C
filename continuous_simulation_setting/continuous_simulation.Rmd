@@ -5,7 +5,7 @@ date: "2/16/2022"
 output: pdf_document
 ---
 ```{r setting scenario}
-scenario_id = 15
+scenario_id = 16
 ```
 
 ## Generating 100 Samples from Our Population
@@ -41,7 +41,10 @@ source("./shared_code/boot_cont_simple.R")
 boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
-  summarize(ATE = mean(estimate), sd_ATE = sd(estimate))
+  summarize(ATE = mean(estimate),
+            sd_ATE = sd(estimate),
+            perc_2.5 = quantile(estimate, probs = 0.025),
+            perc_97.5 = quantile(estimate, probs = 0.975))
  
 fig1 <-
   boot_result %>%
@@ -139,6 +142,7 @@ cont_simple_df <-
          scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
+  relocate(-perc_2.5, - perc_97.5) %>% 
   tibble()
 
 cont_complex_df <- 
@@ -153,6 +157,7 @@ cont_complex_df <-
          scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
+  relocate(-perc_97.5, -perc_2.5) %>% 
   tibble() %>% 
   relocate(seq)
 

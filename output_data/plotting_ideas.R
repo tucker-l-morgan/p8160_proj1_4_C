@@ -18,7 +18,13 @@ df_plot <- tibble(
                0.01, 0.02, 0.05,
                0.01, 0.05, 0.08, 
                0.01, 0.01, 0.03, 
-               0.01, 0.02, 0.05))
+               0.01, 0.02, 0.05), 
+   cr = c(0.99, 0.8, 0.7,
+          0.9, 0.95, 0.8,
+          0.7, 0.99, 0.96,
+          0.76, 0.81, 0.67,
+          0.79,0.87, 0.91,
+          0.967, 0.98, 0.8))
 # plot the point plot
 ggplot(df_plot, aes(x=bias, y=treat_rate, color=Method)) + 
   geom_point(position=position_dodge(0.3))+
@@ -30,5 +36,17 @@ ggplot(df_plot, aes(x=bias, y=treat_rate, color=Method)) +
    title = "Bias and Bias Standard Error rate of Simulations", 
    y = "Treatment Rate",
    x = "Bias"
+  )+theme_bw()
+
+
+ggplot(df_plot, aes(x=cr, y=treat_rate, color=Method)) + 
+  geom_point(position=position_dodge(0.3))+
+  geom_vline(xintercept=0.9927, linetype="dashed", color = "black") +
+   geom_vline(xintercept=0.9072, linetype="dashed", color = "black") +
+   geom_vline(xintercept=0.95, linetype="dashed", color = "black") +
+  labs(
+   title = "Coverage Rates", 
+   y = "Treatment Rate",
+   x = "Coverage Rate"
   )+theme_bw()
 
