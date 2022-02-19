@@ -5,15 +5,23 @@ set.seed(1)
 # set up R script should be run prior to this
 source("./shared_code/setup.R")
 
+# a tibble of all scenarios to be tested
+all_scenarios <- tibble(
+  id = c(1:12),
+  n_sample = c(rep(1000, 6), rep(10000, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
+  beta1 = rep(c(1, -1),6)
+)
+
 # list of parameters
-desired_prop = 0.2 # 0.1, 0.2, 0.3 (AKA alpha0)
+desired_prop = 0.1 # 0.1, 0.2, 0.3 (AKA alpha0)
 alpha1   = log(1.25)
 alpha2   = log(1.75)
 beta0    = 0
 beta1    = 1       # 1, -1
 beta2    = 2
 beta3    = 1
-m_sample = 10     # 100
+m_sample = 100     # 100
 m_boot   = 500     # 500
 n_sample = 1000   # 1000, 10000
 
