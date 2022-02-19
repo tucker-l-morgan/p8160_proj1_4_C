@@ -4,6 +4,9 @@ author: "Tucker Morgan - tlm2152"
 date: "2/16/2022"
 output: pdf_document
 ---
+```{r setting scenario}
+scenario_id = 15
+```
 
 ## Generating 100 Samples from Our Population
 ```{r calling data gen script}
@@ -133,7 +136,7 @@ cont_simple_df <-
                                             TRUE ~ 0
          ),
          boot_type = c(0),
-         scenario_id = c(7), # this needs to be updated each run
+         scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
   tibble()
@@ -147,15 +150,24 @@ cont_complex_df <-
                                             TRUE ~ 0
          ),
          boot_type = c(1),
-         scenario_id = c(7), # this needs to be updated each run
+         scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
   tibble() %>% 
   relocate(seq)
 
-cont_df_scen_7 <- bind_rows(cont_simple_df, cont_complex_df) # change df name each run
-  
+to_combine_df <- bind_rows(cont_simple_df, cont_complex_df)
 
-save(cont_df_scen_7, file = "./output_data/continuous_scen_7.RData") # change object name and file name each run
+dataset_name <- paste0("cont_df_scen_", scenario_id)
+
+save_command <- paste0('save(', dataset_name, ", file = './output_data/", dataset_name, ".RData')")
+
+eval(parse(text = paste(dataset_name, "to_combine_df", sep = " <- ")), envir = .GlobalEnv)
+
+eval(parse(text = save_command))
+
+beep()
+
+#save(cont_df_scen_7, file = "./output_data/continuous_scen_7.RData") # change object name and file name each run
 ```
 
