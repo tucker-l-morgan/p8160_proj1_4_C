@@ -70,7 +70,7 @@ fin_estimate_df <-
 
 ## Confidence Intervals Coverage Rates
 
-```{r coverage rate calculation}
+```{r coverage rate calculation, echo = FALSE, include = FALSE}
 cvg_rate <- function(df){
   res = df %>% 
     mutate(ci_low = avg_trt_eff - 1.96*sd(avg_trt_eff),

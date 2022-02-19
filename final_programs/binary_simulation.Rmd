@@ -135,9 +135,9 @@ simple_boot_result <-
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
-            ci_lower = ATE - qnorm(0.025)*sd_ATE,
+            ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
-            covered = ci_lower <= 0.767 & 0.767 <= ci_upper,
+            covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 0,
             scenario = "test"
             )
@@ -201,9 +201,9 @@ complex_boot_result <-
   group_by(seq) %>% 
   summarize(ATE = mean(difference), 
             sd_ATE = sd(difference),
-            ci_lower = ATE - qnorm(0.025)*sd_ATE,
+            ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
-            covered = ci_lower <= 0.767 & 0.767 <= ci_upper,
+            covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 1,
             scenario = "test"
             )
@@ -213,6 +213,8 @@ complex_boot_result <-
 
 ```{r}
 binary_test <- bind_rows(simple_boot_result, complex_boot_result) 
+
+bin_df_
 
 save(binary_test, file = "./output_data/binary_test.RData")
 ```
