@@ -45,8 +45,6 @@ nb_tib <- tibble(nb = no_boot_list)
 
 pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta", total = nrow(nb_tib))
 
-# iter = 500 later
-
 result_list <- nb_tib %>% mutate(res_tib = map(.x = nb, ~generate_boots(.x, iter = m_boot)))
 
 fin_estimate_df <- 
