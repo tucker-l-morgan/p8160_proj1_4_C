@@ -15,7 +15,7 @@ beep()
 ### Set Parameters
 
 ```{r}
-scenario_id <- 3
+scenario_id <- 5
 
 all_scenarios <- tibble(
   id = c(1:12),
@@ -183,6 +183,7 @@ beep()
 
 ```{r}
 rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
+beep()
 ```
 
 
@@ -252,7 +253,7 @@ complex_boot_result <-
             boot_type = 1,
             scenario = scenario_id
             )
-beep("fanfare")
+beep()
 ```
 
 ## Put it All Together
@@ -271,7 +272,7 @@ eval(parse(text = paste(dataset_name, to_output_bin_ds, sep = " <- ")), envir = 
 eval(parse(text = save_command))
 
 
-beep()
+beep("fanfare")
 ```
 
 
