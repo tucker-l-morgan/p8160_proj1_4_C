@@ -1,28 +1,26 @@
----
-title: "Binary Simulation"
-author: "Waveley Qiu"
-date: "2022-02-18"
-output: pdf_document
----
+# #####
+#
+# Binary Simulation RScript
+#
+# Waveley Qiu
+# 
+# ###
 
-```{r setup, include=FALSE}
 source("./shared_code/setup.R")
 beep()
-```
 
 ## Call Function to Generate No Boot Data
 
 ### Set Parameters
 
-```{r}
-scenario_id <- 5
+scenario_id <- 13
 
 all_scenarios <- tibble(
   id = c(1:18),
   n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
   desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
-  beta1 = rep(c(0.767, 1.25),9),
-  beta0 = rep(c(0.422, 0.422, 0.46, 0.46, 0.499, 0.499), 3)
+  beta1 = rep(c(0.767, 1.587),9),
+  beta0 = rep(c(0.422, 0.873, 0.46, 0.952, 0.499, 1.032), 3)
 )
 
 desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
@@ -37,20 +35,14 @@ m_boot   = 500
 n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
 beep()
-```
 
-
-```{r noboot-gen, message=FALSE, warning=FALSE}
 source("./shared_code/data_gen_binary.R")
 beep()
-```
-
 
 ## Simple Bootstrap
 
 ### Nearest Neighbors Matching
 
-```{r}
 df <- no_boot_list
 pb4 <- progress_bar$new(format = "nearest neighbor matching... [:bar] :percent eta: :eta",
                         total = length(df))
@@ -60,22 +52,20 @@ matched_df <- list()
 for (i in 1:length(df)) {
   pb4$tick()
   matched <- matchit(A ~  L2 + L3, 
-                          data = df[[i]], 
-                          distance = "glm", 
-                          link = "logit",
-                          method = "nearest", 
-                          ratio = 1) # perform NNM
+                     data = df[[i]], 
+                     distance = "glm", 
+                     link = "logit",
+                     method = "nearest", 
+                     ratio = 1) # perform NNM
   
   matched_df[[i]] <- match.data(matched, distance = "ps") 
-
+  
 }
 beep()
-```
 
 ### Simple Bootstrap
 
 #### Create SBS Function
-```{r}
 # creating the tibble to apply map function
 matched_tib <-
   tibble(data = matched_df)
@@ -113,25 +103,23 @@ outcome_model_list <- function(list) {
     boots[i, "mean0"] <- mean(sampl_all_untreated$pred.y)
     boots[i, "difference"] <- boots[i, "mean1"] - boots[i, "mean0"]
   }
-    return(boots)
+  return(boots)
 }
 beep()
-```
 
 
 #### Running SBS
 
-```{r}
 simple_boot <- function(df, n = m_boot, size = df %>% pull(A) %>% sum(), seeds = seed_vec){
   boots <- list()
   pb2$tick()
   for (i in 1:n) {
-  set.seed(seeds[i])
-  boots[[i]] <- 
-    df %>% 
-    filter(subclass %in% sample(levels(subclass), 
-                                size, 
-                                replace =  TRUE))
+    set.seed(seeds[i])
+    boots[[i]] <- 
+      df %>% 
+      filter(subclass %in% sample(levels(subclass), 
+                                  size, 
+                                  replace =  TRUE))
   }
   return(boots)
 }
@@ -148,7 +136,7 @@ boot_tib <-
   matched_tib %>% 
   mutate(
     boots = map(.x = data, ~simple_boot(.x))
-    ) %>%
+  ) %>%
   mutate(ATE = map(.x = boots, ~outcome_model_list(.x)))
 
 ## Unnesting bootstrap coefficients
@@ -160,11 +148,9 @@ boot_estimates <-
   unnest(ATE)
 
 beep()
-```
 
 ### Simple Boot Results
 
-```{r}
 simple_boot_result <-
   boot_estimates %>% 
   group_by(seq) %>% 
@@ -175,23 +161,20 @@ simple_boot_result <-
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 0,
             scenario = scenario_id
-            )
+  )
 beep()
-```
 
 ### Intermediate Step, Remove Obsolete Datasets
 
-```{r}
 rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
 beep()
-```
+
 
 
 ## Complex Bootstrap
 
 ### Writing Bootstrap Function
 
-```{r}
 generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
   
   pb3$tick()
@@ -199,45 +182,43 @@ generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
   matched_boot_df <- list()
   boot_results <- tibble()
   
-    for (i in 1:iter) {
-      set.seed(seeds[[i]])
-      
-      boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
-      
-      matched <- matchit(A ~ L2 + L3, data = boot_samples[[i]], 
-                         distance = "glm", link = "logit",
-                         method = "nearest", ratio = 1)
-      
-      matched_boot_df[[i]] <- match.data(matched, distance = "ps")
-    }
-
+  for (i in 1:iter) {
+    set.seed(seeds[[i]])
+    
+    boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
+    
+    matched <- matchit(A ~ L2 + L3, data = boot_samples[[i]], 
+                       distance = "glm", link = "logit",
+                       method = "nearest", ratio = 1)
+    
+    matched_boot_df[[i]] <- match.data(matched, distance = "ps")
+  }
+  
   return(matched_boot_df)
 }
 
 beep()
-```
 
 
 ### Run Complex Bootstrap
 
-```{r}
 nb_tib <- tibble(
   seq = seq(1, length(no_boot_list)),
   nb = no_boot_list
-  )
+)
 
 pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
                         total = length(nb_tib$nb))
 booted_tib <- nb_tib %>% 
   mutate(
-   complex_boot = map(.x = nb, ~generate_boots(.x))
-)
+    complex_boot = map(.x = nb, ~generate_boots(.x))
+  )
 
 pb3 <- progress_bar$new(format = "calculating outcomes.. [:bar] :percent eta: :eta",
                         total = length(nb_tib$nb))
 result_list <- booted_tib %>% 
   mutate(
-  outcomes = map(.x = complex_boot, ~outcome_model_list(.x))
+    outcomes = map(.x = complex_boot, ~outcome_model_list(.x))
   )
 
 complex_boot_estimates <- result_list %>% unnest(outcomes)
@@ -252,13 +233,11 @@ complex_boot_result <-
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 1,
             scenario = scenario_id
-            )
+  )
 beep()
-```
 
 ## Put it All Together
 
-```{r}
 
 to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result)
 
@@ -273,7 +252,6 @@ eval(parse(text = paste(output_dataset_name, "to_output_bin_ds", sep = " <- ")))
 eval(parse(text = save_command))
 
 beep("fanfare")
-```
 
 
 
