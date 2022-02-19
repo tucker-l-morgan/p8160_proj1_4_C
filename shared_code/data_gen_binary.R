@@ -4,20 +4,7 @@
 
 set.seed(20220217)
 
-
 # here is all the decided upon parameters 
-
-desired_prop = 0.1 # 0.2, 0.3 (AKA alpha0)
-alpha1   = log(1.25)
-alpha2   = log(1.75)
-beta0    = 0.422 #given that true ATE = 0.15
-beta1    = 0.767 #given that true ATE = 0.15
-beta2    = log(1.75)
-beta3    = log(1.25)
-m_sample = 100
-m_boot   = 500
-n_sample = 1000 # 1000
-
 
 seed_vec <- runif(100000, min = 100, max = 99999999) %>% round(0) %>% unique()
 
@@ -93,14 +80,59 @@ no_boot_list <-
   )
 
 
+################ calculating empirical ##################
+
+df <- no_boot_list
+matched_df <- list()
+
+for (i in 1:length(df)) {
+  
+  matched <- matchit(A ~ L2 + L3, 
+                     data = df[[i]], 
+                     distance = "glm", 
+                     link = "logit",
+                     method = "nearest", 
+                     ratio = 1) # perform NNM
+  
+  matched_df[[i]] <- match.data(matched, distance = "ps")
+}
+
+outcome_model_df <- function(df) {
+  pb1$tick()
+  mod <- glm(Y ~ A + ps, 
+             data = df, 
+             weights = weights,
+             family = "binomial"
+  ) %>% 
+    summary()
+  coefs <- mod$coefficients[2,1:2]
+  tib_coef <- tibble(estimate = coefs[1], se = coefs[2])
+  return(tib_coef)
+}
+
+# running glm function
+# adding progress bar for sanity
+pb1 <- progress_bar$new(format = "glming... [:bar] :percent eta: :eta", total = length(matched_df))
+binary_empirical_mean_se <- 
+  tibble(data = matched_df) %>%
+  mutate(
+    outcoef = map(.x = data, ~outcome_model_df(.x))
+  ) %>% 
+  unnest(cols = outcoef) %>%  # preparing dataset to get estimates
+  select(estimate, se)  %>% 
+  summarize(empirical_mean = mean(estimate),
+            empirical_se = sd(estimate))
+
+
+###################### end empirical ####################### 
 
 # creating a data frame will all the senarios 
 
 
-all_scenarios <- tibble(
-  id = c(1:12),
-  n_sample = c(rep(1000, 6), rep(10000, 6)),
-  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
-  beta1 = rep(c(0.767, 1.25),6)
-)
+# all_scenarios <- tibble(
+#  id = c(1:12),
+#  n_sample = c(rep(1000, 6), rep(10000, 6)),
+#  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
+#  beta1 = rep(c(0.767, 1.25),6)
+#)
 

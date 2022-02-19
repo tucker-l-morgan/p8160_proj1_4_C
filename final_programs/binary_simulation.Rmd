@@ -7,13 +7,44 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 source("./shared_code/setup.R")
+beep()
 ```
 
 ## Call Function to Generate No Boot Data
 
+### Set Parameters
+
+```{r}
+scenario_id <- 3
+
+all_scenarios <- tibble(
+  id = c(1:12),
+  n_sample = c(rep(1000, 6), rep(10000, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
+  beta1 = rep(c(0.767, 1.25),6),
+  beta0 = rep(c(0.422, 0.422, 0.46, 0.46, 0.499, 0.499), 2)
+)
+
+desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
+alpha1   = log(1.25)
+alpha2   = log(1.75)
+beta0    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta0)
+beta1    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta1)
+beta2    = log(1.75)
+beta3    = log(1.25)
+m_sample = 100
+m_boot   = 500
+n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
+
+beep()
+```
+
+
 ```{r noboot-gen, message=FALSE, warning=FALSE}
 source("./shared_code/data_gen_binary.R")
+beep()
 ```
+
 
 ## Simple Bootstrap
 
@@ -21,7 +52,7 @@ source("./shared_code/data_gen_binary.R")
 
 ```{r}
 df <- no_boot_list
-pb4 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+pb4 <- progress_bar$new(format = "nearest neighbor matching... [:bar] :percent eta: :eta",
                         total = length(df))
 
 matched_df <- list()
@@ -38,6 +69,7 @@ for (i in 1:length(df)) {
   matched_df[[i]] <- match.data(matched, distance = "ps") 
 
 }
+beep()
 ```
 
 ### Simple Bootstrap
@@ -83,6 +115,7 @@ outcome_model_list <- function(list) {
   }
     return(boots)
 }
+beep()
 ```
 
 
@@ -107,7 +140,7 @@ simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = se
 
 pb2 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
                         total = length(df))
-pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
+pb3 <- progress_bar$new(format = "outcome modeling... [:bar] :percent eta: :eta",
                         total = length(df))
 
 # creating booted tibbles, applying functions through purr:map.
@@ -125,6 +158,8 @@ boot_estimates <-
   mutate(seq = seq(1:nrow(boot_tib))) %>% 
   select(ATE, seq) %>% 
   unnest(ATE)
+
+beep()
 ```
 
 ### Simple Boot Results
@@ -139,9 +174,17 @@ simple_boot_result <-
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 0,
-            scenario = "test"
+            scenario = scenario_id
             )
+beep()
 ```
+
+### Intermediate Step, Remove Obsolete Datasets
+
+```{r}
+rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
+```
+
 
 ## Complex Bootstrap
 
@@ -169,6 +212,8 @@ generate_boots <- function(df, iter = 100, seeds = seed_vec){
 
   return(matched_boot_df)
 }
+
+beep()
 ```
 
 
@@ -205,18 +250,28 @@ complex_boot_result <-
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
             covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 1,
-            scenario = "test"
+            scenario = scenario_id
             )
+beep("fanfare")
 ```
 
 ## Put it All Together
 
 ```{r}
-binary_test <- bind_rows(simple_boot_result, complex_boot_result) 
 
-bin_df_
+to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result) 
+to_output_bin_ds <- bind_cols(to_output_bin_ds, binary_empirical_mean_se)
 
-save(binary_test, file = "./output_data/binary_test.RData")
+dataset_name <- paste0("bin_df_scen_", scenario_id)
+
+save_command <- paste0('save(', dataset_name, ", file = './output_data/", dataset_name, ".RData')")
+
+eval(parse(text = paste(dataset_name, to_output_bin_ds, sep = " <- ")), envir = .GlobalEnv)
+
+eval(parse(text = save_command))
+
+
+beep()
 ```
 
 
