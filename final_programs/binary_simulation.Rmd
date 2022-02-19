@@ -9,7 +9,6 @@ output: pdf_document
 source("./shared_code/setup.R")
 ```
 
-
 ## Call Function to Generate No Boot Data
 
 ```{r noboot-gen, message=FALSE, warning=FALSE}
@@ -215,7 +214,7 @@ complex_boot_result <-
 ```{r}
 binary_test <- bind_rows(simple_boot_result, complex_boot_result) 
 
-save(binary_test, "./output_data/binary_test.RData")
+save(binary_test, file = "./output_data/binary_test.RData")
 ```
 
 
