@@ -10,18 +10,16 @@ library(tidyverse)
 library(simstudy)
 library(MatchIt)
 library(dplyr)
-library(progress) 
+library(progress)
 library(ggpmisc)
 library(cowplot)
 
 ```
 
-```{r}
-source('./shared_code/data_gen_binary.R')
-```
 
-```{r old data gen function, eval = FALSE, include = FALSE}
-seed_vec <- rnorm(100000, mean = 0, sd = 100) %>% round(0) %>% unique()
+```{r}
+source('./shared_code/data_gen_final_pretty.R')
+```
 
 ## Function for finding the optimal combintion of coefficits for covariates to have desired proportion of the treated.
 
@@ -71,6 +69,9 @@ no_boot_bias %>%
   plot.title = element_text(color = "blue", size = 11, face = "bold"),
   plot.caption = element_text(color = "orange", face = "italic")
   )
+
+
+
 ```
 
 
@@ -157,7 +158,9 @@ outcome_model_list <- function(list) {
 
 # now, define function
 
-simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = seed_vec){
+seed_vec_2 <- rnorm(100000, mean = 0, sd = 10000) %>% round(0) %>% unique()
+
+simple_boot <- function(df, n, size = 500, seeds = seed_vec_2){
   boots <- list()
   pb2$tick()
   for (i in 1:n) {
@@ -171,6 +174,7 @@ simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = se
   return(boots)
 }
 
+
 # adding progress bars for sanity
 pb2 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
                         total = length(df))
@@ -181,10 +185,12 @@ pb3 <- progress_bar$new(format = "bootstrapping... [:bar] :percent eta: :eta",
 boot_tib <- 
   matched_tib %>% 
   mutate(
-    boots = map(.x = data, ~simple_boot(.x))
+    boots = map(.x = data, ~simple_boot(.x, n = 100))
     ) %>%
   mutate(ATE = map(.x = boots, ~outcome_model_list(.x)))
+
 ```
+
 
 ## Unnesting bootstrap coefficients
 ```{r}
@@ -288,6 +294,9 @@ CI_coverage_rate <- function(nboot){
 }
 
 CI_coverage_rate(100)
+
+
+
 ```
 
 
