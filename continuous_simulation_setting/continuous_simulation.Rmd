@@ -5,7 +5,7 @@ date: "2/16/2022"
 output: pdf_document
 ---
 ```{r setting scenario}
-scenario_id = 16
+scenario_id = 14
 ```
 
 ## Generating 100 Samples from Our Population
@@ -43,8 +43,8 @@ boot_result <-
   group_by(seq) %>%
   summarize(ATE = mean(estimate),
             sd_ATE = sd(estimate),
-            perc_2.5 = quantile(estimate, probs = 0.025),
-            perc_97.5 = quantile(estimate, probs = 0.975))
+            perc_25 = quantile(estimate, probs = 0.025),
+            perc_975 = quantile(estimate, probs = 0.975))
  
 fig1 <-
   boot_result %>%

@@ -34,8 +34,8 @@ generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
     tibble(
       ATE = mean(boot_ate$estimate),
       sd_ATE = sd(boot_ate$estimate),
-      perc_2.5 = quantile(boot_ate$estimate, probs = 0.025),
-      perc_97.5 = quantile(boot_ate$estimate, probs = 0.975)
+      perc_25 = quantile(boot_ate$estimate, probs = 0.025),
+      perc_975 = quantile(boot_ate$estimate, probs = 0.975)
     )
   
   return(results)
