@@ -18,11 +18,11 @@ beep()
 scenario_id <- 3
 
 all_scenarios <- tibble(
-  id = c(1:12),
-  n_sample = c(rep(1000, 6), rep(10000, 6)),
-  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),2),
-  beta1 = rep(c(0.767, 1.25),6),
-  beta0 = rep(c(0.422, 0.422, 0.46, 0.46, 0.499, 0.499), 2)
+  id = c(1:18),
+  n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
+  beta1 = rep(c(0.767, 1.25),9),
+  beta0 = rep(c(0.422, 0.422, 0.46, 0.46, 0.499, 0.499), 3)
 )
 
 desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
@@ -122,7 +122,7 @@ beep()
 #### Running SBS
 
 ```{r}
-simple_boot <- function(df, n = m_boot, size = n_sample*desired_prop, seeds = seed_vec){
+simple_boot <- function(df, n = m_boot, size = df %>% pull(A) %>% sum(), seeds = seed_vec){
   boots <- list()
   pb2$tick()
   for (i in 1:n) {
@@ -183,6 +183,7 @@ beep()
 
 ```{r}
 rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
+beep()
 ```
 
 
@@ -191,7 +192,7 @@ rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
 ### Writing Bootstrap Function
 
 ```{r}
-generate_boots <- function(df, iter = 100, seeds = seed_vec){
+generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
   
   pb3$tick()
   boot_samples <- list()
@@ -252,7 +253,7 @@ complex_boot_result <-
             boot_type = 1,
             scenario = scenario_id
             )
-beep("fanfare")
+beep()
 ```
 
 ## Put it All Together
@@ -271,7 +272,7 @@ eval(parse(text = paste(dataset_name, to_output_bin_ds, sep = " <- ")), envir = 
 eval(parse(text = save_command))
 
 
-beep()
+beep("fanfare")
 ```
 
 
