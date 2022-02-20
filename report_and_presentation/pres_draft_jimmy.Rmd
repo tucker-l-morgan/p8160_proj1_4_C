@@ -4,7 +4,9 @@ author: |
   | Amy Pitts, Hun Lee, Jimmy Kelliher,
   | Tucker Morgan, and Waveley Qiu
 date: "2022-02-21"
-output: beamer_presentation
+output:
+  beamer_presentation:
+    colortheme: "dolphin"
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 >- Identifying the effect of a treatment or intervention is one of the most fundamental tasks we encounter as biostatisticians...
  
->- ... but confounding variables can bias our estimates of treatment effects.
+>- ... but outside of a randomized control trial (RCT), confounding variables can bias our estimates of treatment effects.
  
 >- Propensity score matching (PSM) is a tool that can help us mitigate the effects of confounders...
  
@@ -29,6 +31,30 @@ knitr::opts_chunk$set(echo = TRUE)
   A simulation study!
 \end{center}
 
+## A Quick Foray into Confounding
+
+```{tikz, echo = FALSE}
+\tikzstyle{block} = [circle, draw, text width=5em, text centered, minimum height=1em]
+\tikzstyle{line} = [draw, -latex]
+
+\begin{tikzpicture}[node distance = 4cm, auto]
+    % Place nodes
+    \node [block] (L) {Confounder $L$};
+    \node [block, below of = L] (A) {Treatment $A$};
+    \node [block, right of = A] (Y) {Outcome $Y$};
+    % Draw edges
+    \path [line] (L) -- (A);
+    \path [line] (L) -- (Y);
+    \path [line] (A) -- (Y);
+\end{tikzpicture}
+```
+
+
+## Taking a Step Back, What is Propensity Score Matching?
+
+>- A _propensity score_ is the probability that an individual receives a treatment $A$; that is, $P(A = 1)$. In an RCT, treatments are randomized, and hence outcomes $Y$ are independent of treatment $A$.
+
+
 ## Enter the Bootstrap
 
 >- Bootstrapping is one of the most common procedures for estimating standard errors.
@@ -38,6 +64,8 @@ knitr::opts_chunk$set(echo = TRUE)
 >- When do we execute the bootstrap - before the match or after it?
 
 >- Let's try both!
+
+<!-- Hun  -->
 
 ## Roadmap of the Simulation Study
 
@@ -91,9 +119,29 @@ knitr::opts_chunk$set(echo = TRUE)
 \end{tikzpicture}
 ```
 
+<!-- Waveley  -->
 
+## Data Generation
 
+```{tikz, echo = FALSE}
+\tikzstyle{block} = [circle, draw, text width=5em, text centered, minimum height=1em]
+\tikzstyle{line} = [draw, -latex]
 
+\begin{tikzpicture}[node distance = 4cm, auto]
+    % Place nodes
+    \node [block] (L1) {$L_1$};
+    \node [block, right of = L1] (L2) {$L_2$};
+    \node [block, right of = L2] (L3) {$L_3$};
+    \node [block, below of = L2] (A) {$A$};
+    \node [block, below of = L3] (Y) {$Y$};
+    % Draw edges
+    \path [line] (L1) -- (A);
+    \path [line] (L2) -- (A);
+    \path [line] (L2) -- (Y);
+    \path [line] (L3) -- (Y);
+    \path [line] (A) -- (Y);
+\end{tikzpicture}
+```
 
 ## Data Generation - Continuous Outcome
 
@@ -120,7 +168,22 @@ Given this, we further define the data-generating process of our binary outcome 
   \]
 Observe that we have omitted a random error term, as realizations of $Y_i$ are innately subject to noise.
 
-## Measures
+
+
+
+<!-- Amy  -->
+
+## Parameters of Interest
+
+- The sample size of each dataset $n_{\text{sample}} \in \{ 100, 1000 \}$
+- The population proportion of treated individuals $\pi \in \{ 0.113, 0.216, 0.313 \}$
+- 
+
+_Other Parameters_
+
+- The number of datasets $m_{\text{sample}} = 100$
+
+## Measures of Interest
 
 ## Results
 ```{r loading in binary coverage plot, echo = FALSE, message = FALSE}
