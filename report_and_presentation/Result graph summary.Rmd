@@ -97,16 +97,15 @@ binary_final_odd <- binary_final_odd %>%
 rm(binary_scen_1, binary_scen_3, binary_scen_5, binary_scen_13, binary_scen_15, binary_scen_17)
 ```
 
-Get all the even numbers $\beta_1 = 1.587$
+Get all the even numbers $\beta_1 = 1.386$
 ```{r compiling even-numbered scenarios with larger beta1}
 binary_final_even <- 
-  binary_scen_2 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.1) %>% 
-  bind_rows(binary_scen_4 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.2)) %>%
-  bind_rows(binary_scen_6 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.3)) %>%
-  bind_rows(binary_scen_14 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.1)) %>%
-  bind_rows(binary_scen_16 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.2)) %>%
-  bind_rows(binary_scen_18 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.3))
- 
+  binary_scen_2 %>% mutate(n_sample = 1000, beta1 = 1.386, desired_prop = 0.1) %>% 
+  bind_rows(binary_scen_4 %>% mutate(n_sample = 1000, beta1 = 1.386, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_6 %>% mutate(n_sample = 1000, beta1 = 1.386, desired_prop = 0.3)) %>%
+ bind_rows(binary_scen_14 %>% mutate(n_sample = 100, beta1 = 1.386, desired_prop = 0.1)) %>%
+ bind_rows(binary_scen_16 %>% mutate(n_sample = 100, beta1 = 1.386, desired_prop = 0.2)) %>%
+ bind_rows(binary_scen_18 %>% mutate(n_sample = 100, beta1 = 1.386, desired_prop = 0.3))
 
 binary_final_even <- binary_final_even %>% 
   mutate(
