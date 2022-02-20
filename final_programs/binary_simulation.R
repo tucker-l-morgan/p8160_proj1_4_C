@@ -12,7 +12,7 @@ source("./shared_code/setup.R")
 
 ### Set Parameters
 
-scenario_id <- 5
+scenario_id <- 15
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -243,6 +243,6 @@ beep("fanfare")
 
 #rm(list = ls())
 
-#source("shared_code/empirical_calculation_binary.R")
+source("shared_code/empirical_calculation_binary.R")
 
 
