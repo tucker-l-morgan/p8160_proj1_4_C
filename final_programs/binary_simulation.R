@@ -12,11 +12,7 @@ source("./shared_code/setup.R")
 
 ### Set Parameters
 
-run_auto <- c(1, 3, 5, 15, 17)
-
-for (q in run_auto) {
-
-scenario_id <- q
+scenario_id <- 5
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -245,9 +241,8 @@ eval(parse(text = save_command))
 
 beep("fanfare")
 
-rm(list = ls())
-}
+#rm(list = ls())
 
-source("shared_code/empirical_calculation_binary.R")
+#source("shared_code/empirical_calculation_binary.R")
 
 
