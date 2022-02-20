@@ -184,13 +184,20 @@ _Other Parameters_
 - The number of datasets $m_{\text{sample}} = 100$
 - The number of bootstrap re-sample $m_{\text{boot}} = 500$
 - The sample size of bootstrap re-samples $n_{\text{simple}} = n_{\text{complex}} = n_{\text{sample}}\times \pi$
-- Strength of Covariate Correlation on Treatment Status $\alpha_1, \alpha_2$
+- Strength of Covariate Correlation on Treatment Status $\alpha_1, \alpha_2$ 
+(continuous data (1,2), binary data ($\log(1.25), \log(1.75)$) )
 - Strength of Covariate Correlation on Outcome Variable  $\beta_2, \beta_3$
+(continuous data (2,1), binary data ($\log(1.75), \log(1.25)$) )
 
 ## Measures of Interest
 
+- \textbf{Coverage Rate:} Looks at the rate of the true avergae treatment effect falling in the 95\% confidence intervals. $\hat{\text{ATE}} \pm 1.96\times \text{SE}$
+- \textbf{Standard Error:}  the variability of the average estimate. 
 
+_Other Measures_
 
+- \textbf{Bias:} This is mean of the average estimate subtract the true ATE 
+- \textbf{95\% Confidence Intervals:}
 
 ## Results
 ```{r loading in binary coverage plot, echo = FALSE, message = FALSE}

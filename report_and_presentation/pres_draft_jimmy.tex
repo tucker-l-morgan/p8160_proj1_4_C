@@ -285,10 +285,12 @@ of \(Y_i\) are innately subject to noise.
   \(n_{\text{simple}} = n_{\text{complex}} = n_{\text{sample}}\times \pi\)
 \item
   Strength of Covariate Correlation on Treatment Status
-  \(\alpha_1, \alpha_2\)
+  \(\alpha_1, \alpha_2\) (continuous data (1,2), binary data
+  (\(\log(1.25), \log(1.75)\)) )
 \item
   Strength of Covariate Correlation on Outcome Variable
-  \(\beta_2, \beta_3\)
+  \(\beta_2, \beta_3\) (continuous data (2,1), binary data
+  (\(\log(1.75), \log(1.25)\)) )
 \end{itemize}
 
 \end{frame}
@@ -296,7 +298,26 @@ of \(Y_i\) are innately subject to noise.
 \begin{frame}{Measures of Interest}
 \protect\hypertarget{measures-of-interest}{}
 
-Something
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Coverage Rate:} Looks at the rate of the true avergae
+  treatment effect falling in the 95\% confidence intervals.
+  \(\hat{\text{ATE}} \pm 1.96\times \text{SE}\)
+\item
+  \textbf{Standard Error:} the variability of the average estimate.
+\end{itemize}
+
+\emph{Other Measures}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Bias:} This is mean of the average estimate subtract the true
+  ATE
+\item
+  \textbf{95\% Confidence Intervals:}
+\end{itemize}
 
 \end{frame}
 
