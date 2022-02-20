@@ -12,7 +12,7 @@ source("./shared_code/setup.R")
 
 ### Set Parameters
 
-scenario_id <- 16
+scenario_id <- 14
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -227,11 +227,11 @@ complex_boot_result <-
 ## Put it All Together
 
 
-to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result)
+#to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result)
 
 #to_output_bin_ds <- bind_cols(to_output_bin_ds, binary_empirical_mean_se)
 
-#to_output_bin_ds <- bind_cols(simple_boot_result, binary_empirical_mean_se)
+to_output_bin_ds <- simple_boot_result
 
 output_dataset_name <- paste0("binary_scen_", scenario_id)
 
