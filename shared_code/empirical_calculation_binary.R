@@ -112,19 +112,19 @@ save(binary_empiricals, file = './output_data/binary_empiricals.RData')
 
 scenarios <- c(1:6, 13:18)
 
-for (q in scenarios){
+for (k in scenarios){
 
-  load_dataset_name <- paste0("binary_scen_", q)
+  load_dataset_name <- paste0("binary_scen_", k)
 
   load_command <- paste0("load(file = './output_data/", load_dataset_name, ".RData')")
 
   eval(parse(text = load_command))
   eval(parse(text = paste("current_dataset", load_dataset_name, sep = " <- ")))
   
-  #current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
+  current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
 
   # adding empiricals and re-evaluating covered
-  if (q %% 2 == 0){
+  if (k %% 2 == 0){
     modified_ds <- 
       current_dataset %>% 
       mutate(
@@ -133,7 +133,7 @@ for (q in scenarios){
       left_join(binary_empiricals, on = c("scenario"))
      
   }
-  if (q %% 2 != 0){
+  if (k %% 2 != 0){
   modified_ds <- 
     current_dataset %>% 
     mutate(
