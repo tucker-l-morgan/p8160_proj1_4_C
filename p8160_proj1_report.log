@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2022.2.15)  20 FEB 2022 15:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2022.2.15)  20 FEB 2022 18:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -691,18 +691,18 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 [1
 
 {c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf, id=67, 478.97545pt x 371.41461pt>
+<p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf, id=75, 592.78667pt x 331.5808pt>
 File: p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf  used on input line 208.
-(pdftex.def)             Requested size: 469.75816pt x 364.2672pt.
+(pdftex.def)             Requested size: 469.75261pt x 262.76053pt.
 [2] [3 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-1-1.pdf>]
-<p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf, id=110, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf, id=125, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf  used on input line 265.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf, id=111, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf, id=126, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf  used on input line 266.
@@ -716,54 +716,54 @@ Underfull \hbox (badness 10000) in paragraph at lines 265--267
 Overfull \vbox (26.90105pt too high) has occurred while \output is active []
 
 [5 <./p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf> <./p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf>]
-<p8160_proj1_report_files/figure-latex/standard error plots-1.pdf, id=132, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/standard error plots-1.pdf, id=146, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf  used on input line 296.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf  used on input line 294.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/standard error plots-2.pdf, id=133, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/standard error plots-2.pdf, id=147, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf  used on input line 297.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf  used on input line 295.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 296--298
+Underfull \hbox (badness 10000) in paragraph at lines 294--296
 [][]
  []
 
 [6 <./p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>]
-<p8160_proj1_report_files/figure-latex/bias plots-1.pdf, id=143, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/bias plots-1.pdf, id=157, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-1.pdf  used on input line 317.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-1.pdf  used on input line 315.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/bias plots-2.pdf, id=144, 469.755pt x 325.215pt>
+<p8160_proj1_report_files/figure-latex/bias plots-2.pdf, id=158, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-2.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-2.pdf  used on input line 318.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-2.pdf  used on input line 316.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 317--319
+Underfull \hbox (badness 10000) in paragraph at lines 315--317
 [][]
  []
 
-[7 <./p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>] [8 <./p8160_proj1_report_files/figure-latex/bias plots-1.pdf>] [9 <./p8160_proj1_report_files/figure-latex/bias plots-2.pdf>] (./p8160_proj1_report.aux)
+[7 <./p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>] [8 <./p8160_proj1_report_files/figure-latex/bias plots-1.pdf>] [9 <./p8160_proj1_report_files/figure-latex/bias plots-2.pdf>] [10] (./p8160_proj1_report.aux)
 Package rerunfilecheck Info: File `p8160_proj1_report.out' has not changed.
-(rerunfilecheck)             Checksum: E261C416A2F1B594349AE68EED08279A;1238.
+(rerunfilecheck)             Checksum: FDE98F3ED9D09373DFFD3E61DA0EE43C;1465.
  ) 
 Here is how much of TeX's memory you used:
- 32905 strings out of 480238
- 799885 string characters out of 5894271
- 1160313 words of memory out of 5000000
- 50255 multiletter control sequences out of 15000+600000
+ 32914 strings out of 480238
+ 799988 string characters out of 5894271
+ 1160390 words of memory out of 5000000
+ 50259 multiletter control sequences out of 15000+600000
  520517 words of font info for 68 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,6n,80p,744b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}<c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-Output written on p8160_proj1_report.pdf (9 pages, 294798 bytes).
+{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}<c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/Users/tmorg/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
+Output written on p8160_proj1_report.pdf (10 pages, 308048 bytes).
 PDF statistics:
- 249 PDF objects out of 1000 (max. 8388607)
- 191 compressed objects within 2 object streams
- 36 named destinations out of 1000 (max. 500000)
- 136 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 274 PDF objects out of 1000 (max. 8388607)
+ 212 compressed objects within 3 object streams
+ 41 named destinations out of 1000 (max. 500000)
+ 152 words of extra memory for PDF output out of 10000 (max. 10000000)
 

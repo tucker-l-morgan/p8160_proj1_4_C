@@ -200,46 +200,54 @@ _Other Measures_
 - \textbf{95\% Confidence Intervals:}
 
 ## Results
-```{r loading in binary coverage plot, echo = FALSE, message = FALSE}
+```{r loading in binary coverage plot, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 source("./shared_code/bin_plots_script.R")
 bin_cvg_plot
 ```
 
 ## Results
-```{r binary standard error plot, echo = FALSE}
+```{r binary standard error plot, echo = FALSE, message = FALSE, warning = FALSE}
 bin_se_plot
 ```
 
 ## Results
-```{r continuous coverage plot, echo = FALSE, message = FALSE}
+```{r continuous coverage plot, echo = FALSE, message = FALSE, warning = FALSE}
 source("./shared_code/cont_plots_script.R")
 cont_cvg_plot
 ```
 
 ## Results
-```{r continous standard error plot, echo = FALSE}
+```{r continous standard error plot, echo = FALSE, message = FALSE, warning = FALSE}
 cont_se_plot
 ```
 
 ## Summary of Results
 
+- For binary outcomes, the simple bootstrap tended to underestimate the standard error
+
+- Larger standard error estimates from complex bootstrap in binary and continuous settings
+
+- Differences between simple and complex bootstrap were smaller for larger sample sizes
+
+- Complex bootstrap not as reliable in small sample sizes
+
 ## Limitations
 
->- Sample size / treatment (or exposure) prevalence
+- Sample size / treatment (or exposure) prevalence
 
->- Small number of initial samples, limited in detecting differences in coverage rate
+- Small number of initial samples, limited in detecting significant differences in coverage rate
 
->-
+- 
 
->-
+- 
 
 ## Future Work
 
->- Larger number of initial samples, narrower coverage window
+- Larger number of initial samples, narrower coverage window
 
->- Increased sample size, changes in bootstrap performance?
+- Increased sample size, changes in bootstrap performance?
 
->- Changes in treatment propensity model
+- Changes in treatment propensity model
 
->- Non-normal distributions of covariates
+- Non-normal distributions of covariates
