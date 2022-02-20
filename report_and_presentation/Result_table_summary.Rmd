@@ -311,13 +311,5 @@ all_result_binary %>%
 ```
 
 
-```{r displaying results}
-all_result_continuous %>%
-  kbl() %>%
-  kable_classic("striped", full_width = F , html_font = "Cambria") %>%
-  column_spec(2, width = "2cm")  %>%
-  column_spec(1:9, border_left = T, border_right = T) %>%
-   add_header_above(c("Continuous Outcome" = 0, "Empirical" = 3, "Simple" = 1, "Complex" = 5))
-```
 
 
