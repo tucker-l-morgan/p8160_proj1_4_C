@@ -124,6 +124,7 @@ for (k in scenarios){
   current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
 
   # adding empiricals and re-evaluating covered
+  
   if (k %% 2 == 0){
     modified_ds <- 
       current_dataset %>% 
