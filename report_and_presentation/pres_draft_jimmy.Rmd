@@ -119,3 +119,44 @@ Given this, we further define the data-generating process of our binary outcome 
     = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
   \]
 Observe that we have omitted a random error term, as realizations of $Y_i$ are innately subject to noise.
+
+## Measures
+
+## Results
+```{r loading in binary coverage plot, echo = FALSE, message = FALSE}
+library(tidyverse)
+source("./shared_code/bin_plots_script.R")
+bin_cvg_plot
+```
+
+## Results
+```{r binary standard error plot, echo = FALSE}
+bin_se_plot
+```
+
+## Results
+```{r continuous coverage plot, echo = FALSE, message = FALSE}
+source("./shared_code/cont_plots_script.R")
+cont_cvg_plot
+```
+
+## Results
+```{r continous standard error plot, echo = FALSE}
+cont_se_plot
+```
+
+## Limitations
+
+>- Sample size / treatment (or exposure) prevalence
+
+>- Small number of initial samples, limited in detecting differences in coverage rate
+
+## Future Work
+
+>- Larger number of initial samples, narrower coverage window
+
+>- Increased sample size, changes in bootstrap performance?
+
+>- Changes in treatment propensity model
+
+>- Non-normal distributions of covariates
