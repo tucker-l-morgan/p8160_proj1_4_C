@@ -177,13 +177,20 @@ Observe that we have omitted a random error term, as realizations of $Y_i$ are i
 
 - The sample size of each dataset $n_{\text{sample}} \in \{ 100, 1000 \}$
 - The population proportion of treated individuals $\pi \in \{ 0.113, 0.216, 0.313 \}$
-- 
+- The true average treatment effect $\beta_1 \in \{0.15, 0.30 \}$
 
 _Other Parameters_
 
 - The number of datasets $m_{\text{sample}} = 100$
+- The number of bootstrap re-sample $m_{\text{boot}} = 500$
+- The sample size of bootstrap re-samples $n_{\text{simple}} = n_{\text{complex}} = n_{\text{sample}}\times \pi$
+- Strength of Covariate Correlation on Treatment Status $\alpha_1, \alpha_2$
+- Strength of Covariate Correlation on Outcome Variable  $\beta_2, \beta_3$
 
 ## Measures of Interest
+
+
+
 
 ## Results
 ```{r loading in binary coverage plot, echo = FALSE, message = FALSE}
