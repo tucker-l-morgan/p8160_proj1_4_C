@@ -145,11 +145,17 @@ cont_cvg_plot
 cont_se_plot
 ```
 
+## Summary of Results
+
 ## Limitations
 
 >- Sample size / treatment (or exposure) prevalence
 
 >- Small number of initial samples, limited in detecting differences in coverage rate
+
+>-
+
+>-
 
 ## Future Work
 
