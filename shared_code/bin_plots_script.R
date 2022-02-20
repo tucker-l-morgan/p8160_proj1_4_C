@@ -68,12 +68,13 @@ rm(binary_final_odd, binary_final_even)
 cr_df<- binary_final %>%
   mutate(scenario = factor(scenario),
          new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
-         treat_effect = ifelse(beta1 == 0.767, "True ATE = 0.15", "True ATE = 0.3")) %>%  
-  group_by( new_name, treat_effect, boot_type ) %>%
+         treat_effect = ifelse(beta1 == 0.767, "True ATE = 0.15", "True ATE = 0.3"),
+         Method = factor(boot_type, levels = c("Simple", "Complex", "Empirical"))) %>%  
+  group_by(new_name, treat_effect, Method) %>%
   summarize(cr = sum(covered)/ 100) 
 
 bin_cvg_plot <- 
-  ggplot(cr_df, aes(x=cr, y=new_name, color=boot_type)) + 
+  ggplot(cr_df, aes(x=cr, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
   geom_vline(xintercept=0.9927, linetype="dashed", color = "black") +
   geom_vline(xintercept=0.9072, linetype="dashed", color = "black") +
@@ -85,7 +86,7 @@ bin_cvg_plot <-
     x = "CI Coverage Rate"
   ) + 
   theme_bw() + 
-  theme(text = element_text(size = 16)) 
+  theme(text = element_text(size = 16))
 
 # bias plots
 empirical_data <- binary_final %>%
@@ -119,7 +120,7 @@ boot_data <- binary_final %>%
 bin_bias_plot <- 
   bind_rows(boot_data,empirical_data ) %>%
   mutate(
-    Method = factor(Method, levels = c("Empirical", "Simple", "Complex"))
+    Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot( aes(x=ATE_bias, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
@@ -133,13 +134,14 @@ bin_bias_plot <-
     x = "Bias"
   ) + 
   theme_bw() +
-  theme(text = element_text(size = 16))
+  theme(text = element_text(size = 16)) +
+  scale_color_manual(values = c("#F8766D", "#00B9E3", "#00BA38"))
 
 # standard error plot
 bin_se_plot <- 
   bind_rows(boot_data,empirical_data ) %>%
   mutate(
-    Method = factor(Method, levels = c("Empirical", "Simple", "Complex"))
+    Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot( aes(x=bias_se, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
@@ -150,6 +152,7 @@ bin_se_plot <-
     x = "Standard Error"
   )  +
   theme_bw() +
-  theme(text = element_text(size = 16))
+  theme(text = element_text(size = 16)) +
+  scale_color_manual(values = c("#F8766D", "#00B9E3", "#00BA38"))
 
 rm(boot_data, empirical_data, cr_df, binary_final)

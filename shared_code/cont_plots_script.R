@@ -57,26 +57,26 @@ continuous_final_odd <-
               ) %>% 
               select(-simp_perc_25, -simp_perc_975)) %>% 
   bind_rows(cont_df_scen_15 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.2) %>% 
-            mutate(
-              perc_25 = case_when(
-                boot_type == 0 ~ simp_perc_25,
-                boot_type == 1 ~ comp_perc_25),
-              perc_975 = case_when(
-                boot_type == 0 ~ simp_perc_975,
-                boot_type == 1 ~ comp_perc_975
-              )
-            ) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
               select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
   bind_rows(cont_df_scen_17 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.3) %>% 
-            mutate(
-              perc_25 = case_when(
-                boot_type == 0 ~ simp_perc_25,
-                boot_type == 1 ~ comp_perc_25),
-              perc_975 = case_when(
-                boot_type == 0 ~ simp_perc_975,
-                boot_type == 1 ~ comp_perc_975
-              )
-            ) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
               select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
   mutate(
     ATE_bias = ATE - pos_beta,
@@ -171,12 +171,13 @@ cr_df_cont <-
   continuous_final %>%
   mutate(scenario = factor(scenario_id),
          new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
-         treat_effect = ifelse(beta1 == pos_beta, "True ATE = 1", "True ATE = -1")) %>%  
-  group_by(new_name, treat_effect, boot_type) %>%
+         treat_effect = ifelse(beta1 == pos_beta, "True ATE = 1", "True ATE = -1"),
+         Method = factor(boot_type, levels = c("Simple", "Complex"))) %>%  
+  group_by(new_name, treat_effect, Method) %>%
   summarize(cr = sum(covered)/ 100) 
 
 cont_cvg_plot <- 
-  ggplot(cr_df_cont, aes(x=cr, y=new_name, color=boot_type)) + 
+  ggplot(cr_df_cont, aes(x=cr, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
   geom_vline(xintercept=0.9927, linetype="dashed", color = "black") +
   geom_vline(xintercept=0.9072, linetype="dashed", color = "black") +
@@ -224,7 +225,7 @@ boot_data_cont <-
 cont_bias_plot <- 
   bind_rows(boot_data_cont, empirical_data_cont) %>%
   mutate(
-    Method = factor(Method, levels = c("Empirical", "Simple", "Complex"))
+    Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot(aes(x=ATE_bias, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
@@ -238,12 +239,13 @@ cont_bias_plot <-
     x = "Bias"
   ) +
   theme_bw() +
-  theme(text = element_text(size = 16))
+  theme(text = element_text(size = 16)) +
+  scale_color_manual(values = c("#F8766D", "#00B9E3", "#00BA38"))
 
 cont_se_plot <- 
   bind_rows(boot_data_cont, empirical_data_cont) %>%
   mutate(
-    Method = factor(Method, levels = c("Empirical", "Simple", "Complex"))
+    Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot(aes(x=bias_se, y=new_name, color=Method)) + 
   geom_point(position=position_dodge(0.5), size = 3)+
@@ -254,6 +256,7 @@ cont_se_plot <-
     x = "Standard Error"
   ) +
   theme_bw() +
-  theme(text = element_text(size = 16))
+  theme(text = element_text(size = 16)) +
+  scale_color_manual(values = c("#F8766D", "#00B9E3", "#00BA38"))
 
 rm(boot_data_cont, empirical_data_cont, cr_df_cont, continuous_final)
