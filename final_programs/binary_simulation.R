@@ -13,7 +13,7 @@ beep()
 
 ### Set Parameters
 
-scenario_id <- 6
+scenario_id <- 14
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -245,6 +245,8 @@ beep()
 to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result)
 
 to_output_bin_ds <- bind_cols(to_output_bin_ds, binary_empirical_mean_se)
+
+to_output_bin_ds <- bind_cols(simple_boot_result, binary_empirical_mean_se)
 
 output_dataset_name <- paste0("binary_scen_", scenario_id)
 
