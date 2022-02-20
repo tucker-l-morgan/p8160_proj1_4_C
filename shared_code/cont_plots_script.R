@@ -25,11 +25,59 @@ cont_all_scenarios <- tibble(
 # compiling continuous data
 continuous_final_odd <- 
   cont_df_scen_1 %>% mutate(n_sample = 1000, beta1 = pos_beta, desired_prop = 0.1) %>% 
-  bind_rows(cont_df_scen_3 %>% mutate(n_sample = 1000, beta1 = pos_beta, desired_prop = 0.2)) %>% 
-  bind_rows(cont_df_scen_5 %>% mutate(n_sample = 1000, beta1 = pos_beta, desired_prop = 0.3)) %>% 
-  bind_rows(cont_df_scen_13 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.1)) %>% 
-  bind_rows(cont_df_scen_15 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.2)) %>% 
-  bind_rows(cont_df_scen_17 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.3)) %>% 
+  bind_rows(cont_df_scen_3 %>% mutate(n_sample = 1000, beta1 = pos_beta, desired_prop = 0.2) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>%
+  bind_rows(cont_df_scen_5 %>% mutate(n_sample = 1000, beta1 = pos_beta, desired_prop = 0.3) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
+  bind_rows(cont_df_scen_13 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.1) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975)) %>% 
+  bind_rows(cont_df_scen_15 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.2) %>% 
+            mutate(
+              perc_25 = case_when(
+                boot_type == 0 ~ simp_perc_25,
+                boot_type == 1 ~ comp_perc_25),
+              perc_975 = case_when(
+                boot_type == 0 ~ simp_perc_975,
+                boot_type == 1 ~ comp_perc_975
+              )
+            ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
+  bind_rows(cont_df_scen_17 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.3) %>% 
+            mutate(
+              perc_25 = case_when(
+                boot_type == 0 ~ simp_perc_25,
+                boot_type == 1 ~ comp_perc_25),
+              perc_975 = case_when(
+                boot_type == 0 ~ simp_perc_975,
+                boot_type == 1 ~ comp_perc_975
+              )
+            ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
   mutate(
     ATE_bias = ATE - pos_beta,
     empirical_bias = empirical_mean - pos_beta,
@@ -39,12 +87,71 @@ continuous_final_odd <-
 rm(cont_df_scen_1, cont_df_scen_3, cont_df_scen_5, cont_df_scen_13, cont_df_scen_15, cont_df_scen_17)
 
 continuous_final_even <- 
-  cont_df_scen_2 %>% mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.1) %>% 
-  bind_rows(cont_df_scen_4 %>% mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.2)) %>% 
-  bind_rows(cont_df_scen_6 %>% mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.3)) %>% 
-  bind_rows(cont_df_scen_14 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.1)) %>% 
-  bind_rows(cont_df_scen_16 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.2)) %>% 
-  bind_rows(cont_df_scen_18 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.3)) %>% 
+  cont_df_scen_2 %>% 
+  mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.1) %>% 
+  mutate(
+    perc_25 = case_when(
+      boot_type == 0 ~ simp_perc_25,
+      boot_type == 1 ~ comp_perc_25),
+    perc_975 = case_when(
+      boot_type == 0 ~ simp_perc_975,
+      boot_type == 1 ~ comp_perc_975
+    )
+  ) %>% 
+  select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975) %>% 
+  bind_rows(cont_df_scen_4 %>% mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.2) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
+  bind_rows(cont_df_scen_6 %>% mutate(n_sample = 1000, beta1 = neg_beta, desired_prop = 0.3) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
+  bind_rows(cont_df_scen_14 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.1) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975)) %>% 
+  bind_rows(cont_df_scen_16 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.2) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
+  bind_rows(cont_df_scen_18 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.3) %>% 
+              mutate(
+                perc_25 = case_when(
+                  boot_type == 0 ~ simp_perc_25,
+                  boot_type == 1 ~ comp_perc_25),
+                perc_975 = case_when(
+                  boot_type == 0 ~ simp_perc_975,
+                  boot_type == 1 ~ comp_perc_975
+                )
+              ) %>% 
+              select(-simp_perc_25, -simp_perc_975, -comp_perc_25, -comp_perc_975)) %>% 
   mutate(
     ATE_bias = ATE - neg_beta,
     empirical_bias = empirical_mean - neg_beta,
