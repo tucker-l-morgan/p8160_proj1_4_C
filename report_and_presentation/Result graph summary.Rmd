@@ -30,6 +30,8 @@ load("./output_data/binary_scen_3.RData")
 load("./output_data/binary_scen_4.RData")
 load("./output_data/binary_scen_5.RData")
 load("./output_data/binary_scen_6.RData")
+load("./output_data/binary_scen_13.RData")
+load("./output_data/binary_scen_14.RData")
 load("./output_data/binary_scen_15.RData")
 load("./output_data/binary_scen_16.RData")
 load("./output_data/binary_scen_17.RData")
@@ -57,7 +59,7 @@ Get all the odd numbers $\beta_1 = 0.767$
 binary_final_odd <- binary_scen_1 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.1) %>% 
   bind_rows(binary_scen_3 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.2)) %>%
  bind_rows(binary_scen_5 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.3)) %>%
- # rbind(binary_scen_13 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.1)) %>%
+ bind_rows(binary_scen_13 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.1)) %>%
  bind_rows(binary_scen_15 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.2)) %>%
  bind_rows(binary_scen_17 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.3))
 
@@ -74,7 +76,7 @@ Get all the even numbers $\beta_1 = 1.587$
 binary_final_even <- binary_scen_2 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.1) %>% 
   bind_rows(binary_scen_4 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.2)) %>%
  bind_rows(binary_scen_6 %>% mutate(n_sample = 1000, beta1 = 1.587, desired_prop = 0.3)) %>%
- # bind_rows(binary_scen_14 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.1)) %>%
+ bind_rows(binary_scen_14 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.1)) %>%
  bind_rows(binary_scen_16 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.2)) %>%
  bind_rows(binary_scen_18 %>% mutate(n_sample = 100, beta1 = 1.587, desired_prop = 0.3))
  
