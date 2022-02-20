@@ -5,7 +5,7 @@ date: "2/16/2022"
 output: pdf_document
 ---
 ```{r setting scenario}
-scenario_id = 14
+scenario_id = 2
 ```
 
 ## Generating 100 Samples from Our Population
@@ -43,8 +43,8 @@ boot_result <-
   group_by(seq) %>%
   summarize(ATE = mean(estimate),
             sd_ATE = sd(estimate),
-            perc_25 = quantile(estimate, probs = 0.025),
-            perc_975 = quantile(estimate, probs = 0.975))
+            simp_perc_25 = quantile(estimate, probs = 0.025),
+            simp_perc_975 = quantile(estimate, probs = 0.975))
  
 fig1 <-
   boot_result %>%
@@ -132,8 +132,8 @@ cvg_plot(boot_result)
 ```{r output}
 cont_simple_df <- 
   boot_result %>% 
-  mutate(ci_lower = ATE - qnorm(0.975)*sd(ATE),
-         ci_upper = ATE + qnorm(0.975)*sd(ATE),
+  mutate(ci_lower = ATE - qnorm(0.975)*sd_ATE,
+         ci_upper = ATE + qnorm(0.975)*sd_ATE,
          covered = case_when(
            ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
                                             TRUE ~ 0
@@ -142,13 +142,13 @@ cont_simple_df <-
          scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
-  relocate(-perc_2.5, - perc_97.5) %>% 
+  relocate(-simp_perc_25, - simp_perc_975) %>% 
   tibble()
 
 cont_complex_df <- 
   fin_estimate_df %>% 
-  mutate(ci_lower = ATE - qnorm(0.975)*sd(ATE),
-         ci_upper = ATE + qnorm(0.975)*sd(ATE),
+  mutate(ci_lower = ATE - qnorm(0.975)*sd_ATE,
+         ci_upper = ATE + qnorm(0.975)*sd_ATE,
          covered = case_when(
            ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
                                             TRUE ~ 0
@@ -157,7 +157,7 @@ cont_complex_df <-
          scenario_id = c(scenario_id), 
          empirical_mean = continuous_empirical_mean_se$empircal_mean,
          empirical_se = continuous_empirical_mean_se$empircal_se) %>% 
-  relocate(-perc_97.5, -perc_2.5) %>% 
+  relocate(-comp_perc_975, -comp_perc_25) %>% 
   tibble() %>% 
   relocate(seq)
 
