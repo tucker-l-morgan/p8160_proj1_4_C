@@ -228,9 +228,9 @@ cont_bias_plot <-
     Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot(aes(x=ATE_bias, y=new_name, color=Method)) + 
-  geom_point(position=position_dodge(0.5), size = 3)+
+  geom_point(position=position_dodge(0.7), size = 3)+
   geom_errorbar(aes(xmin=ATE_bias-1.96*bias_se, xmax=ATE_bias+1.96*bias_se), width=.2,
-                position=position_dodge(0.5), size = 1) +
+                position=position_dodge(0.7), size = 1) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   facet_grid(~treat_effect) +
   labs(
@@ -248,7 +248,7 @@ cont_se_plot <-
     Method = factor(Method, levels = c("Simple", "Complex", "Empirical"))
   ) %>% 
   ggplot(aes(x=bias_se, y=new_name, color=Method)) + 
-  geom_point(position=position_dodge(0.5), size = 3)+
+  geom_point(position=position_dodge(0.7), size = 3)+
   facet_grid(~treat_effect) +
   labs(
     title = "Continuous Simulation Standard Error", 
