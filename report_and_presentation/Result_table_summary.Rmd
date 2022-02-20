@@ -5,15 +5,13 @@ date: "2/19/2022"
 output: pdf_document
 ---
 
-```{r}
-library(kableExtra)
-```
 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
+library(kableExtra)
 ```
 
 Jimmy needs to give me the right esitmate of effect right now here is what I am using 
@@ -90,12 +88,16 @@ binary_final_odd <-
 binary_final_odd <- binary_final_odd %>% 
   mutate(
     ATE_bias = ATE - smaller_true_ATE,
-    empirical_bias = empirical_mean - smaller_true_ATE,
+    E_Bias = empirical_mean - smaller_true_ATE,
+    E_SE = empirical_se,
     boot_type = ifelse(boot_type == 0, "Simple", "Complex")
   ) 
 
+
+
 rm(binary_scen_1, binary_scen_3, binary_scen_5, binary_scen_13, binary_scen_15, binary_scen_17)
 ```
+
 
 Get all the even numbers $\beta_1 = 1.386$
 ```{r compiling even-numbered scenarios with larger beta1}
@@ -110,7 +112,8 @@ binary_final_even <-
 binary_final_even <- binary_final_even %>% 
   mutate(
     ATE_bias = ATE - bigger_true_ATE,
-    empirical_bias = empirical_mean - bigger_true_ATE,
+    E_Bias = empirical_mean - bigger_true_ATE,
+    E_SE = empirical_se,
     boot_type = ifelse(boot_type == 0, "Simple", "Complex")
   ) 
 
@@ -121,11 +124,6 @@ rm(binary_scen_2, binary_scen_4, binary_scen_6, binary_scen_14, binary_scen_16, 
 binary_final <- binary_final_even %>% bind_rows(binary_final_odd)
 ```
 
-```{r, eval = FALSE}
-binary_final %>% group_by(scenario) %>% 
-  summarise(E_Bias = mean(empirical_bias),
-            E_se = mean(empirical_se))
-```
 
 ## Compiling Continuous Data
 ```{r compiling odd-numbered scenarios}
@@ -138,7 +136,8 @@ continuous_final_odd <-
   bind_rows(cont_df_scen_17 %>% mutate(n_sample = 100, beta1 = pos_beta, desired_prop = 0.3)) %>% 
   mutate(
     ATE_bias = ATE - pos_beta,
-    empirical_bias = empirical_mean - pos_beta,
+    E_Bias = empirical_mean - pos_beta,
+    E_SE = empirical_se,
     boot_type = ifelse(boot_type == 0, "Simple", "Complex")
   ) 
 
@@ -155,7 +154,8 @@ continuous_final_even <-
   bind_rows(cont_df_scen_18 %>% mutate(n_sample = 100, beta1 = neg_beta, desired_prop = 0.3)) %>% 
   mutate(
     ATE_bias = ATE - neg_beta,
-    empirical_bias = empirical_mean - neg_beta,
+    E_Bias = empirical_mean - neg_beta,
+    E_SE = empirical_se,
     boot_type = ifelse(boot_type == 0, "Simple", "Complex")
   ) 
 
@@ -172,7 +172,7 @@ rm(continuous_final_even, continuous_final_odd)
 ```
 
 ## Creating Dataframes
-```{r coverage rate dataframes}
+```{r coverage rate dataframes, message=FALSE}
 cr_df_binary <-
   binary_final %>%
   group_by(scenario, boot_type) %>%
@@ -188,7 +188,7 @@ cr_df_continuous <-
   rename(S_CR = Simple, C_CR = Complex)
 ```
 
-```{r standard error dataframes}
+```{r standard error dataframes, message=FALSE}
 se_df_binary <-
   binary_final %>%
   group_by(scenario, boot_type) %>%
@@ -204,7 +204,7 @@ se_df_continuous <-
   rename(S_SE = Simple, C_SE = Complex)
 ```
 
-```{r bias dataframes}
+```{r bias dataframes, message=FALSE}
 bias_df_binary <-
   binary_final %>%
   group_by(scenario, boot_type) %>%
@@ -220,12 +220,33 @@ bias_df_continuous <-
   rename(S_Bias = Simple, C_Bias = Complex)
 ```
 
-```{r final result dataframes}
+## Adding Empirical
+
+
+
+```{r}
+E_df <-
+  binary_final %>% 
+  group_by(scenario) %>% 
+  summarise(E_SE = mean(E_SE) %>% round(digits = 3) , 
+            E_Bias = mean(E_Bias) %>% round(digits = 3))
+
+E_df <-
+  continuous_final %>% 
+  group_by(scenario) %>% 
+  summarise(E_SE = mean(E_SE) %>% round(digits = 3) , 
+            E_Bias = mean(E_Bias) %>% round(digits = 3))
+```
+
+
+```{r final result dataframes, message=FALSE}
 all_result_binary <-
   se_df_binary %>% 
   full_join(bias_df_binary) %>% 
   full_join(cr_df_binary) %>% 
+  full_join(E_df) %>%
   relocate(starts_with("S")) %>% 
+  relocate(starts_with("E")) %>%
   relocate(scenario) %>%
   rename(Scenario = scenario)
  
@@ -233,30 +254,36 @@ all_result_continuous <-
   se_df_continuous %>% 
   full_join(bias_df_continuous) %>% 
   full_join(cr_df_continuous) %>% 
+  full_join(E_df) %>%
   relocate(starts_with("S")) %>% 
+  relocate(starts_with("E")) %>%
   relocate(scenario) %>%
   rename(Scenario = scenario)
 
-all_result_binary
+all_result_binary 
+
 all_result_continuous
 ```
 
 ```{r labeling scenarios}
-all_result_binary["Scenario"] <- 
-                          c("Large Sample, ATE = 1, p = 0.1", 
+all_result_continuous["Scenario"] <- 
+                          c("Large Sample, ATE = +1, p = 0.1", 
                             "Large Sample, ATE = -1, p = 0.1",
-                            "Large Sample, ATE = 1, p = 0.2",
+                            "Large Sample, ATE = +1, p = 0.2",
                             "Large Sample, ATE = -1, p = 0.2",
-                            "Large Sample, ATE = 1, p = 0.3",
+                            "Large Sample, ATE = +1, p = 0.3",
                             "Large Sample, ATE = -1, p = 0.3",
-                            "Small Sample, ATE = 1, p = 0.1",
+                            "Small Sample, ATE = +1, p = 0.1",
                             "Small Sample, ATE = -1, p = 0.1",
-                            "Small Sample, ATE = 1, p = 0.2",
+                            "Small Sample, ATE = +1, p = 0.2",
                             "Small Sample, ATE = -1, p = 0.2",
-                            "Small Sample, ATE = 1, p = 0.3",
+                            "Small Sample, ATE = +1, p = 0.3",
                             "Small Sample, ATE = -1, p = 0.3")
 
-all_result_continuous["Scenario"] <- 
+all_result_continuous <- all_result_continuous[c(1,3,5,2,4,6,7,9,11,8,10,12),]
+
+
+all_result_binary["Scenario"] <- 
                           c("Large Sample, ATE = 0.15, p = 0.1", 
                             "Large Sample, ATE = 0.30, p = 0.1",
                             "Large Sample, ATE = 0.15, p = 0.2",
@@ -269,22 +296,20 @@ all_result_continuous["Scenario"] <-
                             "Small Sample, ATE = 0.30, p = 0.2",
                             "Small Sample, ATE = 0.15, p = 0.3",
                             "Small Sample, ATE = 0.30, p = 0.3")
+
+all_result_binary <- all_result_binary[c(1,3,5,2,4,6,7,9,11,8,10,12),]
+
 ```
 
 ```{r displaying results}
 all_result_binary %>%
   kbl() %>%
   kable_classic("striped", full_width = F , html_font = "Cambria") %>%
-  column_spec(5, width = "5cm")  %>%
-  column_spec(1:7, border_left = T, border_right = T) %>%
-  add_header_above(c("Binary Outcome" = 1, "Simple" = 2, "Empirical(no boot)" = 2, "Complex" = 2))
-
-all_result_continuous %>%
-  kbl() %>%
-  kable_classic("striped", full_width = F , html_font = "Cambria") %>%
-  column_spec(5, width = "5cm")  %>%
-  column_spec(1:7, border_left = T, border_right = T) %>%
-  add_header_above(c("Continuous Outcome" = 1, "Simple" = 2, "Empirical(no boot)" = 2, "Complex" = 2))
+  column_spec(2, width = "2cm")  %>%
+  column_spec(1:9, border_left = T, border_right = T) %>%
+  add_header_above(c("Binary Outcome" = 0, "Empirical" = 3, "Simple" = 1, "Complex" = 5))
 ```
+
+
 
 
