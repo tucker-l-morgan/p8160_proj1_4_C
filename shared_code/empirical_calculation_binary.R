@@ -4,6 +4,8 @@
 #
 # #########
 
+source("shared_code/setup.R")
+
 r <- log(0.5/0.5)
 
 before_a <- log((0.50/0.50)/(0.2/0.8))
@@ -101,7 +103,51 @@ outcome_model_df <- function(df) {
     summarize(empirical_mean = mean(estimate),
               empirical_se = sd(estimate))
 
- binary_empiricals <- bind_rows(empiricals, binary_empirical_mean_se)
+ empiricals <- bind_rows(empiricals, binary_empirical_mean_se)
 }
 
+binary_empiricals <- empiricals
+
 save(binary_empiricals, file = './output_data/binary_empiricals.RData')
+
+scenarios <- c(1:6, 13:18)
+
+for (q in scenarios){
+
+  load_dataset_name <- paste0("binary_scen_", q)
+
+  load_command <- paste0("load(file = './output_data/", load_dataset_name, ".RData')")
+
+  eval(parse(text = load_command))
+  eval(parse(text = paste("current_dataset", load_dataset_name, sep = " <- ")))
+  
+  current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
+
+  # adding empiricals and re-evaluating covered
+  if (q %% 2 == 0){
+    modified_ds <- 
+      current_dataset %>% 
+      mutate(
+        covered = (0.30 >= ci_lower) & (0.30 <= ci_upper)
+      ) %>%
+      left_join(binary_empiricals, on = c("scenario"))
+     
+  }
+  if (q %% 2 != 0){
+  modified_ds <- 
+    current_dataset %>% 
+    mutate(
+      covered = (0.15 >= ci_lower) & (0.15 <= ci_upper)
+    ) %>%
+    left_join(binary_empiricals, on = c("scenario"))
+    
+  }
+  
+  save_command <- paste0('save(', load_dataset_name, ", file = './output_data/", load_dataset_name, ".RData')")
+  
+  eval(parse(text = paste(load_dataset_name, "modified_ds", sep = " <- ")))
+  
+  eval(parse(text = save_command))
+
+}
+

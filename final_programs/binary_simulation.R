@@ -12,7 +12,11 @@ source("./shared_code/setup.R")
 
 ### Set Parameters
 
-scenario_id <- 1
+run_auto <- c(1, 3, 5, 15, 17)
+
+for (q in run_auto) {
+
+scenario_id <- q
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -151,7 +155,6 @@ simple_boot_result <-
             perc_975 = quantile(difference, probs = 0.975),
             ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
-            covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 0,
             scenario = scenario_id
   )
@@ -219,7 +222,6 @@ complex_boot_result <-
             perc_975 = quantile(difference, probs = 0.975),
             ci_lower = ATE + qnorm(0.025)*sd_ATE,
             ci_upper = ATE - qnorm(0.025)*sd_ATE,
-            covered = ci_lower <= 0.15 & 0.15 <= ci_upper,
             boot_type = 1,
             scenario = scenario_id
   )
@@ -243,5 +245,9 @@ eval(parse(text = save_command))
 
 beep("fanfare")
 
+rm(list = ls())
+}
+
+source("shared_code/empirical_calculation_binary.R")
 
 
