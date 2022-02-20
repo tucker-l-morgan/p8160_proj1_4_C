@@ -121,7 +121,7 @@ for (q in scenarios){
   eval(parse(text = load_command))
   eval(parse(text = paste("current_dataset", load_dataset_name, sep = " <- ")))
   
-  current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
+  #current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
 
   # adding empiricals and re-evaluating covered
   if (q %% 2 == 0){
