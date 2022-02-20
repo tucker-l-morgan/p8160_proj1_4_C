@@ -4,6 +4,7 @@ author: "Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu"
 date: "2/11/2022"
 output:
   pdf_document: default
+  
 header-includes: 
   - \usepackage{amsmath,amssymb,amsthm,amsfonts,bbm,graphics}
   - \usepackage{geometry}
@@ -136,7 +137,37 @@ Bias is also calculated using the true treatment effect. This measure helps conf
 
 # Results
 
-**detail to be added**
+```{r cvg rate plots, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+source("./shared_code/bin_plots_script.R")
+source("./shared_code/cont_plots_script.R")
+bin_cvg_plot + labs(title = "Figure 2: Binary Coverage Rates") + theme(text = element_text(size = 10))
+cont_cvg_plot + labs(title = "Figure 3: Continuous Coverage Rates") + theme(text = element_text(size = 10))
+```
+
+
+Analysis was performed on 24 different scenarios, 12 in a binary outcome setting and 12 in a continuous setting. To assess the standard error estimates produced by each bootstrapping method, confidence intervals were created and coverage rates calculated, see Figure 2. Each of our scenarios included 100 initial, base samples, which resulted in 100 confidence intervals. Based on the binomial distribution where n = 100, p = 0.95, and a confidence interval containing the true treatment effect is considered a success, we ascertained a statistically significant coverage rate range with which to assess our results. A coverage rate below 90% and above 99% indicates a statistically significant under- or over-estimation of the standard error. Based on this criteria, the simple bootstrap method underestimated the standard error in five out of the six binary outcome scenarios with a lesser true average treatment effect, and the standard bootstrap underestimated the standard error of the true average treatment effect in all six of the scenarios involving the larger treatment effect. Conversely, the complex bootstrap method overestimated the standard error in one of the five possible scenarios in each of the lesser and greater treatment effect cases. Note the complex bootstrapping method was not reliable in the scenario where $n_{sample} = 100$ and treated proportion was equal to 10%.
+
+In the continuous setting (Figure 3), the coverage rate from the simple bootstrapping method fell within the statistically significant range for all 12 scenarios. However, the complex bootstrap seems to have overestimated the standard error in eight of the 10 possible scenarios. Again, the complex bootstrap was not reliable in the two scenarios where $n_{sample} = 100$ and treated proportion was equal to 10%.
+
+```{r standard error plots, echo = FALSE, message = FALSE, warning = FALSE}
+bin_se_plot + labs(title = "Figure 4: Binary Standard Error Estimates") + theme(text = element_text(size = 10))
+cont_se_plot + labs(title = "Figure 5: Continuous Standard Error Estimates") + theme(text = element_text(size = 10))
+```
+
+
+In Figure 4, the standard error estimates from the binary setting can be seen in more detail. In general, the simple bootstrap seemed to produce lower estimates of standard error compared to an empirical estimate based on the initial sample distribution before any bootstrapping, while the complex bootstrap seems to produce larger estimates of the standard error. This aligns with the observation that the complex bootstrap confidence intervals tended to have higher coverage rates compared to the simple bootstrap method.
+
+In Figure 5, a similar figure features the standard error estimates from the continuous setting. Again, the estimates from the two bootstrapping methods and the empirical measurement seem to produce similar values. In general, the complex bootstrap seems to produce larger estimates of standard error compared to the simple bootstrap, but the scenario in which $n_{sample} = 1000$ and treated proportion is 30% has a smaller simple bootstrap estimate compared to the complex bootstrap. These results are summarized in detail in Table ## and Table ##.
+
+```{r bias plots, echo = FALSE, message = FALSE, warning = FALSE}
+bin_bias_plot + labs(title = "Figure 6: Binary Bias Distributions")
+cont_bias_plot + labs(title = "Figure 7: Continuous Bias Distributions")
+```
+
+
+Additional analysis was performed on the bias demonstrated in each of the bootstrap methods and the empirical calculation. In Figures 6 and 7, the mean and standard deviation of the bias (the difference between the estimated and true average treatment effect) are shown for all three methods in the binary and continuous settings, respectively. The standard deviation of bias increases as the number of initial samples ($n_{sample}$) decreases. These results are summarized in detail in Tables ## and ##.
+
 
 # Discussion
 
