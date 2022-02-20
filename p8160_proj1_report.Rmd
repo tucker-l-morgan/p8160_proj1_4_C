@@ -19,13 +19,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-**detail to be added**
+In an observation data setting estimating the average treatment effect (ATE) can be a challenge. In an ideal world a randomized clinical trial would be conducted where participants are randomized to treatment and no treatment which in term controls for oberserved and unobserved confounding variables allowing the investinators to estimate the ATE. Due to the limitations around RCTs methods such as propensity-score matching have been developed to examine observational data ATE value. The propensity score is a probability associated with participant treatment assigment given the measured basline covariates [1] <!-- Rosenbaum, P. R. und DB Rubin-->. Matching similar treated participants with untreated participants based on their propensity score can help minimizes the confounding that occurs in the observed covariates. In particular this paper will be exploring nearest-neighbor propensity score matching (NNM) using the MatchIt R package [2] <!-- Ho, D., Imai, K., King, G.--> .  It has been shown that subject who have similar propensity scores will have a similar distribution of measured baseline covariates [1] <!-- Rosenbaum, P. R. und DB Rubin-->. There are suggested limitations in matching methods ability to estimate the variance of the treatment effect [3, 4] <!-- Schafer, J. L., & Kang, J. , Austin, P. C., & Small,-->. Bootstrapping is a resampling-based approach and that draws repeated sample with replacement for the original sample to help explore statistical inference when other approaches are limited [4] <!-- Austin, P. C., & Small,--> . This report will explore bootstrapping methods and their ability to estimate the standard error of the estimated ATE in observational data. 
 
-# Simulation Planning
 
 ## Aims
 
-The primary goal of this simulation study is to assess the performance of two bootstrap methods (detailed below) in estimating the sampling variability of treatment effects obtained from a nearest-neighbor propensity-score matching (NNM). In this study, NNM will select a treated subject at random from simulated observational data. The untreated subject with the nearest propensity score is then selected to be paired with the treated subject, without replacement. Treatment effects can then be estimated by comparing outcomes (continuous or binary) between the treated and untreated subjects. The bootstrapping methods will be used to assess the variance of estimated treatment effects.
+The primary goal of this simulation study is to assess the performance of two bootstrap methods (detailed below) in estimating the sampling variability of treatment effects obtained from a nearest-neighbor propensity-score matching (NNM) [2] <!-- Ho, D., Imai, K., King, G.-->. In this study, NNM will select a treated subject at random from simulated observational data. The untreated subject with the nearest propensity score is then selected to be paired with the treated subject, without replacement. Treatment effects can then be estimated by comparing outcomes (continuous or binary) between the treated and untreated subjects. The bootstrapping methods will be used to assess the variance of estimated treatment effects.
+
+# Methods
 
 ## Data Generation
 
@@ -63,13 +64,13 @@ The outcome variable for the continuous data data follows at normal distribution
 
 Thus the true treatment effect will depend on the assignment of $\beta_1$. 
 
-## Methods for Evaluation
+## Evaluation
 
 Two bootstrap methods will be assessed in this simulation: the simple bootstrap and the complex bootstrap.
 
 In the simple bootstrap, one draws repeated samples from an original sample with replacement to imitate the process of drawing samples from a population. Here, 500 repeated samples ($m_{boot}$) of matched pairs ($n_{boot} = n_{sample} \cdot P(A = 1)$) will be drawn from the matched pairs of observations for each of the 100 initial samples ($m_{sample}$). The distribution of the estimated treatment effect ($\hat{\beta_1}$) across the 500 bootstraps is assessed for each of the 100 initial samples.
 
-The complex bootstrap considers two additional sources of variability compared to the simple bootstrap. In this approach, a sample is drawn with replacement from the original, unmatched observational data. The propensity-score model is estimated using this bootstrap sample, and NNM proceeds as before. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
+The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,--> . In this approach, a sample is drawn with replacement from the original, unmatched observational data. The propensity-score model is estimated using this bootstrap sample, and NNM proceeds as before. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
 
 The resulting standard error estimates, $\hat{\sigma}_{\beta}$, will be the primary targets of this analysis.
 
@@ -168,3 +169,14 @@ Additional analysis was performed on the bias demonstrated in each of the bootst
 # Discussion
 
 **conclusions to be added**
+
+
+# References 
+
+\begin{enumerate}
+  \item  Rosenbaum, P. R. und DB Rubin 1983.“The Central Role of the Propensity Score in Observational Studies for Causal Effects”. Biometrika, 70(1), 1-55
+  \item Ho, D., Imai, K., King, G., Stuart, E., \& Whitworth, A. (2018). Package ‘MatchIt’
+  \item Schafer, J. L., \& Kang, J. (2008). Average causal effects from nonrandomized studies: a practical guide and simulated example. Psychological methods, 13(4), 279.
+  \item  Austin, P. C., \& Small, D. S. (2014). The use of bootstrapping when using propensity‐score matching without replacement: a simulation study. Statistics in medicine, 33(24), 4306-4319.
+\end{enumerate}
+
