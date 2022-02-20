@@ -238,9 +238,6 @@ cont_se_plot
 
 - Small number of initial samples, limited in detecting significant differences in coverage rate
 
-- 
-
-- 
 
 ## Future Work
 
