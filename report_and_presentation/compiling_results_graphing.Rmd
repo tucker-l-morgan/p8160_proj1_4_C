@@ -372,3 +372,13 @@ bind_rows(boot_data_cont, empirical_data_cont) %>%
     )+theme_bw()
 ```
 
+\newpage 
+
+![](binary.jpg)
+
+$\\$
+$\\$
+$\\$
+
+![](continuous.jpg)
+
