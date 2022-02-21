@@ -170,7 +170,7 @@ rm(continuous_final_even, continuous_final_odd)
 cr_df_cont <- 
   continuous_final %>%
   mutate(scenario = factor(scenario_id),
-         new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+         new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
          treat_effect = ifelse(beta1 == pos_beta, "True ATE = 1", "True ATE = -1"),
          Method = factor(boot_type, levels = c("Simple", "Complex"))) %>%  
   group_by(new_name, treat_effect, Method) %>%
@@ -185,7 +185,7 @@ cont_cvg_plot <-
   facet_grid(~treat_effect) + 
   labs(
     title = "Continuous Coverage Rates by Parameters of Interest", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "CI Coverage Rate"
   ) +
   theme_bw() +
@@ -196,7 +196,7 @@ empirical_data_cont <-
   continuous_final %>%
   mutate(
     scenario = factor(scenario_id),
-    new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+    new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
     treat_effect = ifelse(beta1 == pos_beta, "True ATE = 1", "True ATE = -1")
   ) %>% 
   select(scenario, new_name, treat_effect, empirical_bias, empirical_se) %>%
@@ -212,7 +212,7 @@ empirical_data_cont <-
 boot_data_cont <- 
   continuous_final %>%
   mutate(scenario = factor(scenario_id),
-         new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+         new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
          treat_effect = ifelse(beta1 == pos_beta, "True ATE = 1", "True ATE = -1"),
          Method = factor(boot_type)
   ) %>% 
@@ -235,7 +235,7 @@ cont_bias_plot <-
   facet_grid(~treat_effect) +
   labs(
     title = "Continuous Simulation Bias and Standard Error CI", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "Bias"
   ) +
   theme_bw() +
@@ -252,7 +252,7 @@ cont_se_plot <-
   facet_grid(~treat_effect) +
   labs(
     title = "Continuous Simulation Standard Error", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "Standard Error"
   ) +
   theme_bw() +

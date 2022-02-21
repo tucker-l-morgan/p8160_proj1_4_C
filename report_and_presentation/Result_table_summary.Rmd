@@ -303,13 +303,29 @@ all_result_binary <- all_result_binary[c(1,3,5,2,4,6,7,9,11,8,10,12),]
 
 ```{r displaying results}
 all_result_binary %>%
-  kbl() %>%
+  kbl(caption = "Table 1: Binary outcome summary") %>%
   kable_classic("striped", full_width = F , html_font = "Cambria") %>%
   column_spec(2, width = "2cm")  %>%
   column_spec(1:9, border_left = T, border_right = T) %>%
-  add_header_above(c("Binary Outcome" = 0, "Empirical" = 3, "Simple" = 1, "Complex" = 5))
+  add_header_above(c("Binary Outcome" = 0, "Empirical" = 3, "Simple" = 1, "Complex" = 5)) %>%
+  row_spec(1:3, bold = T, color = "black", background = "lightgrey") %>%
+  row_spec(4:6, bold = T, color = "black", background = "white") %>%
+  row_spec(7:9, bold = T, color = "black", background = "lightgrey") %>%
+  row_spec(10:12, bold = T, color = "black", background = "white")
 ```
 
-
+```{r displaying results}
+all_result_continuous %>%
+  kbl(caption = "Table 2: Continuous outcome summary") %>%
+  kable_classic("striped", full_width = F , html_font = "Cambria") %>%
+  column_spec(2, width = "2cm")  %>%
+  column_spec(1:9, border_left = T, border_right = T) %>%
+  add_header_above(c("Continuous Outcome" = 0, "Empirical" = 3, 
+                     "Simple" = 1, "Complex" = 5)) %>%
+  row_spec(1:3, bold = T, color = "black", background = "lightgrey") %>%
+  row_spec(4:6, bold = T, color = "black", background = "white") %>%
+  row_spec(7:9, bold = T, color = "black", background = "lightgrey") %>%
+  row_spec(10:12, bold = T, color = "black", background = "white")
+```
 
 
