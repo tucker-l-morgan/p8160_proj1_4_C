@@ -5,12 +5,13 @@ date: "2/16/2022"
 output: pdf_document
 ---
 ```{r setting scenario}
-scenario_id = 2
+source("./shared_code/setup.R")
+scenario_id = 1
 ```
 
 ## Generating 100 Samples from Our Population
 ```{r calling data gen script}
-source("./shared_code/data_gen_continuous.R")
+source("./shared_code/data_gen_continuous_updated.R")
 ```
 
 Let's take a look at one of our "no-boot" aka sub-population data sets.
@@ -165,14 +166,13 @@ to_combine_df <- bind_rows(cont_simple_df, cont_complex_df)
 
 dataset_name <- paste0("cont_df_scen_", scenario_id)
 
-save_command <- paste0('save(', dataset_name, ", file = './output_data/", dataset_name, ".RData')")
+save_command <- paste0('save(', dataset_name, ", file = './new_output_data/", dataset_name, ".RData')")
 
 eval(parse(text = paste(dataset_name, "to_combine_df", sep = " <- ")), envir = .GlobalEnv)
 
 eval(parse(text = save_command))
 
 beep()
-
 #save(cont_df_scen_7, file = "./output_data/continuous_scen_7.RData") # change object name and file name each run
 ```
 

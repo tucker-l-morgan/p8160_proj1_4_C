@@ -9,7 +9,29 @@ expit <- function(x){
   return(res)
 }
 
+
+
 set.seed(20220217)
+
+# a tibble of all scenarios to be tested
+all_scenarios <- tibble(
+  id = c(1:18),
+  n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
+  beta1 = rep(c(1, -1),9)
+)
+
+# list of parameters
+desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
+alpha1   = log(1.25)
+alpha2   = log(1.75)
+beta0    = 0
+beta1    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta1)
+beta2    = 2
+beta3    = 1
+m_sample = 100     # 100
+m_boot   = 500     # 500
+n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
 seed_vec <- runif(100000, min = 100, max = 99999999) %>% round(0) %>% unique()
 
