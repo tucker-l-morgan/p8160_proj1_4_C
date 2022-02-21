@@ -119,6 +119,13 @@ knitr::opts_chunk$set(echo = TRUE)
 \end{tikzpicture}
 ```
 
+## An Example of Bootstrap Result Image.
+
+![](plot.jpg)
+
+
+
+
 <!-- Waveley  -->
 
 ## Data Generation
