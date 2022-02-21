@@ -1,5 +1,7 @@
 ---
-title: "Title in Progress"
+title: |
+  | The Chicken or the Egg:
+  | Bootstrapping in the Setting of Propensity Score Matching
 author: |
   | Amy Pitts, Hun Lee, Jimmy Kelliher,
   | Tucker Morgan, and Waveley Qiu
