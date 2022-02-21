@@ -212,26 +212,29 @@ _Other Measures_
 
 - \textbf{Bias:} The mean of the average estimate ($\hat{\beta}_1$) less the true treatment effect ($\beta$)
 
-## Results
-```{r loading in binary coverage plot, echo = FALSE, message = FALSE, warning = FALSE}
+## Results - Binary Outcome
+
+```{r loading_in_binary_coverage_plot, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 source("./shared_code/bin_plots_script.R")
 bin_cvg_plot
 ```
 
-## Results
-```{r binary standard error plot, echo = FALSE, message = FALSE, warning = FALSE}
+## Results - Binary Outcome
+```{r binary_standard_error_plot, echo = FALSE, message = FALSE, warning = FALSE}
 bin_se_plot
 ```
 
-## Results
-```{r continuous coverage plot, echo = FALSE, message = FALSE, warning = FALSE}
+## Results - Continuous Outcome
+
+```{r continuous_coverage_plot, echo = FALSE, message = FALSE, warning = FALSE}
 source("./shared_code/cont_plots_script.R")
 cont_cvg_plot
 ```
 
-## Results
-```{r continous standard error plot, echo = FALSE, message = FALSE, warning = FALSE}
+## Results - Continuous Outcome
+
+```{r continous_standard_error_plot, echo = FALSE, message = FALSE, warning = FALSE}
 cont_se_plot
 ```
 
