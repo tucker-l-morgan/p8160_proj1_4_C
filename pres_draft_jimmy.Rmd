@@ -123,6 +123,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Data Generation
 
+\begin{center}
+  Let's generate some data.
+\end{center}
+
+
+## Data Generation
+
+>- Three covariates (L1, L2, L3), one confounding covariate (L2) related to both treatment (A) and outcome (Y).
+
 ```{tikz, echo = FALSE}
 \tikzstyle{block} = [circle, draw, text width=5em, text centered, minimum height=1em]
 \tikzstyle{line} = [draw, -latex]
@@ -142,6 +151,39 @@ knitr::opts_chunk$set(echo = TRUE)
     \path [line] (A) -- (Y);
 \end{tikzpicture}
 ```
+
+## Data Generation - Random Number Generation
+
+```{r, eval=FALSE}
+set.seed(20220217)
+
+seed_vec <- 
+  runif(100000, 
+        min = 100, 
+        max = 99999999) %>% 
+  round(0) %>% 
+  unique()
+```
+
+```{r, eval = FALSE}
+simple_boot <- 
+  function(df, 
+           n = m_boot, 
+           size = df %>% pull(A) %>% sum(), 
+           seeds = seed_vec){
+  boots <- list()
+  for (i in 1:n) {
+    set.seed(seeds[i])
+    boots[[i]] <- 
+      df %>% 
+      filter(subclass %in% sample(levels(subclass), 
+                                  size, 
+                                  replace =  TRUE))
+  }
+  return(boots)
+}
+```
+
 
 ## Data Generation - Continuous Outcome
 
@@ -164,11 +206,9 @@ For each individual $i \in \{ 1, \ldots, n \}$, we consider covariates $L_{1i}, 
 Given this, we further define the data-generating process of our binary outcome via $Y_i \sim B(\tau_i)$ where
   \[
     \log \left( \frac{\tau_i}{1 - \tau_i} \right)
-    = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
+    = \beta_0 + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
   \]
 Observe that we have omitted a random error term, as realizations of $Y_i$ are innately subject to noise.
-
-
 
 
 <!-- Amy  -->
