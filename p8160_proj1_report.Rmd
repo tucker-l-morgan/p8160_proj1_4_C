@@ -147,7 +147,7 @@ Bootstrapping functions were then defined, in which separate procedures were wri
 
 We then constructed functions that produced the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and each bootstrapped sample produced a single estimated treatment effect. Then, we summarized these estimates. <add a little more detail about summarization>
 
-Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters we wanted to vary, we established a dataset containing our scenarios of interest that these final programs would take in and run accordingly.
+Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters we wanted to vary, we established a dataset containing our scenarios of interest that these final programs would take in and run accordingly. 
 
 **discussion of coding will go here, perhaps even excerpts of code**
 
