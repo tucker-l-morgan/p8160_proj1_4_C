@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Motivation
 
->- Identifying the effect of a treatment or intervention is one of the most fundamental tasks we encounter as biostatisticians...
+>- Identifying the effect of a treatment, exposure, or intervention is one of the most fundamental tasks we encounter as biostatisticians...
  
 >- ... but outside of a randomized control trial (RCT), confounding variables can bias our estimates of treatment effects.
  
@@ -33,14 +33,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## A Quick Foray into Confounding
 
-```{tikz, echo = FALSE}
+```{tikz, echo = FALSE, fig.align = "center"}
 \tikzstyle{block} = [circle, draw, text width=5em, text centered, minimum height=1em]
 \tikzstyle{line} = [draw, -latex]
 
 \begin{tikzpicture}[node distance = 4cm, auto]
     % Place nodes
-    \node [block] (L) {Confounder $L$};
-    \node [block, below of = L] (A) {Treatment $A$};
+    \node [block] (A) {Treatment $A$};
+    \node [block, above of = A] (L) {Confounder $L$};
     \node [block, right of = A] (Y) {Outcome $Y$};
     % Draw edges
     \path [line] (L) -- (A);
@@ -49,11 +49,15 @@ knitr::opts_chunk$set(echo = TRUE)
 \end{tikzpicture}
 ```
 
+## A (Yet) Quick(er) Foray into Propensity Score Matching
 
-## Taking a Step Back, What is Propensity Score Matching?
+> (1) We start with an unmatched dataset.
 
->- A _propensity score_ is the probability that an individual receives a treatment $A$; that is, $P(A = 1)$. In an RCT, treatments are randomized, and hence outcomes $Y$ are independent of treatment $A$.
+> (2) We estimate the propensity score - the probability of treatment given some set of covariates - according to some pre-specified model fitting (e.g., logistic regression).
 
+> (3) We pair treated and untreated indiviuals who have similar propensity scores according to some pre-specified matching algorithm (e.g., nearest neighbors).
+
+> (4) We end with a matched dataset.
 
 ## Enter the Bootstrap
 
@@ -69,7 +73,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Roadmap of the Simulation Study
 
-```{tikz, echo = FALSE}
+```{tikz, echo = FALSE, fig.align = "center"}
 \tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
 \tikzstyle{line} = [draw, -latex]
 
@@ -130,7 +134,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Data Generation
 
-```{tikz, echo = FALSE}
+```{tikz, echo = FALSE, fig.align = "center"}
 \tikzstyle{block} = [circle, draw, text width=5em, text centered, minimum height=1em]
 \tikzstyle{line} = [draw, -latex]
 
