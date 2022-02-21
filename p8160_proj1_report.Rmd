@@ -30,7 +30,7 @@ The primary goal of this simulation study is to assess the performance of two bo
 
 ## Data Generation
 
-The data for this simulation study were generated from a parametric model. This simulation study in interested in observational data therefore, our data generation will be modeled off of a potential observational study that could happen in the real world. For each subject, three baseline covariates ($L_1, L_2, L_3$) were simulated from independent standard normal distributions, $N(0, 1)$. Two of these covariates ($L_1$ and $L_2$) affected treatment selection, while two ($L_2$ and $L_3$) affected the outcome. Here the $L_2$ variable will be acting as the confounding since it is shared in the treatment assignment and outcome generation. The probability of treatment for each subject was determined by the following model:
+The data for this simulation study were generated from a parametric model. This simulation study is interested in observational data therefore, our data generation will be modeled off of a potential observational study that could happen in the real world. For each subject, three baseline covariates ($L_1, L_2, L_3$) were simulated from independent standard normal distributions, $N(0, 1)$. Two of these covariates ($L_1$ and $L_2$) affected treatment selection, while two ($L_2$ and $L_3$) affected the outcome. Here the $L_2$ variable will be acting as the confounding since it is shared in the treatment assignment and outcome generation. The probability of treatment for each subject was determined by the following model:
 $$
 \text{log}\left(\frac{\pi_i}{1 - \pi_i}\right) = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}
 $$
@@ -183,7 +183,7 @@ Additional analysis was performed on the bias demonstrated in each of the bootst
 
 \newpage 
 
-![](binary.jpg)
+![binary table](binary.jpg)
 $\\$
 
 ![](continuous.jpg)
