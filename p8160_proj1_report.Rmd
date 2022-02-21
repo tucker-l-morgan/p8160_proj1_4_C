@@ -139,17 +139,17 @@ Bias is also calculated using the true treatment effect. This measure helps conf
 
 # Simulation Execution
 
-We had several options as to how to organize the functions we would establish and ultimately decided to divide our code into individual RMarkdown and/or RScript files along outcome type. Each of these files would define, collate, and/or execute the particular simulation scenarios of interest.
+As this simulation study contained many different components, several options were proposed to maintain program tidiness. It was ultimately determined that it would be best to divide the code into individual RMarkdown and/or RScript files along outcome type. Each of these files would define, collate, and/or execute the particular simulation scenarios of interest.
 
-First, RScript files containing data generation functions for each outcome type were constructed. These scripts would not only generate the initial datasets we were interested (according to algorithms defined previously) but also a vector drawn from a uniform distribution to serve as the seeds we would set in future sampling procedures. A seed was set at the beginning of this script file in order for the results of this simulation study to be reproducible.
+First, RScript files containing data generation functions for each outcome type were constructed. These scripts would not only generate the initial datasets of interest (according to algorithms defined previously) but also a vector drawn from a uniform distribution to provide the seeds needed to run future sampling procedures. A seed was set at the beginning of this script file in order for the results of this simulation study to be reproducible. [Appendix A]
 
-Bootstrapping functions were then defined, in which separate procedures were written for simple bootstrapping and complex bootstrapping. Since the simple bootstrap samples from a dataset in which propensity score matched pairs had already been created, its function only needed to perform the sampling-with-replacement procedure. In the function written to handle complex bootstrapping, a matching procedure was included after the sampling-with-replacement step. Both of these functions were written to perform all iterations of bootstrapping required for each initial dataset (i.e., $m_{boot}$ samples would be produced for each base sample).
+Bootstrapping functions were then defined, in which separate procedures were written for simple bootstrapping and complex bootstrapping. Since the simple bootstrap samples from a dataset in which propensity score matched pairs had already been created, its function only needed to perform the sampling-with-replacement procedure. [Appendix B] In the function written to handle complex bootstrapping, a matching procedure was included after the sampling-with-replacement step. [Appendix C] Both of these functions were written to perform all iterations of bootstrapping required for each initial dataset (i.e., $m_{boot}$ samples would be produced for each base sample).
 
-We then constructed functions that produced the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and each bootstrapped sample produced a single estimated treatment effect. Then, we summarized these estimates. <add a little more detail about summarization>
+Outcome functions were then constructed to produce the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and each bootstrapped sample produced a single estimated treatment effect. [Appendix D] Then, these estimates were summarized and collected in datasets that were indexed by scenario, outcome type, and bootstrapping method. 
 
-Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters we wanted to vary, we established a dataset containing our scenarios of interest that these final programs would take in and run accordingly. 
+Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters that would vary, a dataset was established to describe the scenarios of interest in the study. [Appendix E] These final programs would read in the specified row of parameters and conduct the full simulation based on those values. 
 
-**discussion of coding will go here, perhaps even excerpts of code**
+Some excerpts of the programming associated with this simulation study has been included in the Appendix. All programs are available in [this GitHub repository](https://github.com/tucker-l-morgan/p8160_proj1_4_C).
 
 # Results
 
@@ -200,6 +200,7 @@ One drawback of this study was a lack of sample size plurality. It would be bene
 
 Similar studies in the future could focus on improving some of the limitations mentioned above. In particular, working with a larger number of initial samples and larger sample sizes would give more insight into how well the simple and complex bootstrap methods estimate standard error. As detailed above, the data generation and treatment assignment models are relatively simple with standard normally distributed covariates. Covariate correlations were also held constant in each of the simulated scenarios. It is recommended that these methods be studied in settings with varying parametric or non-parametric data to further understand their performance.
 
+\newpage
 
 # References 
 
@@ -209,4 +210,127 @@ Similar studies in the future could focus on improving some of the limitations m
   \item Schafer, J. L., \& Kang, J. (2008). Average causal effects from nonrandomized studies: a practical guide and simulated example. Psychological methods, 13(4), 279.
   \item  Austin, P. C., \& Small, D. S. (2014). The use of bootstrapping when using propensity‐score matching without replacement: a simulation study. Statistics in medicine, 33(24), 4306-4319.
 \end{enumerate}
+
+\newpage
+
+# Appendices
+
+## Appendix A: Seed Vector
+
+```{r, eval=FALSE}
+set.seed(20220217)
+
+seed_vec <- runif(100000, min = 100, max = 99999999) %>% round(0) %>% unique()
+```
+
+\newpage
+
+## Appendix B: Simple Bootstrap, Binary Outcome
+
+```{r}
+simple_boot <- function(df, n = m_boot, size = df %>% pull(A) %>% sum(), seeds = seed_vec){
+  boots <- list()
+  for (i in 1:n) {
+    set.seed(seeds[i])
+    boots[[i]] <- 
+      df %>% 
+      filter(subclass %in% sample(levels(subclass), 
+                                  size, 
+                                  replace =  TRUE))
+  }
+  return(boots)
+}
+```
+
+\newpage
+
+## Appendix C: Complex Bootstrap, Binary Outcome
+
+```{r, eval=FALSE}
+generate_boots <- function(df, iter = m_boot, seeds = seed_vec){
+  
+  boot_samples <- list()
+  matched_boot_df <- list()
+  boot_results <- tibble()
+  
+  for (i in 1:iter) {
+    set.seed(seeds[[i]])
+    
+    boot_samples[[i]] <- sample_n(df, nrow(df), replace = TRUE)
+    
+    matched <- matchit(A ~ L2 + L3, data = boot_samples[[i]], 
+                       distance = "glm", link = "logit",
+                       method = "nearest", ratio = 1)
+    
+    matched_boot_df[[i]] <- match.data(matched, distance = "ps")
+  }
+  
+  return(matched_boot_df)
+}
+```
+
+\newpage
+
+## Appendix D: Outcome Function, Binary Outcome
+
+```{r, eval=FALSE}
+outcome_model_list <- function(list) {
+  tib_coef <- tibble()
+  boots <- tibble(mean1 = NA,
+                  mean0 = NA,
+                  difference = NA)
+  for (i in 1:length(list)) {
+    mod <- glm(Y ~ A + ps, 
+               data = list[[i]], 
+               weights = weights, 
+               family = "binomial")
+    
+    sampl_all_treated <- 
+      list[[i]] %>%
+      mutate(A = 1)
+    
+    sampl_all_untreated <- 
+      list[[i]] %>%
+      mutate(A = 0)
+    
+    sampl_all_treated$pred.y <- 
+      predict(mod, sampl_all_treated, type = "response")
+    
+    sampl_all_untreated$pred.y <- 
+      predict(mod, sampl_all_untreated, type = "response")
+    
+    boots[i, "mean1"] <- mean(sampl_all_treated$pred.y)
+    boots[i, "mean0"] <- mean(sampl_all_untreated$pred.y)
+    boots[i, "difference"] <- boots[i, "mean1"] - boots[i, "mean0"]
+  }
+  return(boots)
+}
+```
+
+\newpage
+
+## Appendix E: Parameter Setting, Scenario 1
+
+```{r, eval=FALSE}
+scenario_id <- 1
+
+all_scenarios <- tibble(
+  id = c(1:18),
+  n_sample = c(rep(1000, 6), rep(10000, 6), rep(100, 6)),
+  desired_prop = rep(c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3),3),
+  beta1 = rep(c(0.767,  1.386294), 9),
+  beta0 = rep(c(0.422, -1.069315, 0.46, -1.138629, 0.499, -1.207944), 3)
+)
+
+desired_prop = all_scenarios %>% filter(id == scenario_id) %>% pull(desired_prop)
+alpha1   = log(1.25)
+alpha2   = log(1.75)
+beta0    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta0)
+beta1    = all_scenarios %>% filter(id == scenario_id) %>% pull(beta1)
+beta2    = log(1.75)
+beta3    = log(1.25)
+m_sample = 100
+m_boot   = 500
+n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
+```
 
