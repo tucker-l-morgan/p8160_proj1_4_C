@@ -6,7 +6,7 @@ output: pdf_document
 ---
 ```{r setting scenario}
 source("./shared_code/setup.R")
-scenario_id = 1
+scenario_id = 6
 ```
 
 ## Generating 100 Samples from Our Population
