@@ -61,10 +61,7 @@ generate_no_boot_data <- function(n=m_sample,
     
     df[[i]] <- A_tib %>%
       mutate(
-        logit_y = beta0 + beta1*A + beta2*L2 + beta3*L3 + beta_error,
-        y = expit(logit_y),
-        comp_pY = long_runif[(size + 1):(2*size)],
-        Y = (y > comp_pY) %>% as.numeric()
+        Y = beta0 + beta1*A + beta2*L2 + beta3*L3 + beta_error
       )
   }
   return(df)
