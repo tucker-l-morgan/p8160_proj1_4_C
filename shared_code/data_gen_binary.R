@@ -36,8 +36,6 @@ generate_no_boot_data <- function(n=m_sample, size = n_sample, seeds = seed_vec,
 
     alpha0 <- log(desired_prop_treated/(1 - desired_prop_treated))
   
-    log(0.01/0.99)
-
     pre_data <- defData(pre_data, varname = "alpha0", formula = alpha0)
     pre_data <- defData(pre_data, varname = "alpha1", formula = alpha1)
     pre_data <- defData(pre_data, varname = "alpha2", formula = alpha2)

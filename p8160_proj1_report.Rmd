@@ -139,6 +139,16 @@ Bias is also calculated using the true treatment effect. This measure helps conf
 
 # Simulation Execution
 
+We had several options as to how to organize the functions we would establish and ultimately decided to divide our code into individual RMarkdown and/or RScript files along outcome type. Each of these files would define, collate, and/or execute the particular simulation scenarios of interest.
+
+First, RScript files containing data generation functions for each outcome type were constructed. These scripts would not only generate the initial datasets we were interested (according to algorithms defined previously) but also a vector drawn from a uniform distribution to serve as the seeds we would set in future sampling procedures. A seed was set at the beginning of this script file in order for the results of this simulation study to be reproducible.
+
+Bootstrapping functions were then defined, in which separate procedures were written for simple bootstrapping and complex bootstrapping. Since the simple bootstrap samples from a dataset in which propensity score matched pairs had already been created, its function only needed to perform the sampling-with-replacement procedure. In the function written to handle complex bootstrapping, a matching procedure was included after the sampling-with-replacement step. Both of these functions were written to perform all iterations of bootstrapping required for each initial dataset (i.e., $m_{boot}$ samples would be produced for each base sample).
+
+We then constructed functions that produced the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and each bootstrapped sample produced a single estimated treatment effect. Then, we summarized these estimates. <add a little more detail about summarization>
+
+Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters we wanted to vary, we established a dataset containing our scenarios of interest that these final programs would take in and run accordingly.
+
 **discussion of coding will go here, perhaps even excerpts of code**
 
 # Results
