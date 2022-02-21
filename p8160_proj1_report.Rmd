@@ -181,6 +181,13 @@ cont_bias_plot + labs(title = "Figure 7: Continuous Bias Distributions") + theme
 
 Additional analysis was performed on the bias demonstrated in each of the bootstrap methods and the empirical calculation. In Figures 6 and 7, the mean and standard deviation of the bias (the difference between the estimated and true average treatment effect) are shown for all three methods in the binary and continuous settings, respectively. The standard deviation of bias increases as the number of initial samples ($n_{sample}$) decreases. These results are summarized in detail in Tables ## and ##.
 
+\newpage 
+
+![](binary.jpg)
+$\\$
+
+![](continuous.jpg)
+
 # Discussion
 
 In summary, the simple bootstrap method tended to underestimate standard error for binary outcomes and tended to have smaller standard error estimates compared to the complex bootstrap method overall. However, differences were less pronounced in settings with larger sample sizes and higher treatment prevalence. Based on the results of this study, it is recommended to use the simple bootstrap method for continuous data, as the complex bootstrap confidence intervals typically had statistically significantly high coverage rates. For binary data, it is recommended to use the complex bootstrap, particularly in settings with larger sample sizes. The simple bootstrap tended to produce statistically significantly low coverage rates for binary data. Notably, the complex bootstrap was not a reliable method in a setting with small sample size and low treatment prevalence (n = 100, 10% treatment).
