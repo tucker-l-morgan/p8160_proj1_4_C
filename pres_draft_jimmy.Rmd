@@ -65,9 +65,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 >- The PSM algorithm intakes an unmatched dataset and outputs a matched one.
 
->- When do we execute the bootstrap - before the match or after it?
+>- __Primary Research Question:__ When do we execute the bootstrap - before the match or after it?
 
 >- Let's try both!
+
+
+
 
 <!-- Hun  -->
 
@@ -123,9 +126,10 @@ knitr::opts_chunk$set(echo = TRUE)
 \end{tikzpicture}
 ```
 
-## An Example of Bootstrap Result Image.
+## An Example of a Single Bootstrap Sample
 
 ![](plot.jpg)
+
 
 
 
@@ -175,9 +179,10 @@ For each individual $i \in \{ 1, \ldots, n \}$, we consider covariates $L_{1i}, 
 Given this, we further define the data-generating process of our binary outcome via $Y_i \sim B(\tau_i)$ where
   \[
     \log \left( \frac{\tau_i}{1 - \tau_i} \right)
-    = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
+    = \beta_0 + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
   \]
-Observe that we have omitted a random error term, as realizations of $Y_i$ are innately subject to noise.
+Observe that we have omitted a random error term, as realizations of our binary $Y_i$ are innately subject to noise.
+
 
 
 
@@ -193,22 +198,19 @@ Observe that we have omitted a random error term, as realizations of $Y_i$ are i
 _Other Parameters_
 
 - The number of datasets $m_{\text{sample}} = 100$
-- The number of bootstrap re-sample $m_{\text{boot}} = 500$
+- The number of bootstrap re-samples $m_{\text{boot}} = 500$
 - The sample size of bootstrap re-samples $n_{\text{simple}} = n_{\text{complex}} = n_{\text{sample}}\times \pi$
-- Strength of Covariate Correlation on Treatment Status $\alpha_1, \alpha_2$ 
-(continuous and binary data ($\log(1.25), \log(1.75)$) )
-- Strength of Covariate Correlation on Outcome Variable  $\beta_2, \beta_3$
-(continuous data (2,1), binary data ($\log(1.75), \log(1.25)$) )
+- Strength of covariate effect on treatment $\alpha_1 = \log(1.25), \alpha_2 = \log(1.75)$
+- Strength of covariate effect on outcome $\beta_2 = \log(1.75), \beta_3 = \log(1.25)$
 
 ## Measures of Interest
 
-- \textbf{Coverage Rate:} Looks at the rate of the true avergae treatment effect falling in the 95\% confidence intervals. $\hat{\text{ATE}} \pm 1.96\times \text{SE}$
-- \textbf{Standard Error:}  the variability of the average estimate. 
+- \textbf{Standard Error:} The variability of the average estimate of the treatment effect ($\text{SE}(\hat{\beta}_1)$).
+- \textbf{Coverage Rate:} The fraction of alleged 95\% confidence intervals ($\hat{\beta}_1 \pm 1.96 \times \text{SE}(\hat{\beta}_1)$) that contain the true treatment effect
 
 _Other Measures_
 
-- \textbf{Bias:} This is mean of the average estimate subtract the true ATE 
-- \textbf{95\% Confidence Intervals:}
+- \textbf{Bias:} The mean of the average estimate ($\hat{\beta}_1$) less the true treatment effect ($\beta$)
 
 ## Results
 ```{r loading in binary coverage plot, echo = FALSE, message = FALSE, warning = FALSE}
