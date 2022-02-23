@@ -3,18 +3,18 @@ smaller_true_ATE <- 0.15
 bigger_true_ATE <- 0.3
 
 # loading data
-load("./output_data/binary_scen_1.RData")
-load("./output_data/binary_scen_2.RData")
-load("./output_data/binary_scen_3.RData")
-load("./output_data/binary_scen_4.RData")
-load("./output_data/binary_scen_5.RData")
-load("./output_data/binary_scen_6.RData")
-load("./output_data/binary_scen_13.RData")
-load("./output_data/binary_scen_14.RData")
-load("./output_data/binary_scen_15.RData")
-load("./output_data/binary_scen_16.RData")
-load("./output_data/binary_scen_17.RData")
-load("./output_data/binary_scen_18.RData")
+load("./new_output_data/binary_scen_1.RData")
+load("./new_output_data/binary_scen_2.RData")
+load("./new_output_data/binary_scen_3.RData")
+load("./new_output_data/binary_scen_4.RData")
+load("./new_output_data/binary_scen_5.RData")
+load("./new_output_data/binary_scen_6.RData")
+load("./new_output_data/binary_scen_13.RData")
+load("./new_output_data/binary_scen_14.RData")
+load("./new_output_data/binary_scen_15.RData")
+load("./new_output_data/binary_scen_16.RData")
+load("./new_output_data/binary_scen_17.RData")
+load("./new_output_data/binary_scen_18.RData")
 
 bin_all_scenarios <- tibble(
   id = c(1:18),

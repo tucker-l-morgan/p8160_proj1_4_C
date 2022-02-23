@@ -2,18 +2,18 @@
 pos_beta <- 1
 neg_beta <- -1
 
-load("./output_data/cont_df_scen_1.RData")
-load("./output_data/cont_df_scen_2.RData")
-load("./output_data/cont_df_scen_3.RData")
-load("./output_data/cont_df_scen_4.RData")
-load("./output_data/cont_df_scen_5.RData")
-load("./output_data/cont_df_scen_6.RData")
-load("./output_data/cont_df_scen_13.RData")
-load("./output_data/cont_df_scen_14.RData")
-load("./output_data/cont_df_scen_15.RData")
-load("./output_data/cont_df_scen_16.RData")
-load("./output_data/cont_df_scen_17.RData")
-load("./output_data/cont_df_scen_18.RData")
+load("./new_output_data/cont_df_scen_1.RData")
+load("./new_output_data/cont_df_scen_2.RData")
+load("./new_output_data/cont_df_scen_3.RData")
+load("./new_output_data/cont_df_scen_4.RData")
+load("./new_output_data/cont_df_scen_5.RData")
+load("./new_output_data/cont_df_scen_6.RData")
+load("./new_output_data/cont_df_scen_13.RData")
+load("./new_output_data/cont_df_scen_14.RData")
+load("./new_output_data/cont_df_scen_15.RData")
+load("./new_output_data/cont_df_scen_16.RData")
+load("./new_output_data/cont_df_scen_17.RData")
+load("./new_output_data/cont_df_scen_18.RData")
 
 cont_all_scenarios <- tibble(
   id = c(1:18),
