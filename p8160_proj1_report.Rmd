@@ -17,6 +17,12 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dagitty)
+library(ggdag)
+```
+
+
 # Introduction
 
 In an observation data setting estimating the average treatment effect (ATE) can be a challenge. In an ideal world a randomized clinical trial would be conducted where participants are randomized to treatment and no treatment which in term controls for observed and unobserved confounding variables allowing the investigators to estimate the ATE. Due to the limitations around RCTs methods such as propensity-score matching have been developed to examine observational data ATE value. The propensity score is a probability associated with participant treatment assigment given the measured baseline covariates [1] <!-- Rosenbaum, P. R. und DB Rubin-->. Matching similar treated participants with untreated participants based on their propensity score can help minimizes the confounding that occurs in the observed covariates. In particular this paper will be exploring nearest-neighbor propensity score matching (NNM) using the MatchIt R package [2] <!-- Ho, D., Imai, K., King, G.--> .  It has been shown that subject who have similar propensity scores will have a similar distribution of measured baseline covariates [1] <!-- Rosenbaum, P. R. und DB Rubin-->. There are suggested limitations in matching methods ability to estimate the variance of the treatment effect [3, 4] <!-- Schafer, J. L., & Kang, J. , Austin, P. C., & Small,-->. Bootstrapping is a resampling-based approach and that draws repeated sample with replacement for the original sample to help explore statistical inference when other approaches are limited [4] <!-- Austin, P. C., & Small,--> . This report will explore bootstrapping methods and their ability to estimate the standard error of the estimated ATE in observational data. 
@@ -63,6 +69,27 @@ The outcome variable for the binary data follows at logit normal distribution wi
 The outcome variable for the continuous data data follows at normal distribution with $\mu = \beta_1$ and $\sigma^2 = \beta_2^2 + \beta_3^2$. 
 
 Thus the true treatment effect will depend on the assignment of $\beta_1$. 
+$\\$
+
+Fig. 1. Data generation DAG
+
+```{r, echo = FALSE, message = FALSE, fig.width=8, fig.height=3.5}
+g <- dagitty('dag {
+    L1 [pos="1,1"]
+    A [pos="1,0"]
+    Y [pos="2,0"]
+    L2 [pos="1.5,1"]
+    L3 [pos="2,1"]
+    L1 -> A -> Y 
+    A -> Y 
+    L2 -> A
+    L2 -> Y
+    L3 -> Y
+}')
+ggdag(g)+theme_dag_blank()
+```
+
+\newpage
 
 ## Evaluation
 
@@ -70,7 +97,7 @@ Two bootstrap methods will be assessed in this simulation: the simple bootstrap 
 
 In the simple bootstrap, one draws repeated samples from an original sample with replacement to imitate the process of drawing samples from a population. Here, 500 repeated samples ($m_{boot}$) of matched pairs ($n_{boot} = n_{sample} \cdot P(A = 1)$) will be drawn from the matched pairs of observations for each of the 100 initial samples ($m_{sample}$). The distribution of the estimated treatment effect ($\hat{\beta_1}$) across the 500 bootstraps is assessed for each of the 100 initial samples.
 
-The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,--> . In this approach, a sample is drawn with replacement from the original, unmatched observational data. The propensity-score model is estimated using this bootstrap sample, and NNM proceeds as before. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
+The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,-->. In this approach, a sample is drawn with replacement from the original, unmatched observational data. Then by fitting a new logistic model for each bootstrap, the propensity-score model is re-estimated and re-form a propensity-score-matched sample. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
 
 The resulting standard error estimates, $\hat{\sigma}_{\beta}$, will be the primary targets of this analysis.
 
@@ -145,7 +172,7 @@ First, RScript files containing data generation functions for each outcome type 
 
 Bootstrapping functions were then defined, in which separate procedures were written for simple bootstrapping and complex bootstrapping. Since the simple bootstrap samples from a dataset in which propensity score matched pairs had already been created, its function only needed to perform the sampling-with-replacement procedure. [Appendix B] In the function written to handle complex bootstrapping, a matching procedure was included after the sampling-with-replacement step. [Appendix C] Both of these functions were written to perform all iterations of bootstrapping required for each initial dataset (i.e., $m_{boot}$ samples would be produced for each base sample).
 
-Outcome functions were then constructed to produce the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and each bootstrapped sample produced a single estimated treatment effect. [Appendix D] Then, these estimates were summarized and collected in datasets that were indexed by scenario, outcome type, and bootstrapping method. 
+Outcome functions were then constructed to produce the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and we use standardization to estimate the average treatment effect. To this end, the pseudo-population is created where every subject gets treatment and no treatment for each sub-population and we use GLM model to obtain estimated treatment effect from bootstrapped samples. [Appendix D] Then, these estimates were summarized and collected in datasets that were indexed by scenario, outcome type, and bootstrapping method. 
 
 Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters that would vary, a dataset was established to describe the scenarios of interest in the study. [Appendix E] These final programs would read in the specified row of parameters and conduct the full simulation based on those values. 
 
