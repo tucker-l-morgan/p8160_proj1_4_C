@@ -183,7 +183,7 @@ Additional analysis was performed on the bias demonstrated in each of the bootst
 
 \newpage 
 
-![binary table](binary.jpg)
+![](binary.jpg)
 $\\$
 
 ![](continuous.jpg)
