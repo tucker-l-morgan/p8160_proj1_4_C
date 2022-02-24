@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2022.2.16)  24 FEB 2022 09:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2022.2.16)  24 FEB 2022 09:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -723,21 +723,21 @@ Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1
 <p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf, id=114, 592.78667pt x 331.5808pt>
 File: p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf  used on input line 255.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf  used on input line 257.
 (pdftex.def)             Requested size: 469.75261pt x 262.76053pt.
 [3 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf>]
 <p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf, id=154, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf  used on input line 357.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf  used on input line 360.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf, id=155, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf  used on input line 358.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf  used on input line 361.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 357--359
+Underfull \hbox (badness 10000) in paragraph at lines 360--362
 []
  []
 
@@ -748,15 +748,15 @@ Overfull \vbox (26.90105pt too high) has occurred while \output is active []
 <p8160_proj1_report_files/figure-latex/standard error plots-1.pdf, id=178, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf  used on input line 391.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf  used on input line 394.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <p8160_proj1_report_files/figure-latex/standard error plots-2.pdf, id=179, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf  used on input line 392.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf  used on input line 395.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 391--393
+Underfull \hbox (badness 10000) in paragraph at lines 394--396
 [][]
  []
 
@@ -764,15 +764,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 391--393
 <p8160_proj1_report_files/figure-latex/bias plots-1.pdf, id=189, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-1.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-1.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-1.pdf  used on input line 416.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-1.pdf  used on input line 419.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <p8160_proj1_report_files/figure-latex/bias plots-2.pdf, id=190, 469.755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-2.pdf Graphic file (type pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-2.pdf>
-Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-2.pdf  used on input line 417.
+Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-2.pdf  used on input line 420.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 416--418
+Underfull \hbox (badness 10000) in paragraph at lines 419--421
 [][]
  []
 
@@ -780,25 +780,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 416--418
 <binary.jpg, id=219, 635.37375pt x 339.2675pt>
 File: binary.jpg Graphic file (type jpg)
 <use binary.jpg>
-Package pdftex.def Info: binary.jpg  used on input line 430.
+Package pdftex.def Info: binary.jpg  used on input line 433.
 (pdftex.def)             Requested size: 469.77171pt x 250.84177pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 430--431
+Underfull \hbox (badness 10000) in paragraph at lines 433--434
 
  []
 
 <continuous.jpg, id=221, 678.535pt x 352.31625pt>
 File: continuous.jpg Graphic file (type jpg)
 <use continuous.jpg>
-Package pdftex.def Info: continuous.jpg  used on input line 432.
+Package pdftex.def Info: continuous.jpg  used on input line 435.
 (pdftex.def)             Requested size: 469.75305pt x 243.91023pt.
 [10 <./binary.jpg> <./continuous.jpg>] [11] [12]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 502.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 517.
 (/Users/iseonghun/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [13]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 517.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 532.
 [14] [15] [16] [17] (./p8160_proj1_report.aux)
 Package rerunfilecheck Info: File `p8160_proj1_report.out' has not changed.
 (rerunfilecheck)             Checksum: DF8A175D9F028ACE85351F9C3614803D;2900.
@@ -812,7 +812,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  84i,6n,80p,744b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{/Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}</Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></Users/iseonghun/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on p8160_proj1_report.pdf (17 pages, 626657 bytes).
+Output written on p8160_proj1_report.pdf (17 pages, 627028 bytes).
 PDF statistics:
  358 PDF objects out of 1000 (max. 8388607)
  279 compressed objects within 3 object streams

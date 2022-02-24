@@ -71,7 +71,7 @@ The outcome variable for the continuous data data follows at normal distribution
 Thus the true treatment effect will depend on the assignment of $\beta_1$. 
 $\\$
 
-Fig. 1. Data generation DAG
+Figure 1. Data Generation DAG
 
 ```{r, echo = FALSE, message = FALSE, fig.width=8, fig.height=3.5}
 g <- dagitty('dag {
@@ -100,6 +100,8 @@ In the simple bootstrap, one draws repeated samples from an original sample with
 The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,-->. In this approach, a sample is drawn with replacement from the original, unmatched observational data. Then by fitting a new logistic model for each bootstrap, the propensity-score model is re-estimated and re-form a propensity-score-matched sample. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
 
 The resulting standard error estimates, $\hat{\sigma}_{\beta}$, will be the primary targets of this analysis.
+
+Figure 2. 
 
 ```{tikz, echo = FALSE}
 \tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
@@ -172,7 +174,7 @@ First, RScript files containing data generation functions for each outcome type 
 
 Bootstrapping functions were then defined, in which separate procedures were written for simple bootstrapping and complex bootstrapping. Since the simple bootstrap samples from a dataset in which propensity score matched pairs had already been created, its function only needed to perform the sampling-with-replacement procedure. [Appendix B] In the function written to handle complex bootstrapping, a matching procedure was included after the sampling-with-replacement step. [Appendix C] Both of these functions were written to perform all iterations of bootstrapping required for each initial dataset (i.e., $m_{boot}$ samples would be produced for each base sample).
 
-Outcome functions were then constructed to produce the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and we use standardization to estimate the average treatment effect. To this end, the pseudo-population is created where every subject gets treatment and no treatment for each sub-population and we use GLM model to obtain estimated treatment effect from bootstrapped samples. [Appendix D] Then, these estimates were summarized and collected in datasets that were indexed by scenario, outcome type, and bootstrapping method. 
+Outcome functions were then constructed to produce the estimated treatment effect we were interested in. In these outcome functions, bootstrapped samples were passed through the GLM function, and we use standardization to estimate the average treatment effect of the entire study population. To this end, the pseudo-population is created where every subject gets treatment and no treatment for each sub-population and we use GLM model to obtain estimated treatment effect from bootstrapped samples. [Appendix D] Then, these estimates were summarized and collected in datasets that were indexed by scenario, outcome type, and bootstrapping method. 
 
 Finally, these functions were compiled into scripts we could pass parameters into and run through top-to-bottom to generate the results for a given scenario. To avoid manually updating the parameters that would vary, a dataset was established to describe the scenarios of interest in the study. [Appendix E] These final programs would read in the specified row of parameters and conduct the full simulation based on those values. 
 
@@ -184,8 +186,8 @@ Some excerpts of the programming associated with this simulation study has been 
 library(tidyverse)
 source("./shared_code/bin_plots_script.R")
 source("./shared_code/cont_plots_script.R")
-bin_cvg_plot + labs(title = "Figure 2: Binary Coverage Rates") + theme(text = element_text(size = 10))
-cont_cvg_plot + labs(title = "Figure 3: Continuous Coverage Rates") + theme(text = element_text(size = 10))
+bin_cvg_plot + labs(title = "Figure 3: Binary Coverage Rates") + theme(text = element_text(size = 10))
+cont_cvg_plot + labs(title = "Figure 4: Continuous Coverage Rates") + theme(text = element_text(size = 10))
 ```
 
 Analysis was performed on 24 different scenarios, 12 in a binary outcome setting and 12 in a continuous setting. To assess the standard error estimates produced by each bootstrapping method, confidence intervals were created and coverage rates calculated, see Figures 2 and 3. Each of our scenarios included 100 initial, base samples, which resulted in 100 confidence intervals. Based on the binomial distribution where n = 100, p = 0.95, a coverage rate below 90% and above 99% indicates a statistically significant under- or over-estimation of the standard error. Based on this criteria, the simple bootstrap method underestimated the standard error in five out of the six binary outcome scenarios with a lesser true average treatment effect, and the simple bootstrap underestimated the standard error of the true average treatment effect in four of the six of the scenarios involving the larger treatment effect. Conversely, the complex bootstrap method overestimated the standard error in one of the 11 scenarios. Note the complex bootstrapping method was not reliable in the scenario where $n_{sample} = 100$ and treated proportion was equal to 10%. In the scenario with a lesser treatment effect, the complex bootstrap produced a 1% coverage rate, and no estimate was produced for the scenario with a greater treatment effect.
@@ -193,8 +195,8 @@ Analysis was performed on 24 different scenarios, 12 in a binary outcome setting
 In the continuous setting (Figure 3), the coverage rate from the simple bootstrapping method fell within the statistically significant range for all 12 scenarios. However, the complex bootstrap overestimated the standard error in 10 of the 12 scenarios. Again, the complex bootstrap was not reliable in the two scenarios where $n_{sample} = 100$ and treated proportion was equal to 10%. No estimates were produced in these instances due to sampling error wherein the bootstrapped sample contained no treated individuals, and thus no propensity score matching or treatment effect estimation could take place.
 
 ```{r standard error plots, echo = FALSE, message = FALSE, warning = FALSE}
-bin_se_plot + labs(title = "Figure 4: Binary Standard Error Estimates") + theme(text = element_text(size = 10))
-cont_se_plot + labs(title = "Figure 5: Continuous Standard Error Estimates") + theme(text = element_text(size = 10))
+bin_se_plot + labs(title = "Figure 5: Binary Standard Error Estimates") + theme(text = element_text(size = 10))
+cont_se_plot + labs(title = "Figure 6: Continuous Standard Error Estimates") + theme(text = element_text(size = 10))
 ```
 
 In Figure 4, the standard error estimates from the binary setting can be seen in more detail. In general, the simple bootstrap seemed to produce lower estimates of standard error compared to an empirical estimate based on the initial sample distribution before any bootstrapping, while the complex bootstrap seems to produce larger estimates of the standard error. This aligns with the observation that the complex bootstrap confidence intervals tended to have higher coverage rates compared to the simple bootstrap method. Note again the exception for complex bootstrapping for the scenario with only 100 subjects and 10% treatment proportion.
@@ -202,8 +204,8 @@ In Figure 4, the standard error estimates from the binary setting can be seen in
 In Figure 5, a similar plot features the standard error estimates from the continuous setting. Again, the estimates from the two bootstrapping methods and the empirical measurement produce similar values. In general, the complex bootstrap produces larger estimates of standard error compared to the simple bootstrap, but the scenario in which $n_{sample} = 1000$ and treated proportion is 30% has a smaller simple bootstrap estimate compared to the complex bootstrap. These results are summarized in detail in Table ## and Table ##. In general, standard error estimates appear to converge as sample size increases.
 
 ```{r bias plots, echo = FALSE, message = FALSE, warning = FALSE}
-bin_bias_plot + labs(title = "Figure 6: Binary Bias Distributions") + theme(text = element_text(size = 10))
-cont_bias_plot + labs(title = "Figure 7: Continuous Bias Distributions") + theme(text = element_text(size = 10))
+bin_bias_plot + labs(title = "Figure 7: Binary Bias Distributions") + theme(text = element_text(size = 10))
+cont_bias_plot + labs(title = "Figure 8: Continuous Bias Distributions") + theme(text = element_text(size = 10))
 ```
 
 Additional analysis was performed on the bias demonstrated in each of the bootstrap methods and the empirical calculation. In Figures 6 and 7, the mean and standard deviation of the bias (the difference between the estimated and true average treatment effect) are shown for all three methods in the binary and continuous settings, respectively. The standard deviation of bias increases as the number of initial samples ($n_{sample}$) decreases. These results are summarized in detail in Tables 1 and 2.
@@ -215,9 +217,13 @@ $\\$
 
 ![](continuous.jpg)
 
+These two table show the summary of the result of all the plots above (fig 3. - fig 8.) including the standard deviation and the bias of the empirical samples, 100 sub-populations before performing the simple bootstrap (fig 1.). 
+
+\newpage
+
 # Discussion
 
-In summary, the simple bootstrap method tended to have smaller standard error estimates compared to the complex bootstrap method overall and to underestimate standard error for binary outcomes. However, differences were less pronounced in settings with larger sample sizes and higher treatment prevalence. Based on the results of this study, it is recommended to use the simple bootstrap method for continuous data, as the complex bootstrap confidence intervals typically had statistically significantly high coverage rates. For binary data, it is recommended to use the complex bootstrap, particularly in settings with larger sample sizes. The simple bootstrap tended to produce statistically significantly low coverage rates for binary data. Notably, the complex bootstrap was not a reliable method in a setting with small sample size and low treatment prevalence (n = 100, 10% treatment).
+In summary, the simple bootstrap method tended to have smaller standard error estimates compared to the complex bootstrap method overall and to underestimate the sampling variability of the treatment effect for binary outcomes. As we can see from our 95% confidence interval coverage rate plots, the simple bootstrap tended to have less conservative type I error rate than 0.05 whereas the complex bootstrap tended to have more conservative type I error rate than 0.05. As a result, using the complex bootstrap tended to decrease the statistical power. However, differences were less pronounced in settings with larger sample sizes and higher treatment prevalence. Based on the results of this study, it is recommended to use the simple bootstrap method for continuous data, as the complex bootstrap confidence intervals typically had statistically significantly high coverage rates. For binary data, it is recommended to use the complex bootstrap, particularly in settings with larger sample sizes. The simple bootstrap tended to produce statistically significantly low coverage rates for binary data. Notably, the complex bootstrap was not a reliable method in a setting with small sample size and low treatment prevalence (n = 100, 10% treatment).
 
 ## Limitations
 
