@@ -41,7 +41,9 @@ $$
 \text{log}\left(\frac{\pi_i}{1 - \pi_i}\right) = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}
 $$
 
-where $\alpha_0 = \log(\frac{\pi}{1-\pi})$ as close approximation of desired treatment prevalence. \textbf{Due to the nature of the logit normal there is no closed form solution to the mean of the logit normal distibution however, calculating $\alpha_0$ in this fashion gives us a very close but always biased above approximation. }
+where $\alpha_0 = \log(\frac{\pi}{1-\pi})$ as close approximation of desired treatment prevalence. Due to the nature of the logit normal there is no closed form solution to the mean of the logit normal distribution however, calculating $\alpha_0$ in this fashion gives us a very close but always biased approximation.
+
+  \[ \lim_{n \to \infty} \sum_{i = 1}^n \mathcal{L} \left(\Phi_{\mu, \sigma^2}^{-1}\left(\frac{i}{n + 1}\right)\right)  \]
 
 
 For continuous outcomes, 100 sub-populations of 100 or 1,000 subjects will be generated using the following parametric model:
@@ -50,10 +52,9 @@ Y_i = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i} + \epsilon_i
 $$
 where $Y_i$ indicates the outcome for each subject, $A_i$ indicates the treatment status of each subject (0 or 1), $L_{2i}$ and $L_{3i}$ indicate observed covariate values for each subject, and $\epsilon_i$ denotes random error. Because $L_{2i}$ affects both $A_i$ and $Y_i$, it acts as a confounder in estimating the treatment effect.
 
-\textbf{Is there a $\beta_0$ value here?}
 For binary outcomes, the same procedure will be performed using the following parametric model:
 $$
-\text{log}\left(\frac{\tau_i}{1 - \tau_i}\right) = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}
+\text{log}\left(\frac{\tau_i}{1 - \tau_i}\right) = \beta_0 + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}
 $$
 where $Y_i \sim \text{Bernoulli}(\tau_i)$. The binary outcome model does not feature an error term, as realizations of $Y_i$ are innately subject to noise.
 
@@ -64,7 +65,6 @@ In the choice of parameter distributions and structure of our treatment assignme
 The treatment assignment for follows a logit normal with $\mu = \alpha_0$ and $\sigma^2 = \alpha_2^2 + \alpha_3^2$. 
 
 The outcome variable for the binary data follows at logit normal distribution with $\mu = \beta_1$ and $\sigma^2 = \beta_2^2 + \beta_3^2$. 
-\textbf{Talk about the MCMC method that Jimmy created}
 
 The outcome variable for the continuous data data follows at normal distribution with $\mu = \beta_1$ and $\sigma^2 = \beta_2^2 + \beta_3^2$. 
 
@@ -101,7 +101,7 @@ The complex bootstrap considers two additional sources of variability compared t
 
 The resulting standard error estimates, $\hat{\sigma}_{\beta}$, will be the primary targets of this analysis.
 
-Figure 2. 
+Figure 2. CAPTION!!
 
 ```{tikz, echo = FALSE}
 \tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
@@ -157,7 +157,7 @@ Figure 2.
 
 In simulations, three parameters will vary to aid in the comparison of the two bootstrap techniques. These three parameters are dataset sample size ($n_{\text{sample}}$), population proportion of treated individuals ($\pi$) and the true average treatment effect ($\beta_1$).  Varying the sample size and proportion of treated individuals will help make suggestions for studies that have varying amounts of participants and amount of treatment. The range the number of the sample size tried is $n_{\text{sample}} \in \{ 100, 1000 \}$, one a low sample and one a larger sample. The range of population proportion of treated individuals $\pi \in \{ 0.113, 0.216, 0.313 \}$. This is to approximate low, medium, and high treatment levels in a study. The true average treatment effect will take on $\beta_1 \in \{0.15, 0.30 \}$ in a binary study and $\beta_1 \in \{-1, 1 \}$ in a continuous study.
 
-To compare these three parameters there are number of other parameters that will be held constant from simulation to simulations. Such as the number of datasets ($m_{\text{sample}} = 100$), the number of bootstrap re-sample ($m_{\text{boot}} = 500$), the strength of covariate correlation on treatment status ($\alpha_1, \alpha_2$), and strength of covariate correlation on outcome variable  ($\beta_2, \beta_3$). Without loss of generality for the continuous data ($\alpha_1 = 1, \alpha_2 = 2, \beta_2 = 2, \beta_3 = 1$), and for the binary data ($\alpha_1 = \log(1.25), \alpha_2 =\log(1.75), \beta_2 =\log(1.75), \beta_3 =\log(1.25)$). 
+To compare these three parameters there are number of other parameters that will be held constant from simulation to simulations. Such as the number of datasets ($m_{\text{sample}} = 100$), the number of bootstrap re-sample ($m_{\text{boot}} = 500$), the strength of covariate correlation on treatment status ($\alpha_1, \alpha_2$), and strength of covariate correlation on outcome variable  ($\beta_2, \beta_3$). Without loss of generality for the continuous data ($\alpha_1 = \log(1.25), \alpha_2 =\log(1.75),\,\, \beta_2 = 2, \beta_3 = 1$), and for the binary data ($\alpha_1 = \log(1.25), \alpha_2 =\log(1.75), \beta_2 =\log(1.75), \beta_3 =\log(1.25)$). 
 
 
 ## Performance Measures
@@ -201,7 +201,7 @@ cont_se_plot + labs(title = "Figure 6: Continuous Standard Error Estimates") + t
 
 In Figure 4, the standard error estimates from the binary setting can be seen in more detail. In general, the simple bootstrap seemed to produce lower estimates of standard error compared to an empirical estimate based on the initial sample distribution before any bootstrapping, while the complex bootstrap seems to produce larger estimates of the standard error. This aligns with the observation that the complex bootstrap confidence intervals tended to have higher coverage rates compared to the simple bootstrap method. Note again the exception for complex bootstrapping for the scenario with only 100 subjects and 10% treatment proportion.
 
-In Figure 5, a similar plot features the standard error estimates from the continuous setting. Again, the estimates from the two bootstrapping methods and the empirical measurement produce similar values. In general, the complex bootstrap produces larger estimates of standard error compared to the simple bootstrap, but the scenario in which $n_{sample} = 1000$ and treated proportion is 30% has a smaller simple bootstrap estimate compared to the complex bootstrap. These results are summarized in detail in Table ## and Table ##. In general, standard error estimates appear to converge as sample size increases.
+In Figure 5, a similar plot features the standard error estimates from the continuous setting. Again, the estimates from the two bootstrapping methods and the empirical measurement produce similar values. In general, the complex bootstrap produces larger estimates of standard error compared to the simple bootstrap, but the scenario in which $n_{sample} = 1000$ and treated proportion is 30% has a smaller simple bootstrap estimate compared to the complex bootstrap. These results are summarized in detail in Table 1 and Table 2. In general, standard error estimates appear to converge as sample size increases.
 
 ```{r bias plots, echo = FALSE, message = FALSE, warning = FALSE}
 bin_bias_plot + labs(title = "Figure 7: Binary Bias Distributions") + theme(text = element_text(size = 10))
@@ -210,14 +210,13 @@ cont_bias_plot + labs(title = "Figure 8: Continuous Bias Distributions") + theme
 
 Additional analysis was performed on the bias demonstrated in each of the bootstrap methods and the empirical calculation. In Figures 6 and 7, the mean and standard deviation of the bias (the difference between the estimated and true average treatment effect) are shown for all three methods in the binary and continuous settings, respectively. The standard deviation of bias increases as the number of initial samples ($n_{sample}$) decreases. These results are summarized in detail in Tables 1 and 2.
 
-\newpage 
+The two tables below summarize the results of all the plots above (Figure 3 - Figure 8). These tables include the standard deviation and bias of the empirical samples, 100 sub-populations before performing the simple bootstrap (Figure 1). 
 
 ![](binary.jpg)
 $\\$
 
 ![](continuous.jpg)
 
-These two table show the summary of the result of all the plots above (fig 3. - fig 8.) including the standard deviation and the bias of the empirical samples, 100 sub-populations before performing the simple bootstrap (fig 1.). 
 
 \newpage
 
@@ -232,6 +231,22 @@ One drawback of this study was a lack of sample size plurality. It would be bene
 ## Future Work
 
 Similar studies in the future could focus on improving some of the limitations mentioned above. In particular, working with a larger number of initial samples and larger sample sizes would give more insight into how well the simple and complex bootstrap methods estimate standard error. As detailed above, the data generation and treatment assignment models are relatively simple with standard normally distributed covariates. Covariate correlations were also held constant in each of the simulated scenarios. It is recommended that these methods be studied in settings with varying parametric or non-parametric data to further understand their performance.
+
+## Group Contributions
+
+Waveley and Hun worked on binary code.
+
+Tucker worked on continuous code.
+
+Amy worked on figures and data gen.
+
+Jimmy worked on the presentation and finer points on the report. Jimmy did math.
+
+We all worked on the presentation and report.
+
+We all attended meetings. Lots of meetings. Productive meetings!
+
+
 
 \newpage
 
