@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+shared_code/data_gen_binary.R
+report_and_presentation

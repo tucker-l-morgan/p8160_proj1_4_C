@@ -3,18 +3,18 @@ smaller_true_ATE <- 0.15
 bigger_true_ATE <- 0.3
 
 # loading data
-load("./output_data/binary_scen_1.RData")
-load("./output_data/binary_scen_2.RData")
-load("./output_data/binary_scen_3.RData")
-load("./output_data/binary_scen_4.RData")
-load("./output_data/binary_scen_5.RData")
-load("./output_data/binary_scen_6.RData")
-load("./output_data/binary_scen_13.RData")
-load("./output_data/binary_scen_14.RData")
-load("./output_data/binary_scen_15.RData")
-load("./output_data/binary_scen_16.RData")
-load("./output_data/binary_scen_17.RData")
-load("./output_data/binary_scen_18.RData")
+load("./new_output_data/binary_scen_1.RData")
+load("./new_output_data/binary_scen_2.RData")
+load("./new_output_data/binary_scen_3.RData")
+load("./new_output_data/binary_scen_4.RData")
+load("./new_output_data/binary_scen_5.RData")
+load("./new_output_data/binary_scen_6.RData")
+load("./new_output_data/binary_scen_13.RData")
+load("./new_output_data/binary_scen_14.RData")
+load("./new_output_data/binary_scen_15.RData")
+load("./new_output_data/binary_scen_16.RData")
+load("./new_output_data/binary_scen_17.RData")
+load("./new_output_data/binary_scen_18.RData")
 
 bin_all_scenarios <- tibble(
   id = c(1:18),
@@ -67,7 +67,8 @@ rm(binary_final_odd, binary_final_even)
 # calculating coverage rates and producing plots
 cr_df<- binary_final %>%
   mutate(scenario = factor(scenario),
-         new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+         #new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+         new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
          treat_effect = ifelse(beta1 == 0.767, "True ATE = 0.15", "True ATE = 0.3"),
          Method = factor(boot_type, levels = c("Simple", "Complex", "Empirical"))) %>%  
   group_by(new_name, treat_effect, Method) %>%
@@ -82,7 +83,7 @@ bin_cvg_plot <-
   facet_grid(~treat_effect) + 
   labs(
     title = "Binary Coverage Rates by Parameters of Interest", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "CI Coverage Rate"
   ) + 
   theme_bw() + 
@@ -92,7 +93,7 @@ bin_cvg_plot <-
 empirical_data <- binary_final %>%
   mutate(
     scenario = factor(scenario),
-    new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+    new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
     treat_effect = ifelse(beta1 == 0.767, "True ATE = 0.15", "True ATE = 0.3")
   ) %>% 
   select(scenario, new_name, treat_effect, empirical_bias, empirical_se) %>%
@@ -107,7 +108,7 @@ empirical_data <- binary_final %>%
 
 boot_data <- binary_final %>%
   mutate(scenario = factor(scenario),
-         new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
+         new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
          treat_effect = ifelse(beta1 == 0.767, "True ATE = 0.15", "True ATE = 0.3"),
          Method = boot_type
   ) %>% 
@@ -130,7 +131,7 @@ bin_bias_plot <-
   facet_grid(~treat_effect) +
   labs(
     title = "Binary Simulation Bias and Standard Error CI", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "Bias"
   ) + 
   theme_bw() +
@@ -148,7 +149,7 @@ bin_se_plot <-
   facet_grid(~treat_effect) +
   labs(
     title = "Binary Simulation Standard Error", 
-    y = "Scenario",
+    y = "Scenario (Sample Size, Proportion Treated)",
     x = "Standard Error"
   )  +
   theme_bw() +

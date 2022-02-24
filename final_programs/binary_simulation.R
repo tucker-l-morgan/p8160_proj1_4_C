@@ -12,7 +12,7 @@ source("./shared_code/setup.R")
 
 ### Set Parameters
 
-scenario_id <- 15
+scenario_id <- 14
 
 all_scenarios <- tibble(
   id = c(1:18),
@@ -33,7 +33,7 @@ m_sample = 100
 m_boot   = 500
 n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
-source("./shared_code/data_gen_binary.R")
+source("./shared_code/data_gen_binary_updated.R")
 
 ## Simple Bootstrap
 
@@ -229,11 +229,11 @@ to_output_bin_ds <- bind_rows(simple_boot_result, complex_boot_result)
 
 #to_output_bin_ds <- bind_cols(to_output_bin_ds, binary_empirical_mean_se)
 
-#to_output_bin_ds <- simple_boot_result
+to_output_bin_ds <- simple_boot_result
 
 output_dataset_name <- paste0("binary_scen_", scenario_id)
 
-save_command <- paste0('save(', output_dataset_name, ", file = './output_data/", output_dataset_name, ".RData')")
+save_command <- paste0('save(', output_dataset_name, ", file = './new_output_data/", output_dataset_name, ".RData')")
 
 eval(parse(text = paste(output_dataset_name, "to_output_bin_ds", sep = " <- ")))
 
@@ -243,6 +243,6 @@ beep("fanfare")
 
 #rm(list = ls())
 
-source("shared_code/empirical_calculation_binary.R")
+#source("shared_code/empirical_calculation_binary.R")
 
 

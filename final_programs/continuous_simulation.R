@@ -1,44 +1,17 @@
----
-title: "Continuous Simulation"
-author: "Tucker Morgan - tlm2152"
-date: "2/16/2022"
-output: pdf_document
----
-```{r setting scenario}
+## script to run continuous outcomes data gen and bootstrapping
 source("./shared_code/setup.R")
-scenario_id = 6
-```
+scenario_id = 14
+
 
 ## Generating 100 Samples from Our Population
-```{r calling data gen script}
 source("./shared_code/data_gen_continuous_updated.R")
-```
 
-Let's take a look at one of our "no-boot" aka sub-population data sets.
-
-```{r distribution of treatment rate}
-hist(map_dbl(1:length(no_boot_list), function(i) mean(no_boot_list[[i]]$A)), 
-     main = "Hist of Treatment Dist",
-     xlab = "Treat Rate",
-     ylab = "Count")
-```
-
-```{r one sub-pop initial analysis}
-no_boot_df1 <- no_boot_list[[1]]
-
-sum(no_boot_df1$A) / nrow(no_boot_df1) # similar to desired_prop?
-hist(no_boot_df1$Y, breaks = 100) # continuous distribution of outcome
-```
 
 ## The Simple Bootstrap
-
-```{r calling in simple bootstrap}
 source("./shared_code/boot_cont_simple.R")
-```
+
 
 ## Summary of 1000 Simple Bootstraps in 100 Sub-Populations
-
-```{r summary of results}
 boot_result <-
   boot_estimates %>%
   group_by(seq) %>%
@@ -79,58 +52,14 @@ fig2 <-
   )
 
 plot_grid(fig1, fig2)
-```
 
-```{r cleaning up the environment}
 rm(boot_estimates, boot_tib, df, matched, matched_df, matched_tib)
-```
 
 ## Running Complex Bootstraps
-```{r calling in complex boots}
 source("./shared_code/boot_cont_complex.R")
-```
 
-
-## Confidence Intervals Coverage Rates
-
-```{r coverage rate calculation, eval = FALSE, include = FALSE}
-cvg_rate <- function(df){
-  res = df %>% 
-    mutate(ci_lower = ATE - 1.96*sd(ATE),
-         ci_upper = ATE + 1.96*sd(ATE),
-         covered = case_when(
-           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
-                                            TRUE ~ 0
-         ))
-  
-  return(sum(res$covered) / nrow(res))
-}
-
-cvg_plot <- function(df){
-  res = df %>% 
-    mutate(ci_lower = ATE - 1.96*sd(ATE),
-         ci_upper = ATE + 1.96*sd(ATE),
-         covered = case_when(
-           ci_lower <= beta1 & ci_upper >= beta1 ~ 1,
-                                            TRUE ~ 0
-         ))
-  
-  plot = res %>% 
-    ggplot(aes(x = ATE, y = seq)) +
-    geom_point() +
-    geom_errorbar(aes(xmin = ci_lower, xmax = ci_upper)) +
-    geom_vline(xintercept = beta1, linetype = "dashed")
-  
-  return(plot)
-}
-
-cvg_rate(boot_result)
-cvg_plot(boot_result)
-```
 
 ## Generating Output
-
-```{r output}
 cont_simple_df <- 
   boot_result %>% 
   mutate(ci_lower = ATE - qnorm(0.975)*sd_ATE,
@@ -175,4 +104,3 @@ eval(parse(text = save_command))
 beep()
 #save(cont_df_scen_7, file = "./output_data/continuous_scen_7.RData") # change object name and file name each run
 ```
-

@@ -43,7 +43,7 @@ for (q in scenid) {
   m_boot   = 500
   n_sample = all_scenarios %>% filter(id == scenario_id) %>% pull(n_sample)
 
-source("./shared_code/data_gen_binary.R")
+source("./shared_code/data_gen_binary_updated.R")
 
 df <- no_boot_list
 matched_df <- list()
@@ -116,12 +116,12 @@ for (k in scenarios){
 
   load_dataset_name <- paste0("binary_scen_", k)
 
-  load_command <- paste0("load(file = './output_data/", load_dataset_name, ".RData')")
+  load_command <- paste0("load(file = './new_output_data/", load_dataset_name, ".RData')")
 
   eval(parse(text = load_command))
   eval(parse(text = paste("current_dataset", load_dataset_name, sep = " <- ")))
   
-  current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
+  # current_dataset <- current_dataset %>% select(-empirical_mean, -empirical_se, -covered)
 
   # adding empiricals and re-evaluating covered
   
@@ -144,7 +144,7 @@ for (k in scenarios){
     
   }
   
-  save_command <- paste0('save(', load_dataset_name, ", file = './output_data/", load_dataset_name, ".RData')")
+  save_command <- paste0('save(', load_dataset_name, ", file = './new_output_data/", load_dataset_name, ".RData')")
   
   eval(parse(text = paste(load_dataset_name, "modified_ds", sep = " <- ")))
   
