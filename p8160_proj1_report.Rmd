@@ -1,7 +1,11 @@
 ---
-title: "P8160 - Comparing Bootstrapping Methods Report"
-author: "Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu"
-date: "2/11/2022"
+title: |
+  | P8160 - The Chicken or the Egg:
+  | Bootstrapping in the Setting of Propensity Score Matching
+author: |
+  | Group 4
+  | Amy Pitts, Hun Lee, Jimmy Kelliher, Tucker Morgan, Waveley Qiu
+date: "2022-02-25"
 output:
   pdf_document: default
   
@@ -36,44 +40,44 @@ The primary goal of this simulation study is to assess the performance of two bo
 
 ## Data Generation
 
-The data for this simulation study were generated from a parametric model. This simulation study is interested in observational data therefore, our data generation will be modeled off of a potential observational study that could happen in the real world. For each subject, three baseline covariates ($L_1, L_2, L_3$) were simulated from independent standard normal distributions, $N(0, 1)$. Two of these covariates ($L_1$ and $L_2$) affected treatment selection, while two ($L_2$ and $L_3$) affected the outcome. Here the $L_2$ variable will be acting as the confounding since it is shared in the treatment assignment and outcome generation. The probability of treatment for each subject was determined by the following model:
+The data for this simulation study will be generated from a parametric model. As we are focused on observational data, our data generation process will be modeled after a hypothetical observational study that could happen in the natural world. For each subject, we will generate three normally distributed baseline covariates $L_1, L_2, L_3 \sim N(0, 1)$. Two of these covariates ($L_1$ and $L_2$) will determine treatment selection, while two ($L_2$ and $L_3$) will affect the outcome (Figure 1). Here, $L_2$ serves as a confounder since it affects both the treatment assignment and outcome. For each subject $i$, the probability of treatment $\pi_i$ was drawn according to the data-generating process
+
 $$
 \text{log}\left(\frac{\pi_i}{1 - \pi_i}\right) = \alpha_0 + \alpha_1 L_{1i} + \alpha_2 L_{2i}
 $$
 
-where $\alpha_0 = \log(\frac{\pi}{1-\pi})$ as close approximation of desired treatment prevalence. Due to the nature of the logit normal there is no closed form solution to the mean of the logit normal distribution however, calculating $\alpha_0$ in this fashion gives us a very close but always biased approximation.
+where $\alpha_0 \approx \log(\frac{\pi_i}{1-\pi_i})$ serves as a close approximation of desired treatment prevalence.\footnote{Due to the nature of the logit-normal distribution, there is no closed-form computation of the true treatment prevalence. Refer to the appendix for details.}
+
+<!-- Move expression to appendix -->
 
   \[ \lim_{n \to \infty} \sum_{i = 1}^n \mathcal{L} \left(\Phi_{\mu, \sigma^2}^{-1}\left(\frac{i}{n + 1}\right)\right)  \]
 
+For continuous outcomes, 100 samples consisting of either 100 or 1,000 subjects will be generated using the parametric model
 
-For continuous outcomes, 100 sub-populations of 100 or 1,000 subjects will be generated using the following parametric model:
 $$
-Y_i = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i} + \epsilon_i
+Y_i = \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i} + \varepsilon_i,
 $$
-where $Y_i$ indicates the outcome for each subject, $A_i$ indicates the treatment status of each subject (0 or 1), $L_{2i}$ and $L_{3i}$ indicate observed covariate values for each subject, and $\epsilon_i$ denotes random error. Because $L_{2i}$ affects both $A_i$ and $Y_i$, it acts as a confounder in estimating the treatment effect.
+where $Y_i$ indicates the outcome for each subject, $A_i$ indicates the binary treatment status of each subject (treated are denoted by $A_i = 1$), $L_{2i}$ and $L_{3i}$ indicate observed covariate values for each subject, and $\varepsilon_i$ denotes random error. Because $L_{2i}$ affects both $A_i$ and $Y_i$, it acts as a confounder in estimating the treatment effect.
 
-For binary outcomes, the same procedure will be performed using the following parametric model:
+Analogously, binary outcomes are distributed according to $Y_i \sim B(\tau_i)$, where $\tau_i$ is generated according to the process
+
 $$
-\text{log}\left(\frac{\tau_i}{1 - \tau_i}\right) = \beta_0 + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}
+\text{log}\left(\frac{\tau_i}{1 - \tau_i}\right) = \beta_0 + \beta_1 A_i + \beta_2 L_{2i} + \beta_3 L_{3i}.
 $$
-where $Y_i \sim \text{Bernoulli}(\tau_i)$. The binary outcome model does not feature an error term, as realizations of $Y_i$ are innately subject to noise.
+The binary outcome model does not feature an error term, as realizations of $Y_i$ are innately subject to noise.
 
-\textbf{Here I am attempting to explain what the truth is but will need to be revised!}
+In order to evaluate our simulations, we must establish the true treatment effects. For the continuous case, the true average treatment effect is simply given by $\beta_1$, which is specified _a priori_. For the binary case, computing the true effect is less trivial. In the appendix, we show that
+  \[ E(Y \, | \, A = 1) \sim LN \left( \beta_0 + \beta_1, \beta_2^2 + \beta_3^2 \right) \quad \text{and} \]
+ \[ E(Y \, | \, A = 0) \sim LN \left( \beta_0, \beta_2^2 + \beta_3^2 \right), \]
+where $LN$ denotes the logit-normal distribution. To that end, the true treatment effect can be computed in the same way that we compute the true treatment prevalence.
 
-In the choice of parameter distributions and structure of our treatment assignment and outcome generation the true distribution can be calculated. This will allow the simulation estimates to be compared to a truth. 
+\medskip
 
-The treatment assignment for follows a logit normal with $\mu = \alpha_0$ and $\sigma^2 = \alpha_2^2 + \alpha_3^2$. 
+\begin{center}
+Figure 1. Data Generation Directed Acyclic Graph (DAG)
+\end{center}
 
-The outcome variable for the binary data follows at logit normal distribution with $\mu = \beta_1$ and $\sigma^2 = \beta_2^2 + \beta_3^2$. 
-
-The outcome variable for the continuous data data follows at normal distribution with $\mu = \beta_1$ and $\sigma^2 = \beta_2^2 + \beta_3^2$. 
-
-Thus the true treatment effect will depend on the assignment of $\beta_1$. 
-$\\$
-
-Figure 1. Data Generation DAG
-
-```{r, echo = FALSE, message = FALSE, fig.width=8, fig.height=3.5}
+```{r, echo = FALSE, message = FALSE, fig.width=8, fig.height=3.5, fig.align='center'}
 g <- dagitty('dag {
     L1 [pos="1,1"]
     A [pos="1,0"]
@@ -95,15 +99,17 @@ ggdag(g)+theme_dag_blank()
 
 Two bootstrap methods will be assessed in this simulation: the simple bootstrap and the complex bootstrap.
 
-In the simple bootstrap, one draws repeated samples from an original sample with replacement to imitate the process of drawing samples from a population. Here, 500 repeated samples ($m_{boot}$) of matched pairs ($n_{boot} = n_{sample} \cdot P(A = 1)$) will be drawn from the matched pairs of observations for each of the 100 initial samples ($m_{sample}$). The distribution of the estimated treatment effect ($\hat{\beta_1}$) across the 500 bootstraps is assessed for each of the 100 initial samples.
+In the simple bootstrap, one draws repeated samples from an original sample with replacement in order to imitate the process of drawing samples from a population. Here, 500 repeated samples ($m_{boot}$) of matched pairs ($n_{boot} = n_{sample} \cdot P(A = 1)$) will be drawn from the matched pairs of observations for each of the 100 initial samples ($m_{sample}$). The distribution of the estimated treatment effect ($\hat{\beta_1}$) across the 500 bootstraps is assessed for each of the 100 initial samples.
 
-The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,-->. In this approach, a sample is drawn with replacement from the original, unmatched observational data. Then by fitting a new logistic model for each bootstrap, the propensity-score model is re-estimated and re-form a propensity-score-matched sample. The treatment effect is estimated from the newly matched sample. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
+The complex bootstrap considers two additional sources of variability compared to the simple bootstrap [4] <!-- Austin, P. C., & Small,-->. In this approach, a sample is drawn with replacement from the original, unmatched observational data. Then, we generate a matched dataset for _each_ of the bootstrapped samples via the propensity score algorithm. This process is repeated 500 times ($m_{boot}$) for each of the 100 samples ($m_{sample}$).
 
-The resulting standard error estimates, $\hat{\sigma}_{\beta}$, will be the primary targets of this analysis.
+Each of the two bootstrapped procedures yield estimates of the standard error $\hat{\sigma}_{\beta}$, which will be the primary target of this analysis.
 
-Figure 2. CAPTION!!
+\begin{center}
+Figure 2. High-level Summary of the Simulation
+\end{center}
 
-```{tikz, echo = FALSE}
+```{tikz, echo = FALSE, fig.align="center"}
 \tikzstyle{block} = [rectangle, draw, text width=5em, text centered, rounded corners, minimum height=3em]
 \tikzstyle{line} = [draw, -latex]
 
@@ -130,7 +136,7 @@ Figure 2. CAPTION!!
     \path [line] (gen) -- (init);
     \path [line] (init) -- (psm0);
     \path [line] (init) -- node {Complex}(bootc);
-    \path [line] (psm0) -- node {Baseline}(base);
+    \path [line] (psm0) -- node {Empirical}(base);
     \path [line] (psm0) -- node {Simple}(boots);
     \path [line] (boots) -- (samps1);
     \path [line] (boots) -- (samps2);
@@ -155,10 +161,9 @@ Figure 2. CAPTION!!
 
 ## Parameters of Interest 
 
-In simulations, three parameters will vary to aid in the comparison of the two bootstrap techniques. These three parameters are dataset sample size ($n_{\text{sample}}$), population proportion of treated individuals ($\pi$) and the true average treatment effect ($\beta_1$).  Varying the sample size and proportion of treated individuals will help make suggestions for studies that have varying amounts of participants and amount of treatment. The range the number of the sample size tried is $n_{\text{sample}} \in \{ 100, 1000 \}$, one a low sample and one a larger sample. The range of population proportion of treated individuals $\pi \in \{ 0.113, 0.216, 0.313 \}$. This is to approximate low, medium, and high treatment levels in a study. The true average treatment effect will take on $\beta_1 \in \{0.15, 0.30 \}$ in a binary study and $\beta_1 \in \{-1, 1 \}$ in a continuous study.
+We allow three parameters to vary across different simulations: dataset sample size ($n_{\text{sample}}$), population proportion of treated individuals ($E(\pi_i)$) and the true average treatment effect ($\beta_1$). Varying the sample size and proportion of treated individuals enable us to simulate real-world scenarios, such as studies with small-sample datasets or low treatment prevalence. In particular, we consider $n_{\text{sample}} \in \{ 100, 1000 \}$, $E(\pi_i) \in \{ 0.113, 0.216, 0.313 \}$, $E(Y^{a = 1}) - E(Y^{a = 0}) \in \{0.15, 0.30 \}$ (for binary outcomes), and $\beta_1 \in \{-1, 1 \}$ (for continuous outcomes).
 
-To compare these three parameters there are number of other parameters that will be held constant from simulation to simulations. Such as the number of datasets ($m_{\text{sample}} = 100$), the number of bootstrap re-sample ($m_{\text{boot}} = 500$), the strength of covariate correlation on treatment status ($\alpha_1, \alpha_2$), and strength of covariate correlation on outcome variable  ($\beta_2, \beta_3$). Without loss of generality for the continuous data ($\alpha_1 = \log(1.25), \alpha_2 =\log(1.75),\,\, \beta_2 = 2, \beta_3 = 1$), and for the binary data ($\alpha_1 = \log(1.25), \alpha_2 =\log(1.75), \beta_2 =\log(1.75), \beta_3 =\log(1.25)$). 
-
+While the above parameters can vary, we also consider several static parameters: the number of datasets ($m_{\text{sample}} = 100$), the number of bootstrapped re-samples ($m_{\text{boot}} = 500$), the effect size of covariates on the treatment proportion ($\alpha_1 = \log(1.25), \alpha_2 = \log(1.75)$), and the effect size of covariates on the outcome ($\beta_2, \beta_3$). For continuous outcomes, we set $\beta_2 = 2$ and $\beta_3 = 1$; for binary outcomes, we set $\beta_2 = \log(1.75), \beta_3 = \log(1.25)$.
 
 ## Performance Measures
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.13)  24 FEB 2022 14:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.9.13)  24 FEB 2022 15:51
 entering extended mode
 **./p8160_proj1_report.tex
 (p8160_proj1_report.tex
@@ -1060,140 +1060,136 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 169.
+(Font)              <10> on input line 170.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 169.
+(Font)              <7> on input line 170.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 169.
+(Font)              <5> on input line 170.
 [1
 
 {C:/Users/14088/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 222--224
-
- []
-
 <p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1.pdf, id=29, 578.16pt x
  252.945pt>
 File: p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file 
 (type pdf)
 <use p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-2-
-1.pdf  used on input line 227.
+1.pdf  used on input line 225.
 (pdftex.def)             Requested size: 469.75385pt x 205.5173pt.
-[2 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1.pdf>]
-<p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf, id=42, 592.78667p
+[2] [3 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-2-1.pdf>]
+<p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf, id=52, 592.78667p
 t x 331.5808pt>
 File: p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file 
 (type pdf)
 <use p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/unnamed-chunk-3-
-1.pdf  used on input line 260.
+1.pdf  used on input line 259.
 (pdftex.def)             Requested size: 469.75261pt x 262.76053pt.
-[3 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf>]
-<p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf, id=84, 469.755pt x
+[4 <./p8160_proj1_report_files/figure-latex/unnamed-chunk-3-1.pdf>]
+<p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf, id=94, 469.755pt x
  325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf Graphic file (
 type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-1
-.pdf  used on input line 364.
+.pdf  used on input line 357.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf, id=85, 469.755pt x
+<p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf, id=95, 469.755pt x
  325.215pt>
 File: p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf Graphic file (
 type pdf)
 <use p8160_proj1_report_files/figure-latex/cvg rate plots-2.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/cvg rate plots-2
-.pdf  used on input line 365.
+.pdf  used on input line 358.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 364--366
+Underfull \hbox (badness 10000) in paragraph at lines 357--359
 []
  []
 
-[4]
+[5]
 Overfull \vbox (21.90105pt too high) has occurred while \output is active []
 
-[5 <./p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf> <./p8160_proj
+[6 <./p8160_proj1_report_files/figure-latex/cvg rate plots-1.pdf> <./p8160_proj
 1_report_files/figure-latex/cvg rate plots-2.pdf>]
-<p8160_proj1_report_files/figure-latex/standard error plots-1.pdf, id=110, 469.
+<p8160_proj1_report_files/figure-latex/standard error plots-1.pdf, id=119, 469.
 755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-1.pdf Graphic 
 file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error p
-lots-1.pdf  used on input line 398.
+lots-1.pdf  used on input line 391.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/standard error plots-2.pdf, id=111, 469.
+<p8160_proj1_report_files/figure-latex/standard error plots-2.pdf, id=120, 469.
 755pt x 325.215pt>
 File: p8160_proj1_report_files/figure-latex/standard error plots-2.pdf Graphic 
 file (type pdf)
 <use p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/standard error p
-lots-2.pdf  used on input line 399.
+lots-2.pdf  used on input line 392.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 398--400
+Underfull \hbox (badness 10000) in paragraph at lines 391--393
 [][]
  []
 
-[6 <./p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>]
-<p8160_proj1_report_files/figure-latex/bias plots-1.pdf, id=121, 469.755pt x 32
+[7 <./p8160_proj1_report_files/figure-latex/standard error plots-1.pdf>]
+<p8160_proj1_report_files/figure-latex/bias plots-1.pdf, id=131, 469.755pt x 32
 5.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-1.pdf Graphic file (type
  pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-1.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-1.pdf
-  used on input line 422.
+  used on input line 415.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<p8160_proj1_report_files/figure-latex/bias plots-2.pdf, id=122, 469.755pt x 32
+<p8160_proj1_report_files/figure-latex/bias plots-2.pdf, id=132, 469.755pt x 32
 5.215pt>
 File: p8160_proj1_report_files/figure-latex/bias plots-2.pdf Graphic file (type
  pdf)
 <use p8160_proj1_report_files/figure-latex/bias plots-2.pdf>
 Package pdftex.def Info: p8160_proj1_report_files/figure-latex/bias plots-2.pdf
-  used on input line 423.
+  used on input line 416.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 422--424
+Underfull \hbox (badness 10000) in paragraph at lines 415--417
 [][]
  []
 
-[7 <./p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>] [8 <./
+[8 <./p8160_proj1_report_files/figure-latex/standard error plots-2.pdf>] [9 <./
 p8160_proj1_report_files/figure-latex/bias plots-1.pdf>]
-<binary.jpg, id=142, 635.37375pt x 339.2675pt>
+<binary.jpg, id=151, 635.37375pt x 339.2675pt>
 File: binary.jpg Graphic file (type jpg)
 <use binary.jpg>
-Package pdftex.def Info: binary.jpg  used on input line 439.
+Package pdftex.def Info: binary.jpg  used on input line 432.
 (pdftex.def)             Requested size: 469.77171pt x 250.84177pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 439--440
+Underfull \hbox (badness 10000) in paragraph at lines 432--433
 
  []
 
-[9 <./p8160_proj1_report_files/figure-latex/bias plots-2.pdf>]
-<continuous.jpg, id=153, 678.535pt x 352.31625pt>
+[10 <./p8160_proj1_report_files/figure-latex/bias plots-2.pdf>]
+<continuous.jpg, id=162, 678.535pt x 352.31625pt>
 File: continuous.jpg Graphic file (type jpg)
 <use continuous.jpg>
-Package pdftex.def Info: continuous.jpg  used on input line 441.
+Package pdftex.def Info: continuous.jpg  used on input line 434.
 (pdftex.def)             Requested size: 469.75305pt x 243.91023pt.
-[10 <./binary.jpg> <./continuous.jpg>] [11] [12]
+[11 <./binary.jpg> <./continuous.jpg>] [12] [13]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 5
-34.
+27.
 (C:\Users\14088\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [13]
+) [14]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 549.
-[14] [15] [16] [17] (p8160_proj1_report.aux) ) 
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 542.
+[15] [16] [17] [18] (p8160_proj1_report.aux) ) 
 Here is how much of TeX's memory you used:
- 35560 strings out of 478864
- 831010 string characters out of 2848660
- 1255985 words of memory out of 3000000
- 52655 multiletter control sequences out of 15000+600000
- 460952 words of font info for 136 fonts, out of 8000000 for 9000
+ 35579 strings out of 478864
+ 831435 string characters out of 2848660
+ 1255437 words of memory out of 3000000
+ 52664 multiletter control sequences out of 15000+600000
+ 468516 words of font info for 141 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,6n,83p,747b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 84i,8n,83p,747b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
 {C:/Users/14088/AppData/Local/Pro
 grams/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Users/14088/AppData/Local/Program
 s/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Users/14088/AppData/Local/Programs/Mi
@@ -1205,25 +1201,28 @@ ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/14088/AppData/
 Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/14088/
 AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users
 /14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-<C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb>
 <C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb>
 <C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb>
 <C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb>
-<C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><
-C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C
-:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:
-/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/
-Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr5.pfb><C:/Us
-ers/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/User
-s/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/User
-s/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users
-/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users
-/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on p8160_proj1_report.pdf (17 pages, 683890 bytes).
+<C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi5.pfb><
+C:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C
+:/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:
+/Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/
+Users/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/U
+sers/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr5.pfb><C:/Use
+rs/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users
+/14088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/Users/1
+4088/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/140
+88/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/140
+88/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/140
+88/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/1408
+8/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/1408
+8/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on p8160_proj1_report.pdf (18 pages, 723191 bytes).
 PDF statistics:
- 365 PDF objects out of 1000 (max. 8388607)
- 62 named destinations out of 1000 (max. 500000)
- 30943 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 386 PDF objects out of 1000 (max. 8388607)
+ 64 named destinations out of 1000 (max. 500000)
+ 35039 words of extra memory for PDF output out of 35830 (max. 10000000)
 
 
 ! pdflatex: major issue: So far, you have not checked for MiKTeX updates.
