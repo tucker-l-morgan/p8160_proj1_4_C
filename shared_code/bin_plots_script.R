@@ -29,7 +29,9 @@ binary_final_odd <-
   binary_scen_1 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.1) %>% 
   bind_rows(binary_scen_3 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.2)) %>%
   bind_rows(binary_scen_5 %>% mutate(n_sample = 1000, beta1 = 0.767, desired_prop = 0.3)) %>%
-  bind_rows(binary_scen_13 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.1)) %>%
+  bind_rows(binary_scen_13 %>% 
+              filter(boot_type != 1) %>% 
+              mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.1)) %>%
   bind_rows(binary_scen_15 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.2)) %>%
   bind_rows(binary_scen_17 %>% mutate(n_sample = 100, beta1 = 0.767, desired_prop = 0.3))
 
@@ -65,7 +67,7 @@ binary_final <- binary_final_even %>% bind_rows(binary_final_odd)
 rm(binary_final_odd, binary_final_even)
 
 # calculating coverage rates and producing plots
-cr_df<- binary_final %>%
+cr_df<- binary_final %>%  
   mutate(scenario = factor(scenario),
          #new_name = str_c("sample = ", n_sample, ", treat prop = ", desired_prop),
          new_name = str_c("(", n_sample, ", ", desired_prop, ")"),
